@@ -122,7 +122,7 @@ private:
     void showStartupInfoOnSerial(void);
 
     /**
-     * Checks whether the filesystem content is compatible to the Pixelix version.
+     * Checks whether the filesystem content is compatible to the IVTRego6xxControl version.
      * 
      * @return If filesystem content is compatible, it will return true otherwise false.
      */

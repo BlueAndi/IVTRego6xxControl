@@ -131,7 +131,7 @@ static const char*      DEFAULT_WIFI_SSID               = "";
 static const char*      DEFAULT_WIFI_PASSPHRASE         = "";
 
 /** Wifi access point network default value */
-static const char*      DEFAULT_WIFI_AP_SSID            = "pixelix";
+static const char*      DEFAULT_WIFI_AP_SSID            = "IVTReg6xxControl";
 
 /** Wifi access point network passphrase default value */
 static const char*      DEFAULT_WIFI_AP_PASSPHRASE      = "Luke, I am your father.";
@@ -143,7 +143,7 @@ static const char*      DEFAULT_WEB_LOGIN_USER          = "luke";
 static const char*      DEFAULT_WEB_LOGIN_PASSWORD      = "skywalker";
 
 /** Hostname default value */
-static const char*      DEFAULT_HOSTNAME                = "pixelix";
+static const char*      DEFAULT_HOSTNAME                = "IVTReg6xxControl";
 
 /* ---------- Minimum values ---------- */
 

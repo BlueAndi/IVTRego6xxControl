@@ -122,7 +122,7 @@ void setup()
         (void)Logging::getInstance().selectSink("Serial");
     }
 
-    /* Set severity for Pixelix logging system. */
+    /* Set severity for logging system. */
     Logging::getInstance().setLogLevel(CONFIG_LOG_SEVERITY);
 
     /* The setup routine shall handle only the initialization state.

@@ -270,7 +270,7 @@ void InitState::exit(StateMachine& sm)
 
 void InitState::showStartupInfoOnSerial()
 {
-    LOG_INFO("PIXELIX starts up ...");
+    LOG_INFO("IVTRego6xxControl starts up ...");
     LOG_INFO("Target: %s", Version::TARGET);
     LOG_INFO("SW version: %s", Version::SOFTWARE_VER);
     delay(20U); /* To avoid missing log messages on the console */
