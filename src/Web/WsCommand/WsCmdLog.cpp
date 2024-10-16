@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2024 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2019 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,19 +25,17 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  Web server
+ * @brief  Websocket command to get/set logging
  * @author Andreas Merkle <web@blue-andi.de>
  */
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
-#include "MyWebServer.h"
-#include "WebConfig.h"
-#include "CaptivePortal.h"
-#include "Pages.h"
-#include "RestApi.h"
+#include "WsCmdLog.h"
 #include "WebSocket.h"
+
+#include <Logging.h>
 
 /******************************************************************************
  * Compiler Switches
@@ -55,21 +53,89 @@
  * Prototypes
  *****************************************************************************/
 
-static void error(AsyncWebServerRequest* request);
-
 /******************************************************************************
  * Local Variables
  *****************************************************************************/
 
-/** Web server */
-static AsyncWebServer gWebServer(WebConfig::WEBSERVER_PORT);
-
-/** Is captive portal enabled? */
-static bool gIsCaptivePortalEnabled = false;
-
 /******************************************************************************
  * Public Methods
  *****************************************************************************/
+
+void WsCmdLog::execute(AsyncWebSocket* server, uint32_t clientId)
+{
+    if (nullptr == server)
+    {
+        return;
+    }
+
+    /* Any error happended? */
+    if (true == m_isError)
+    {
+        sendNegativeResponse(server, clientId, "\"Parameter invalid.\"");
+    }
+    else
+    {
+        String      msg;
+        LogSink*    selectedSink    = nullptr;
+
+        /* Set logging on/off? */
+        if (0 < m_cnt)
+        {
+            if (false == m_isLoggingOn)
+            {
+                (void)Logging::getInstance().selectSink("Serial");
+            }
+            else
+            {
+                (void)Logging::getInstance().selectSink("Websocket");
+            }
+        }
+
+        selectedSink = Logging::getInstance().getSelectedSink();
+
+        preparePositiveResponse(msg);
+
+        if ((nullptr == selectedSink) ||
+            (selectedSink->getName() != "Websocket"))
+        {
+            msg += "0";
+        }
+        else
+        {
+            msg += "1";
+        }
+
+        sendResponse(server, clientId, msg);
+    }
+
+    m_cnt       = 0U;
+    m_isError   = false;
+}
+
+void WsCmdLog::setPar(const char* par)
+{
+    if (0U == m_cnt)
+    {
+        if (0 == strcmp(par, "0"))
+        {
+            m_isLoggingOn = false;
+        }
+        else if (0 == strcmp(par, "1"))
+        {
+            m_isLoggingOn = true;
+        }
+        else
+        {
+            m_isError = true;
+        }
+
+        ++m_cnt;
+    }
+    else
+    {
+        m_isError = true;
+    }
+}
 
 /******************************************************************************
  * Protected Methods
@@ -83,75 +149,6 @@ static bool gIsCaptivePortalEnabled = false;
  * External Functions
  *****************************************************************************/
 
-void MyWebServer::init(bool initCaptivePortal)
-{
-    if (false == initCaptivePortal)
-    {
-        /* Register all web pages */
-        Pages::init(gWebServer);
-        RestApi::init(gWebServer);
-
-        gWebServer.onNotFound(error);
-
-        /* Register websocket */
-        WebSocketSrv::getInstance().init(gWebServer);
-    }
-    else
-    {
-        CaptivePortal::init(gWebServer);
-    }
-
-    gIsCaptivePortalEnabled = initCaptivePortal;
-}
-
-void MyWebServer::begin()
-{
-    /* Start webserver */
-    gWebServer.begin();
-}
-
-void MyWebServer::end()
-{
-    /* Stop webserver */
-    gWebServer.end();
-}
-
-void MyWebServer::process()
-{
-    if (false == gIsCaptivePortalEnabled)
-    {
-        WebSocketSrv::getInstance().process();
-    }
-}
-
-AsyncWebServer& MyWebServer::getInstance()
-{
-    return gWebServer;
-}
-
 /******************************************************************************
  * Local Functions
  *****************************************************************************/
-
-/**
- * Common error handler used in case a requested path was not found.
- *
- * @param[in] request   Web request
- */
-static void error(AsyncWebServerRequest* request)
-{
-    if (nullptr == request)
-    {
-        return;
-    }
-
-    /* REST request? */
-    if (true == request->url().startsWith(RestApi::BASE_URI))
-    {
-        RestApi::error(request);
-    }
-    else
-    {
-        Pages::error(request);
-    }
-}

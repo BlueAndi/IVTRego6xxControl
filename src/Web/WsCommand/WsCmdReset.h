@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2024 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2019 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  Webserver configuration
+ * @brief  Websocket command to reset system
  * @author Andreas Merkle <web@blue-andi.de>
  *
  * @addtogroup web
@@ -33,8 +33,8 @@
  * @{
  */
 
-#ifndef WEBCONFIG_H
-#define WEBCONFIG_H
+#ifndef WSCMDRESET_H
+#define WSCMDRESET_H
 
 /******************************************************************************
  * Compile Switches
@@ -43,32 +43,7 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
-
-/** Webserver configuration constants. */
-namespace WebConfig
-{
-
-/******************************************************************************
- * Constants
- *****************************************************************************/
-
-/** Web server port */
-static const uint32_t WEBSERVER_PORT   = 80U;
-
-/** Project title, used by the web pages. */
-static const char PROJECT_TITLE[]      = "IVTReg6xxControl";
-
-/** Websocket protocol */
-static const char WEBSOCKET_PROTOCOL[] = "ws";
-
-/** Websocket port */
-static const uint32_t WEBSOCKET_PORT   = 80U;
-
-/** Websocket path */
-static const char WEBSOCKET_PATH[]     = "/ws";
-
-/** Arduino OTA port */
-static const uint32_t ARDUINO_OTA_PORT = 3232U;
+#include "WsCmd.h"
 
 /******************************************************************************
  * Macros
@@ -78,12 +53,56 @@ static const uint32_t ARDUINO_OTA_PORT = 3232U;
  * Types and Classes
  *****************************************************************************/
 
+/**
+ * Websocket command to reset system
+ */
+class WsCmdReset: public WsCmd
+{
+public:
+
+    /**
+     * Constructs the websocket command.
+     */
+    WsCmdReset() :
+        WsCmd("RESET"),
+        m_isError(false)
+    {
+    }
+
+    /**
+     * Destroys websocket command.
+     */
+    ~WsCmdReset()
+    {
+    }
+
+    /**
+     * Execute command.
+     *
+     * @param[in] server    Websocket server
+     * @param[in] clientId  Websocket client ID
+     */
+    void execute(AsyncWebSocket* server, uint32_t clientId) final;
+
+    /**
+     * Set command parameter. Call this for each parameter, until executing it.
+     *
+     * @param[in] par   Parameter string
+     */
+    void setPar(const char* par) final;
+
+private:
+
+    bool    m_isError;  /**< Any error happened during parameter reception? */
+
+    WsCmdReset(const WsCmdReset& cmd);
+    WsCmdReset& operator=(const WsCmdReset& cmd);
+};
+
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
-} /* namespace WebConfig */
-
-#endif /* WEBCONFIG_H */
+#endif  /* WSCMDRESET_H */
 
 /** @} */

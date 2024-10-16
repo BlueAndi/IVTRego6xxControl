@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2024 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2019 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,16 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  Webserver configuration
+ * @brief  freeRTOS critical section wrapper
  * @author Andreas Merkle <web@blue-andi.de>
- *
- * @addtogroup web
+ * 
+ * @addtogroup os
  *
  * @{
  */
 
-#ifndef WEBCONFIG_H
-#define WEBCONFIG_H
+#ifndef CRITICAL_SECTION_HPP
+#define CRITICAL_SECTION_HPP
 
 /******************************************************************************
  * Compile Switches
@@ -43,32 +43,8 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
-
-/** Webserver configuration constants. */
-namespace WebConfig
-{
-
-/******************************************************************************
- * Constants
- *****************************************************************************/
-
-/** Web server port */
-static const uint32_t WEBSERVER_PORT   = 80U;
-
-/** Project title, used by the web pages. */
-static const char PROJECT_TITLE[]      = "IVTReg6xxControl";
-
-/** Websocket protocol */
-static const char WEBSOCKET_PROTOCOL[] = "ws";
-
-/** Websocket port */
-static const uint32_t WEBSOCKET_PORT   = 80U;
-
-/** Websocket path */
-static const char WEBSOCKET_PATH[]     = "/ws";
-
-/** Arduino OTA port */
-static const uint32_t ARDUINO_OTA_PORT = 3232U;
+#include <stdint.h>
+#include <freertos/FreeRTOS.h>
 
 /******************************************************************************
  * Macros
@@ -78,12 +54,95 @@ static const uint32_t ARDUINO_OTA_PORT = 3232U;
  * Types and Classes
  *****************************************************************************/
 
+/**
+ * Wrapper for the freeRTOS critical section with spinlock to protect
+ * concurrent access by cores.
+ */
+class CriticalSection
+{
+public:
+
+    /**
+     * Create critical section wrapper.
+     */
+    CriticalSection() :
+        m_spinlock(portMUX_INITIALIZER_UNLOCKED)
+    {
+    }
+
+    /**
+     * Destroys critical section wrapper.
+     */
+    ~CriticalSection()
+    {
+    }
+
+    /**
+     * Enter the critical section.
+     */
+    void enter()
+    {
+        portENTER_CRITICAL(&m_spinlock);
+    }
+
+    /**
+     * Exit critical section.
+     */
+    void exit()
+    {
+        portEXIT_CRITICAL(&m_spinlock);
+    }
+
+private:
+
+    portMUX_TYPE    m_spinlock; /**< Spinlock */
+
+    CriticalSection(const CriticalSection& CriticalSection);
+    CriticalSection& operator=(const CriticalSection& CriticalSection);
+
+};
+
+/**
+ * The critical section guard enters the critical section at creation and exits during
+ * destruction.
+ */
+class CriticalSectionGuard
+{
+public:
+
+    /**
+     * Creates the critical section guard and enters it.
+     * 
+     * @param[in] critSec The guard uses this critical section for protection.
+     */
+    CriticalSectionGuard(CriticalSection& critSec) :
+        m_criticalSection(critSec)
+    {
+        m_criticalSection.enter();
+    }
+
+    /**
+     * Destroys the critical section guard and exits the critical section.
+     */
+    ~CriticalSectionGuard()
+    {
+        m_criticalSection.exit();
+    }
+
+private:
+
+    CriticalSection&    m_criticalSection;  /**< Critical section used for the guard. */
+
+    CriticalSectionGuard();
+    CriticalSectionGuard(const CriticalSectionGuard& guard);
+    CriticalSectionGuard&  operator=(const CriticalSectionGuard& guard);
+
+};
+
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
-} /* namespace WebConfig */
-
-#endif /* WEBCONFIG_H */
+#endif  /* CRITICAL_SECTION_HPP */
 
 /** @} */

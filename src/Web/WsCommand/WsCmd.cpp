@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2024 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2019 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,65 +25,104 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  Webserver configuration
+ * @brief  Abstract websocket command
  * @author Andreas Merkle <web@blue-andi.de>
- *
- * @addtogroup web
- *
- * @{
  */
-
-#ifndef WEBCONFIG_H
-#define WEBCONFIG_H
-
-/******************************************************************************
- * Compile Switches
- *****************************************************************************/
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
-
-/** Webserver configuration constants. */
-namespace WebConfig
-{
+#include "WsCmd.h"
 
 /******************************************************************************
- * Constants
+ * Compiler Switches
  *****************************************************************************/
-
-/** Web server port */
-static const uint32_t WEBSERVER_PORT   = 80U;
-
-/** Project title, used by the web pages. */
-static const char PROJECT_TITLE[]      = "IVTReg6xxControl";
-
-/** Websocket protocol */
-static const char WEBSOCKET_PROTOCOL[] = "ws";
-
-/** Websocket port */
-static const uint32_t WEBSOCKET_PORT   = 80U;
-
-/** Websocket path */
-static const char WEBSOCKET_PATH[]     = "/ws";
-
-/** Arduino OTA port */
-static const uint32_t ARDUINO_OTA_PORT = 3232U;
 
 /******************************************************************************
  * Macros
  *****************************************************************************/
 
 /******************************************************************************
- * Types and Classes
+ * Types and classes
  *****************************************************************************/
 
 /******************************************************************************
- * Functions
+ * Prototypes
  *****************************************************************************/
 
-} /* namespace WebConfig */
+/******************************************************************************
+ * Local Variables
+ *****************************************************************************/
 
-#endif /* WEBCONFIG_H */
+/* Delimiter of websocket parameters */
+const char*    WsCmd::DELIMITER = ";";
 
-/** @} */
+/* Positive response code */
+const char*    WsCmd::ACK       = "ACK";
+
+/* Negative response code. */
+const char*    WsCmd::NACK      = "NACK";
+
+/******************************************************************************
+ * Public Methods
+ *****************************************************************************/
+
+/******************************************************************************
+ * Protected Methods
+ *****************************************************************************/
+
+void WsCmd::sendPositiveResponse(AsyncWebSocket* server, uint32_t clientId, const char* msg)
+{
+    if (nullptr != server)
+    {
+        String rsp = ACK;
+
+        if ((nullptr != msg) &&
+            ('\0' != msg[0U]))
+        {
+            rsp += DELIMITER;
+            rsp += msg;
+        }
+
+        server->text(clientId, rsp);
+    }
+}
+
+void WsCmd::sendPositiveResponse(AsyncWebSocket* server, uint32_t clientId)
+{
+    sendPositiveResponse(server, clientId, nullptr);
+}
+
+void WsCmd::sendNegativeResponse(AsyncWebSocket* server, uint32_t clientId, const char* msg)
+{
+    if (nullptr != server)
+    {
+        String rsp = NACK;
+
+        rsp += DELIMITER;
+
+        if ((nullptr != msg) &&
+            ('\0' != msg[0U]))
+        {
+            rsp += msg;
+        }
+        else
+        {
+            rsp += "\"Unknown.\"";
+        }
+
+        server->text(clientId, rsp);
+    }
+}
+
+/******************************************************************************
+ * Private Methods
+ *****************************************************************************/
+
+/******************************************************************************
+ * External Functions
+ *****************************************************************************/
+
+/******************************************************************************
+ * Local Functions
+ *****************************************************************************/

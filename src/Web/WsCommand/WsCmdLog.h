@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2024 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2019 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  Webserver configuration
+ * @brief  WWebsocket command to get/set logging
  * @author Andreas Merkle <web@blue-andi.de>
  *
  * @addtogroup web
@@ -33,8 +33,8 @@
  * @{
  */
 
-#ifndef WEBCONFIG_H
-#define WEBCONFIG_H
+#ifndef WSCMDLOG_H
+#define WSCMDLOG_H
 
 /******************************************************************************
  * Compile Switches
@@ -43,32 +43,7 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
-
-/** Webserver configuration constants. */
-namespace WebConfig
-{
-
-/******************************************************************************
- * Constants
- *****************************************************************************/
-
-/** Web server port */
-static const uint32_t WEBSERVER_PORT   = 80U;
-
-/** Project title, used by the web pages. */
-static const char PROJECT_TITLE[]      = "IVTReg6xxControl";
-
-/** Websocket protocol */
-static const char WEBSOCKET_PROTOCOL[] = "ws";
-
-/** Websocket port */
-static const uint32_t WEBSOCKET_PORT   = 80U;
-
-/** Websocket path */
-static const char WEBSOCKET_PATH[]     = "/ws";
-
-/** Arduino OTA port */
-static const uint32_t ARDUINO_OTA_PORT = 3232U;
+#include "WsCmd.h"
 
 /******************************************************************************
  * Macros
@@ -78,12 +53,60 @@ static const uint32_t ARDUINO_OTA_PORT = 3232U;
  * Types and Classes
  *****************************************************************************/
 
+/**
+ * Websocket command to get/set logging
+ */
+class WsCmdLog: public WsCmd
+{
+public:
+
+    /**
+     * Constructs the websocket command.
+     */
+    WsCmdLog() :
+        WsCmd("LOG"),
+        m_isError(false),
+        m_cnt(0U),
+        m_isLoggingOn(false)
+    {
+    }
+
+    /**
+     * Destroys websocket command.
+     */
+    ~WsCmdLog()
+    {
+    }
+
+    /**
+     * Execute command.
+     *
+     * @param[in] server    Websocket server
+     * @param[in] clientId  Websocket client ID
+     */
+    void execute(AsyncWebSocket* server, uint32_t clientId) final;
+
+    /**
+     * Set command parameter. Call this for each parameter, until executing it.
+     *
+     * @param[in] par   Parameter string
+     */
+    void setPar(const char* par) final;
+
+private:
+
+    bool    m_isError;      /**< Any error happened during parameter reception? */
+    uint8_t m_cnt;          /**< Number of received parameters */
+    bool    m_isLoggingOn;  /**< Is logging output via websocket enabled or disabled? */
+
+    WsCmdLog(const WsCmdLog& cmd);
+    WsCmdLog& operator=(const WsCmdLog& cmd);
+};
+
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
-} /* namespace WebConfig */
-
-#endif /* WEBCONFIG_H */
+#endif  /* WSCMDLOG_H */
 
 /** @} */
