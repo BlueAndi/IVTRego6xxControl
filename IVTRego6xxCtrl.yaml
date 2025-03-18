@@ -62,3 +62,6 @@ external_components:
   - source:
       type: local
       path: src
+
+ivt_rego6xx_ctrl_component:
+  id: ivt_rego6xx_ctrl_component_id

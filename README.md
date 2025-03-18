@@ -10,7 +10,12 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
 - [Motivation](#motivation)
 - [Supported Hardware](#supported-hardware)
 - [Software](#software)
+  - [Installation](#installation)
+  - [Build](#build)
+  - [Flash to target and monitor](#flash-to-target-and-monitor)
+  - [Usage](#usage)
 - [REST API](#rest-api)
+- [MQTT API](#mqtt-api)
 - [Used Libraries](#used-libraries)
 - [Issues, Ideas And Bugs](#issues-ideas-and-bugs)
 - [License](#license)
@@ -30,7 +35,43 @@ The protocol for the Rego6xx controller was original derived from http://rago600
 
 ESPHome is used as the base of the software. The IVT reg6xx controller is implemented like a custom component.
 
+### Installation
+
+1. Install Python.
+2. Setup [virtual environment](https://docs.python.org/3/library/venv.html).
+    ```bash
+    python -m venv .venv
+    ```
+3. Activate virtual environment.
+   - Windows CMD: ```.venv\Scripts\activate.bat```
+   - Windows PowerShell: ```.venv\Scripts\activate.ps1```
+   - Linux: ```.venv/Scripts/activate```
+4. Install packages.
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### Build
+
+```bash
+esphome compile IVTRego6xxCtrl.yaml
+```
+
+### Flash to target and monitor
+
+```bash
+esphome run IVTRego6xxCtrl.yaml
+```
+
+### Usage
+
+TODO
+
 ## REST API
+
+TODO
+
+## MQTT API
 
 TODO
 
