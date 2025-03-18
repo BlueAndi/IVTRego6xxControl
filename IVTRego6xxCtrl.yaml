@@ -1,0 +1,64 @@
+# ESPHome configuration for the IVT Rego 600/601 heat pump controller
+esphome:
+  name: heatpumpctrl
+
+# Platform configuration
+esp32:
+  board: esp32-poe-iso
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+# Enable OTA updates
+ota:
+  - platform: esphome
+    password: ""
+
+# Enable ethernet interface
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk_mode: GPIO17_OUT
+  phy_addr: 0
+  power_pin:
+    number: GPIO12
+    ignore_strapping_warning: true
+
+# Configure UART interface for heatpump communication
+uart:
+  id: uart_heatpump
+  rx_pin: GPIO4
+  tx_pin: GPIO3
+  baud_rate: 115200
+
+# Webserver configuration
+web_server:
+  port: 80
+
+# MQTT configuration
+mqtt:
+  broker: homeassistant.fritz.box
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  reboot_timeout: 0s
+  birth_message:
+    topic: devices/heatpumpctrl
+    payload: 'online'
+  will_message:
+    topic: devices/heatpumpctrl
+    payload: 'offline'
+
+# Custom component configuration
+external_components:
+  - source:
+      type: local
+      path: src
