@@ -46,6 +46,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "Rego6xxCtrl.h"
+#include "StreamUartDevAdapter.h"
 
 /******************************************************************************
  * Macros
@@ -55,7 +56,7 @@
  * Types and Classes
  *****************************************************************************/
 
- /** ESPHome namspace */
+/** ESPHome namspace */
 namespace esphome
 {
 
@@ -64,7 +65,7 @@ namespace ivt_rego6xx_ctrl
 {
 
 /**
- * @brief IVT Rego6xx controller component for ESPHome.
+ * IVT Rego6xx controller component for ESPHome.
  */
 class IVTRego6xxCtrlComponent : public uart::UARTDevice, public Component
 {
@@ -73,8 +74,11 @@ public:
     /**
      * Constructs the IVT rego6xx controller component.
      */
-    IVTRego6xxCtrlComponent()
+    IVTRego6xxCtrlComponent() :
+        m_adapter(),
+        m_ctrl(m_adapter)
     {
+        m_adapter.setUartDevice(this);
     }
 
     /**
@@ -101,6 +105,8 @@ public:
 
 private:
 
+    StreamUartDevAdapter    m_adapter;   /**< Stream to UART device adapter. */
+    Rego6xxCtrl             m_ctrl;      /**< IVT rego6xx controller. */
 };
 
 }  /* namespace ivt_rego6xx_ctrl */

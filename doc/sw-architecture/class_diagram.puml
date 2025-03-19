@@ -1,0 +1,41 @@
+@startuml class_diagram
+
+package "uart" {
+    class "UARTDevice" as uartDevice
+}
+
+class "Component" as comp
+
+package "esphome" {
+    package "ivt_rego6xx_ctrl" {
+        class "IVTRego6xxCtrlComponent" as ivtRego6xxCtrlComponent {
+            + setup()
+            + loop()
+        }
+    }
+}
+
+class "StreamAdapter" as streamAdapter {
+    - m_uartDevice: UARTDevice&
+    + StreamAdapter(uartDevice: UARTDevice&)
+}
+
+class "Rego6xxCtrl" as rego6xxCtrl {
+    + Rego6xxCtrl(stream: Stream&)
+    + process()
+}
+
+interface "Stream" as stream
+
+uartDevice <|--- ivtRego6xxCtrlComponent
+comp <|-- ivtRego6xxCtrlComponent
+rego6xxCtrl <-- ivtRego6xxCtrlComponent: <<own>>
+streamAdapter <-- ivtRego6xxCtrlComponent: <<own>>
+
+stream <|.. streamAdapter: <<realize>>
+uartDevice <.. streamAdapter: <<use>>
+
+
+rego6xxCtrl ..> stream: <<use>>
+
+@enduml

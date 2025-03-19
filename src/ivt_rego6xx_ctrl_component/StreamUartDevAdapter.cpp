@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2019 - 2025 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2025 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,14 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller component.
+ * @brief  Stream to UART device adapter
  * @author Andreas Merkle <web@blue-andi.de>
  */
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
-#include "IVTRego6xxCtrl.h"
-#include "esphome/core/log.h"
+#include "StreamUartDevAdapter.h"
 
 /******************************************************************************
  * Compiler Switches
@@ -42,9 +41,6 @@
 /******************************************************************************
  * Macros
  *****************************************************************************/
-
- namespace esphome {
- namespace ivt_rego6xx_ctrl {
 
 /******************************************************************************
  * Types and classes
@@ -58,25 +54,56 @@
  * Local Variables
  *****************************************************************************/
 
- static const char *TAG = "ivt_rego6xx_ctrl_component.component";
-
 /******************************************************************************
  * Public Methods
  *****************************************************************************/
  
- void IVTRego6xxCtrlComponent::setup()
- {
-    /* Nothing to do. */
- }
- 
- void IVTRego6xxCtrlComponent::loop()
- {
-    m_ctrl.process();
- }
- 
-void IVTRego6xxCtrlComponent::dump_config()
+int StreamUartDevAdapter::available()
 {
-    ESP_LOGCONFIG(TAG, "IVT rego6xx controller component");
+    int available = 0;
+
+    if (nullptr != m_uartDev)
+    {
+        available = m_uartDev->available();
+    }
+
+    return available;
+}
+
+int StreamUartDevAdapter::read()
+{
+    int data = -1;
+
+    if (nullptr != m_uartDev)
+    {
+        data = m_uartDev->read();
+    }
+
+    return data;
+}
+
+int StreamUartDevAdapter::peek()
+{
+    int data = -1;
+
+    if (nullptr != m_uartDev)
+    {
+        data = m_uartDev->peek();
+    }
+
+    return data;
+}
+
+size_t StreamUartDevAdapter::write(uint8_t data)
+{
+    size_t written = 0U;
+
+    if (nullptr != m_uartDev)
+    {
+        written = m_uartDev->write(data);
+    }
+
+    return written;
 }
 
 /******************************************************************************
@@ -94,8 +121,3 @@ void IVTRego6xxCtrlComponent::dump_config()
 /******************************************************************************
  * Local Functions
  *****************************************************************************/
-
-  
- }  /* namespace ivt_rego6xx_ctrl */
- }  /* namespace esphome */
- 
