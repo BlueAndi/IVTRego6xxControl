@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2025 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2020 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,14 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller component.
+ * @brief  Rego6xx heatpump utilities
  * @author Andreas Merkle <web@blue-andi.de>
- *
- * @addtogroup APP_LAYER
  *
  * @{
  */
 
-#pragma once
+#ifndef __REGO6XX_UTIL_H__
+#define __REGO6XX_UTIL_H__
 
 /******************************************************************************
  * Compile Switches
@@ -42,10 +41,8 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
-
-#include "esphome/core/component.h"
-#include "esphome/components/uart/uart.h"
-#include "Rego6xxCtrl.h"
+#include <stddef.h>
+#include <stdint.h>
 
 /******************************************************************************
  * Macros
@@ -55,59 +52,30 @@
  * Types and Classes
  *****************************************************************************/
 
- /** ESPHome namspace */
-namespace esphome
-{
-
-/** IVT rego6xx controller namespace */
-namespace ivt_rego6xx_ctrl
-{
-
 /**
- * @brief IVT Rego6xx controller component for ESPHome.
+ * Utility functions
  */
-class IVTRego6xxCtrlComponent : public uart::UARTDevice, public Component
+namespace Rego6xxUtil
 {
-public:
-
-    /**
-     * Constructs the IVT rego6xx controller component.
-     */
-    IVTRego6xxCtrlComponent()
-    {
-    }
-
-    /**
-     * Destroys the IVT rego6xx controller component.
-     */
-    ~IVTRego6xxCtrlComponent()
-    {
-    }
-
-    /**
-     * Initialize the IVT rego6xx controller component.
-     */
-    void setup() override;
-
-    /**
-     * Handle the loop.
-     */
-    void loop() override;
-
-    /**
-     * Dump the configuration of the component.
-     */
-    void dump_config() override;
-
-private:
-
-};
-
-}  /* namespace ivt_rego6xx_ctrl */
-}  /* namespace esphome */
 
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
- /** @} */
+/**
+ * Calculates checksum command/response messages.
+ * Note, source and destination address shall not be considered, as weill as
+ * the checksum field itself. The calling function must consider this!
+ * 
+ * @param[in] buffer    Buffer
+ * @param[in] size      Buffer size in byte
+ * 
+ * @return Checksum over the whole given buffer.
+ */
+uint8_t calculateChecksum(const uint8_t* buffer, size_t size);
+
+}
+
+#endif  /* __REGO6XX_UTIL_H__ */
+
+/** @} */

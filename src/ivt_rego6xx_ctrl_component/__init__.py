@@ -35,14 +35,24 @@ from esphome.const import CONF_ID
 
 DEPENDENCIES = ["uart"]
 
+# UART ID (mandatory)
+CONF_UART_ID = "uart_id"
+
+# Namespace for the generated code.
 ivt_rego6xx_ctrl_component_ns = cg.esphome_ns.namespace("ivt_rego6xx_ctrl")
 
+# The class of the component.
 ivt_rego6xx_ctrl_component = ivt_rego6xx_ctrl_component_ns.class_(
     "IVTRego6xxCtrlComponent", cg.Component, uart.UARTDevice
 )
 
+# The configuration schema is automatically loaded by the ESPHome core and used to validate
+# the provided configuration. See https://esphome.io/guides/contributing#config-validation
 CONFIG_SCHEMA = (
-    cv.Schema({cv.GenerateID(): cv.declare_id(ivt_rego6xx_ctrl_component)})
+    cv.Schema({
+        cv.GenerateID(): cv.declare_id(ivt_rego6xx_ctrl_component),
+        cv.Required(CONF_UART_ID): cv.use_id(uart.UARTDevice)
+    })
     .extend(cv.COMPONENT_SCHEMA)
     .extend(uart.UART_DEVICE_SCHEMA)
 )
@@ -54,6 +64,8 @@ CONFIG_SCHEMA = (
 async def to_code(config: dict) -> None:
     """
     Generate code for the IVT Rego 6xx control component.
+    This runs only after the user input has been successfully validated.
+    See https://esphome.io/guides/contributing#code-generation
 
     Args:
         config (dict): Configuration

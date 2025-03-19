@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2025 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2020 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,14 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller component.
+ * @brief  Rego6xx heatpump controller standard response
  * @author Andreas Merkle <web@blue-andi.de>
- *
- * @addtogroup APP_LAYER
  *
  * @{
  */
 
-#pragma once
+#ifndef __REGO6XX_STD_RSP_H__
+#define __REGO6XX_STD_RSP_H__
 
 /******************************************************************************
  * Compile Switches
@@ -42,10 +41,8 @@
 /******************************************************************************
  * Includes
  *****************************************************************************/
-
-#include "esphome/core/component.h"
-#include "esphome/components/uart/uart.h"
-#include "Rego6xxCtrl.h"
+#include <Arduino.h>
+#include "Rego6xxRsp.h"
 
 /******************************************************************************
  * Macros
@@ -55,59 +52,80 @@
  * Types and Classes
  *****************************************************************************/
 
- /** ESPHome namspace */
-namespace esphome
-{
-
-/** IVT rego6xx controller namespace */
-namespace ivt_rego6xx_ctrl
-{
-
 /**
- * @brief IVT Rego6xx controller component for ESPHome.
+ * A response of the Rego6xx heatpump controller, containing a uint16_t value.
  */
-class IVTRego6xxCtrlComponent : public uart::UARTDevice, public Component
+class Rego6xxStdRsp : public Rego6xxRsp
 {
 public:
 
     /**
-     * Constructs the IVT rego6xx controller component.
+     * Constructs a empty response.
+     * 
+     * @param[in] stream    Input stream from heatpump controller.
      */
-    IVTRego6xxCtrlComponent()
+    Rego6xxStdRsp(Stream& stream) :
+        Rego6xxRsp(stream),
+        m_response()
     {
     }
 
     /**
-     * Destroys the IVT rego6xx controller component.
+     * Destroys a response.
      */
-    ~IVTRego6xxCtrlComponent()
+    ~Rego6xxStdRsp()
     {
     }
 
     /**
-     * Initialize the IVT rego6xx controller component.
+     * Is response valid?
+     * 
+     * @return If response is valid it will return true otherwise false.
      */
-    void setup() override;
+    bool isValid() const override;
 
     /**
-     * Handle the loop.
+     * Get device address.
+     * 
+     * @return Device address
      */
-    void loop() override;
+    uint8_t getDevAddr() const override;
 
     /**
-     * Dump the configuration of the component.
+     * Get value.
+     * 
+     * @return value
      */
-    void dump_config() override;
+    uint16_t getValue() const;
 
 private:
 
-};
+    /** Response size in bytes */
+    static const size_t RSP_SIZE    = 5;
 
-}  /* namespace ivt_rego6xx_ctrl */
-}  /* namespace esphome */
+    uint8_t m_response[RSP_SIZE];   /**< Response message */
+
+    Rego6xxStdRsp();
+
+    /**
+     * Get response buffer and its size.
+     * 
+     * @param[out]  buffer  Response buffer
+     * @param[out]  size    Response buffer size in byte
+     */
+    void getResponse(uint8_t*& buffer, size_t& size) override
+    {
+        buffer  = m_response;
+        size    = sizeof(m_response);
+    }
+
+    friend Rego6xxCtrl;
+};
 
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
- /** @} */
+#endif  /* __REGO6XX_STD_RSP_H__ */
+
+/** @} */

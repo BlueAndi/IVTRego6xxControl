@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2025 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2020 - 2024 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,89 +25,89 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller component.
+ * @brief  Rego6xx heatpump controller confirmation response
  * @author Andreas Merkle <web@blue-andi.de>
- *
- * @addtogroup APP_LAYER
- *
- * @{
  */
-
-#pragma once
-
-/******************************************************************************
- * Compile Switches
- *****************************************************************************/
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
+#include "Rego6xxConfirmRsp.h"
+#include "Rego6xxUtil.h"
 
-#include "esphome/core/component.h"
-#include "esphome/components/uart/uart.h"
-#include "Rego6xxCtrl.h"
+/******************************************************************************
+ * Compiler Switches
+ *****************************************************************************/
 
 /******************************************************************************
  * Macros
  *****************************************************************************/
 
 /******************************************************************************
- * Types and Classes
+ * Types and classes
  *****************************************************************************/
-
- /** ESPHome namspace */
-namespace esphome
-{
-
-/** IVT rego6xx controller namespace */
-namespace ivt_rego6xx_ctrl
-{
-
-/**
- * @brief IVT Rego6xx controller component for ESPHome.
- */
-class IVTRego6xxCtrlComponent : public uart::UARTDevice, public Component
-{
-public:
-
-    /**
-     * Constructs the IVT rego6xx controller component.
-     */
-    IVTRego6xxCtrlComponent()
-    {
-    }
-
-    /**
-     * Destroys the IVT rego6xx controller component.
-     */
-    ~IVTRego6xxCtrlComponent()
-    {
-    }
-
-    /**
-     * Initialize the IVT rego6xx controller component.
-     */
-    void setup() override;
-
-    /**
-     * Handle the loop.
-     */
-    void loop() override;
-
-    /**
-     * Dump the configuration of the component.
-     */
-    void dump_config() override;
-
-private:
-
-};
-
-}  /* namespace ivt_rego6xx_ctrl */
-}  /* namespace esphome */
 
 /******************************************************************************
- * Functions
+ * Prototypes
  *****************************************************************************/
 
- /** @} */
+/******************************************************************************
+ * Local Variables
+ *****************************************************************************/
+
+/******************************************************************************
+ * Public Methods
+ *****************************************************************************/
+
+bool Rego6xxConfirmRsp::isValid() const
+{
+    bool isValid = false;
+
+    if (false == m_isPending)
+    {
+        isValid = true;
+    }
+
+    return isValid;
+}
+
+uint8_t Rego6xxConfirmRsp::getDevAddr() const
+{
+    uint8_t devAddr = 0;
+
+    if ((false == isPending()) &&
+        (true == isValid()))
+    {
+        devAddr = m_response[0];
+    }
+
+    return devAddr;
+}
+
+bool Rego6xxConfirmRsp::isConfirmed() const
+{
+    bool isConfirmed = false;
+
+    if (false == m_isPending)
+    {
+        isConfirmed = true;
+    }
+
+    return isConfirmed;
+}
+
+/******************************************************************************
+ * Protected Methods
+ *****************************************************************************/
+
+/******************************************************************************
+ * Private Methods
+ *****************************************************************************/
+
+/******************************************************************************
+ * External Functions
+ *****************************************************************************/
+
+/******************************************************************************
+ * Local Functions
+ *****************************************************************************/

@@ -1,6 +1,13 @@
 # ESPHome configuration for the IVT Rego 600/601 heat pump controller
 esphome:
   name: heatpumpctrl
+  includes:
+    - lib/Rego6xx
+    - lib/Utilities
+  platformio_options:
+    build_flags:
+      - -I src/Rego6xx
+      - -I src/Utilities
 
 # Platform configuration
 esp32:
