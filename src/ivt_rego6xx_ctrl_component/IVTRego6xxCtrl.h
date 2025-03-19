@@ -54,19 +54,53 @@
  * Types and Classes
  *****************************************************************************/
 
+ /** ESPHome namspace */
 namespace esphome
 {
+
+/** IVT rego6xx controller namespace */
 namespace ivt_rego6xx_ctrl
 {
 
+/**
+ * @brief IVT Rego6xx controller component for ESPHome.
+ */
 class IVTRego6xxCtrlComponent : public uart::UARTDevice, public Component
 {
 public:
-    void setup() override;
-    void loop() override;
-    void dump_config() override;
-};
 
+    /**
+     * Constructs the IVT rego6xx controller component.
+     */
+    IVTRego6xxCtrlComponent()
+    {
+    }
+
+    /**
+     * Destroys the IVT rego6xx controller component.
+     */
+    ~IVTRego6xxCtrlComponent()
+    {
+    }
+
+    /**
+     * Initialize the IVT rego6xx controller component.
+     */
+    void setup() override;
+
+    /**
+     * Handle the loop.
+     */
+    void loop() override;
+
+    /**
+     * Dump the configuration of the component.
+     */
+    void dump_config() override;
+
+private:
+
+};
 
 }  /* namespace ivt_rego6xx_ctrl */
 }  /* namespace esphome */

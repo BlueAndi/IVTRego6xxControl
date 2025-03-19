@@ -65,3 +65,4 @@ external_components:
 
 ivt_rego6xx_ctrl_component:
   id: ivt_rego6xx_ctrl_component_id
+  uart_id: uart_heatpump

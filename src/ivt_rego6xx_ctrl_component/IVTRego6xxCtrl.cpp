@@ -66,12 +66,16 @@
  
  void IVTRego6xxCtrlComponent::setup()
  {
- 
+    /* Nothing to do. */
  }
  
  void IVTRego6xxCtrlComponent::loop()
  {
- 
+    /* Incoming data to process? */
+    if (0 < this->available())
+    {
+        /* TODO */
+    }
  }
  
  void IVTRego6xxCtrlComponent::dump_config()
