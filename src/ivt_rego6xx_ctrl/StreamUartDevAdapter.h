@@ -25,7 +25,7 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller component.
+ * @brief  Stream to UART device adapter
  * @author Andreas Merkle <web@blue-andi.de>
  *
  * @addtogroup APP_LAYER
@@ -43,10 +43,8 @@
  * Includes
  *****************************************************************************/
 
-#include "esphome/core/component.h"
+#include <Stream.h>
 #include "esphome/components/uart/uart.h"
-#include "Rego6xxCtrl.h"
-#include "StreamUartDevAdapter.h"
 
 /******************************************************************************
  * Macros
@@ -56,61 +54,71 @@
  * Types and Classes
  *****************************************************************************/
 
-/** ESPHome namspace */
-namespace esphome
-{
-
-/** IVT rego6xx controller namespace */
-namespace ivt_rego6xx_ctrl
-{
-
 /**
- * IVT Rego6xx controller component for ESPHome.
+ * Stream to UART device adapter.
  */
-class IVTRego6xxCtrlComponent : public uart::UARTDevice, public Component
+class StreamUartDevAdapter : public Stream
 {
 public:
 
     /**
-     * Constructs the IVT rego6xx controller component.
+     * Constructs the adapter.
      */
-    IVTRego6xxCtrlComponent() :
-        m_adapter(),
-        m_ctrl(m_adapter)
-    {
-        m_adapter.setUartDevice(this);
-    }
-
-    /**
-     * Destroys the IVT rego6xx controller component.
-     */
-    ~IVTRego6xxCtrlComponent()
+    StreamUartDevAdapter() :
+        m_uartDev(nullptr)
     {
     }
 
     /**
-     * Initialize the IVT rego6xx controller component.
+     * Destroys the adapter.
      */
-    void setup() override;
+    ~StreamUartDevAdapter()
+    {
+    }
 
     /**
-     * Handle the loop.
+     * Set UART device.
+     *
+     * @param[in] uartDev UART device
      */
-    void loop() override;
+    void setUartDevice(esphome::uart::UARTDevice* uartDev)
+    {
+        m_uartDev = uartDev;
+    }
 
     /**
-     * Dump the configuration of the component.
+     * Available bytes in the input buffer.
+     * 
+     * @return Number of bytes available in the input buffer.
      */
-    void dump_config() override;
+    int available() override;
+
+    /**
+     * Read a byte from the input buffer.
+     * 
+     * @return Byte from the input buffer or -1 if no byte is available.
+     */
+    int read() override;
+
+    /**
+     * Peek a byte from the input buffer.
+     * 
+     * @return Byte from the input buffer or -1 if no byte is available.
+     */
+    int peek() override;
+
+    /**
+     * Write a byte to the output buffer.
+     * 
+     * @return Number of bytes written.
+     */
+    size_t write(uint8_t data) override;
 
 private:
 
-    StreamUartDevAdapter    m_adapter;   /**< Stream to UART device adapter. */
-    Rego6xxCtrl             m_ctrl;      /**< IVT rego6xx controller. */
-};
+    esphome::uart::UARTDevice* m_uartDev; /**< UART device */
 
-}  /* namespace ivt_rego6xx_ctrl */
-}  /* namespace esphome */
+};
 
 /******************************************************************************
  * Functions

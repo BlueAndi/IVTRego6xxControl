@@ -24,37 +24,37 @@
 # Imports
 ################################################################################
 
-import esphome.codegen as cg
-import esphome.config_validation as cv
-from esphome.components import uart
-from esphome.const import CONF_ID
+import esphome.codegen as cg # Code generation API
+import esphome.config_validation as cv # Configuration validation API
+from esphome.components import sensor # Sensor component
+from esphome.const import CONF_ID, CONF_UNIT_OF_MEASUREMENT, CONF_STATE_CLASS
 
 ################################################################################
 # Variables
 ################################################################################
 
-DEPENDENCIES = ["uart"]
-
-# UART ID (mandatory)
-CONF_UART_ID = "uart_id"
+DEPENDENCIES = ["ivt_rego6xx_ctrl"]
 
 # Namespace for the generated code.
-ivt_rego6xx_ctrl_component_ns = cg.esphome_ns.namespace("ivt_rego6xx_ctrl")
+ivt_rego6xx_ctrl_ns = cg.esphome_ns.namespace("ivt_rego6xx_ctrl")
 
 # The class of the component.
-ivt_rego6xx_ctrl_component = ivt_rego6xx_ctrl_component_ns.class_(
-    "IVTRego6xxCtrlComponent", cg.Component, uart.UARTDevice
+ivt_rego6xx_sensor = ivt_rego6xx_ctrl_ns.class_(
+    "IVTRego6xxSensor", sensor.Sensor
 )
+
+# Sensor variables
+CONF_IVT_REGO_VARIABLE = "ivt_rego_variable"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
-CONFIG_SCHEMA = (
+CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend(
     cv.Schema({
-        cv.GenerateID(): cv.declare_id(ivt_rego6xx_ctrl_component),
-        cv.Required(CONF_UART_ID): cv.use_id(uart.UARTDevice)
+        cv.GenerateID(): cv.declare_id(ivt_rego6xx_sensor),
+
+        # Mandatory variables
+        cv.Required(CONF_IVT_REGO_VARIABLE): cv.string
     })
-    .extend(cv.COMPONENT_SCHEMA)
-    .extend(uart.UART_DEVICE_SCHEMA)
 )
 
 ################################################################################
@@ -71,8 +71,17 @@ async def to_code(config: dict) -> None:
         config (dict): Configuration
     """
     var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
-    await uart.register_uart_device(var, config)
+    await sensor.register_sensor(var, config)
+
+    # Add the mandatory variables.
+    cg.add(var.setIvtRegoVariable(config[CONF_IVT_REGO_VARIABLE]))
+
+    # Add the optional variables.
+    if CONF_UNIT_OF_MEASUREMENT in config:
+        cg.add(var.set_unit_of_measurement(config[CONF_UNIT_OF_MEASUREMENT]))
+
+    if CONF_STATE_CLASS in config:
+        cg.add(var.set_state_class(config[CONF_STATE_CLASS]))
 
 ################################################################################
 # Main

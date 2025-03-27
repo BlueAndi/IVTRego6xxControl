@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2019 - 2025 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2025 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,77 +25,76 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller component.
+ * @brief  IVT rego6xx controller sensor.
  * @author Andreas Merkle <web@blue-andi.de>
+ *
+ * @addtogroup APP_LAYER
+ *
+ * @{
  */
+
+#pragma once
+
+/******************************************************************************
+ * Compile Switches
+ *****************************************************************************/
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
-#include "IVTRego6xxCtrl.h"
-#include "esphome/core/log.h"
-
-/******************************************************************************
- * Compiler Switches
- *****************************************************************************/
+#include <Arduino.h>
+#include "esphome/components/sensor/sensor.h"
 
 /******************************************************************************
  * Macros
  *****************************************************************************/
 
- namespace esphome {
- namespace ivt_rego6xx_ctrl {
-
 /******************************************************************************
- * Types and classes
+ * Types and Classes
  *****************************************************************************/
 
-/******************************************************************************
- * Prototypes
- *****************************************************************************/
-
-/******************************************************************************
- * Local Variables
- *****************************************************************************/
-
- static const char *TAG = "ivt_rego6xx_ctrl_component.component";
-
-/******************************************************************************
- * Public Methods
- *****************************************************************************/
- 
- void IVTRego6xxCtrlComponent::setup()
- {
-    /* Nothing to do. */
- }
- 
- void IVTRego6xxCtrlComponent::loop()
- {
-    m_ctrl.process();
- }
- 
-void IVTRego6xxCtrlComponent::dump_config()
+/** ESPHome namspace */
+namespace esphome
 {
-    ESP_LOGCONFIG(TAG, "IVT rego6xx controller component");
-}
+
+/** IVT rego6xx controller namespace */
+namespace ivt_rego6xx_ctrl
+{
+
+/**
+ * IVT Rego6xx controller sensor for ESPHome.
+ */
+class IVTRego6xxSensor : public sensor::Sensor
+{
+public:
+
+    /**
+     * Constructs the IVT rego6xx controller component.
+     */
+    IVTRego6xxSensor()
+    {
+    }
+
+    /**
+     * Destroys the IVT rego6xx controller component.
+     */
+    ~IVTRego6xxSensor()
+    {
+    }
+
+    void setIvtRegoVariable(const String& ivtRegoVariable)
+    {
+    }
+
+private:
+
+};
+
+}  /* namespace ivt_rego6xx_ctrl */
+}  /* namespace esphome */
 
 /******************************************************************************
- * Protected Methods
+ * Functions
  *****************************************************************************/
 
-/******************************************************************************
- * Private Methods
- *****************************************************************************/
-
-/******************************************************************************
- * External Functions
- *****************************************************************************/
-
-/******************************************************************************
- * Local Functions
- *****************************************************************************/
-
-  
- }  /* namespace ivt_rego6xx_ctrl */
- }  /* namespace esphome */
- 
+ /** @} */

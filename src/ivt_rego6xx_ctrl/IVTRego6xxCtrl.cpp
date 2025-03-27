@@ -1,6 +1,6 @@
 /* MIT License
  *
- * Copyright (c) 2025 Andreas Merkle <web@blue-andi.de>
+ * Copyright (c) 2019 - 2025 Andreas Merkle <web@blue-andi.de>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,83 +25,80 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  Stream to UART device adapter
+ * @brief  IVT rego6xx controller component.
  * @author Andreas Merkle <web@blue-andi.de>
- *
- * @addtogroup APP_LAYER
- *
- * @{
  */
-
-#pragma once
-
-/******************************************************************************
- * Compile Switches
- *****************************************************************************/
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
+#include "IVTRego6xxCtrl.h"
+#include "esphome/core/log.h"
 
-#include <Stream.h>
-#include "esphome/components/uart/uart.h"
+/******************************************************************************
+ * Compiler Switches
+ *****************************************************************************/
 
 /******************************************************************************
  * Macros
  *****************************************************************************/
 
+ namespace esphome {
+ namespace ivt_rego6xx_ctrl {
+
 /******************************************************************************
- * Types and Classes
+ * Types and classes
+ *****************************************************************************/
+
+/******************************************************************************
+ * Prototypes
+ *****************************************************************************/
+
+/******************************************************************************
+ * Local Variables
  *****************************************************************************/
 
 /**
- * Stream to UART device adapter.
+ * Logger tag of this component.
  */
-class StreamUartDevAdapter : public Stream
-{
-public:
-
-    /**
-     * Constructs the adapter.
-     */
-    StreamUartDevAdapter() :
-        m_uartDev(nullptr)
-    {
-    }
-
-    /**
-     * Destroys the adapter.
-     */
-    ~StreamUartDevAdapter()
-    {
-    }
-
-    /**
-     * Set UART device.
-     *
-     * @param[in] uartDev UART device
-     */
-    void setUartDevice(esphome::uart::UARTDevice* uartDev)
-    {
-        m_uartDev = uartDev;
-    }
-
-    int available() override;
-
-    int read() override;
-
-    int peek() override;
-
-    size_t write(uint8_t) override;
-
-private:
-
-    esphome::uart::UARTDevice* m_uartDev; /**< UART device */
-
-};
+static const char *TAG = "ivt_rego6xx_ctrl.component";
 
 /******************************************************************************
- * Functions
+ * Public Methods
+ *****************************************************************************/
+ 
+ void IVTRego6xxCtrl::setup()
+ {
+    /* Nothing to do. */
+ }
+ 
+ void IVTRego6xxCtrl::loop()
+ {
+    m_ctrl.process();
+ }
+ 
+void IVTRego6xxCtrl::dump_config()
+{
+    ESP_LOGCONFIG(TAG, "IVT rego6xx controller component");
+}
+
+/******************************************************************************
+ * Protected Methods
  *****************************************************************************/
 
- /** @} */
+/******************************************************************************
+ * Private Methods
+ *****************************************************************************/
+
+/******************************************************************************
+ * External Functions
+ *****************************************************************************/
+
+/******************************************************************************
+ * Local Functions
+ *****************************************************************************/
+
+  
+ }  /* namespace ivt_rego6xx_ctrl */
+ }  /* namespace esphome */
+ 

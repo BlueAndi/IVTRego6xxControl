@@ -70,6 +70,13 @@ external_components:
       type: local
       path: src
 
-ivt_rego6xx_ctrl_component:
-  id: ivt_rego6xx_ctrl_component_id
+ivt_rego6xx_ctrl:
+  id: ivt_rego6xx_ctrl_id
   uart_id: uart_heatpump
+
+sensor:
+  - platform: ivt_rego6xx_ctrl
+    name: Radiator return GT1
+    ivt_rego_variable: gt1
+    unit_of_measurement: °C
+    state_class: measurement
