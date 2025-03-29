@@ -46,6 +46,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "Rego6xxCtrl.h"
+#include "SimpleTimer.hpp"
 #include "StreamUartDevAdapter.h"
 #include "sensor/IVTRego6xxSensor.h"
 
@@ -79,7 +80,11 @@ public:
         m_adapter(),
         m_ctrl(m_adapter),
         m_sensorCount(0U),
-        m_sensors{ nullptr }
+        m_sensors{ nullptr },
+        m_timer(),
+        m_pauseTimer(),
+        m_rego6xxRsp(nullptr),
+        m_currentSensorIndex(0U)
     {
         m_adapter.setUartDevice(this);
     }
@@ -124,12 +129,50 @@ public:
 
 private:
 
-    static const size_t  MAX_SENSORS = 11U; /**< Maximum number of sensors. */
+    static const size_t MAX_SENSORS           = 11U; /**< Maximum number of sensors. */
 
-    StreamUartDevAdapter m_adapter;              /**< Stream to UART device adapter. */
-    Rego6xxCtrl          m_ctrl;                 /**< IVT rego6xx controller. */
-    size_t               m_sensorCount;          /**< Number of registered sensors. */
-    IVTRego6xxSensor*    m_sensors[MAX_SENSORS]; /**< List of registered sensors. */
+    /** Duration after the first time all sensors are read. */
+    static const uint32_t SENSOR_READ_INITIAL = (2UL * 1000UL);
+
+    /** Period in ms for reading all sensors from heatpump. */
+    static const uint32_t SENSOR_READ_PERIOD  = (5UL * 60UL * 1000UL);
+
+    /** Pause between every request to the heatpump controller in ms. */
+    static const uint32_t REGO6xx_REQ_PAUSE   = (1UL * 1000UL);
+
+    StreamUartDevAdapter  m_adapter;              /**< Stream to UART device adapter. */
+    Rego6xxCtrl           m_ctrl;                 /**< IVT rego6xx controller. */
+    size_t                m_sensorCount;          /**< Number of registered sensors. */
+    IVTRego6xxSensor*     m_sensors[MAX_SENSORS]; /**< List of registered sensors. */
+    SimpleTimer           m_timer;                /**< Timer used to read cyclic all registered sensors values from the heatpump. */
+    SimpleTimer           m_pauseTimer;           /**< Timer used to pause between each heatpump request. This shall avoid problems with the Rego6xx controller. */
+    const Rego6xxStdRsp*  m_rego6xxRsp;           /**< Pending Rego6xx response, used to read temperatures. */
+    size_t                m_currentSensorIndex;   /**< Index of the current sensor to read. */
+
+    /**
+     * Read all registered sensors.
+     * This will be called periodically.
+     */
+    void readSensors();
+
+    /**
+     * Get system register value from the sensor type.
+     *
+     * @param[in] sensorType   The sensor type.
+     * @param[out] sysRegAddr  The system register address.
+     *
+     * @return True if the system register address is valid, otherwise false.
+     */
+    bool getSysRegAddr(const char* sensorType, Rego6xxCtrl::SysRegAddr& sysRegAddr);
+
+    /**
+     * Calculate the temperature in °C from the raw temperature value.
+     *
+     * @param[in] rawTemperature   The raw temperature value.
+     *
+     * @return The temperature in °C.
+     */
+    float calculateTemperature(uint16_t rawTemperature);
 };
 
 } /* namespace ivt_rego6xx_ctrl */

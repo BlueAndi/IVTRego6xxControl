@@ -83,6 +83,16 @@ public:
     {
     }
 
+    /**
+     * Get the sensor type.
+     *
+     * @return The sensor type.
+     */
+    const char* getSensorType() const
+    {
+        return m_sensorType;
+    }
+
 private:
 
     const char* m_sensorType; /**< Sensor type */

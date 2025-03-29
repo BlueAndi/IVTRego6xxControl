@@ -81,3 +81,59 @@ sensor:
     name: Radiator return GT1
     unit_of_measurement: °C
     state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt2
+    name: Outddor GT2
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt3
+    name: Hot water GT3
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt4
+    name: Forward GT4
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt8
+    name: Heat fluid out GT8
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt9
+    name: Heat fluid in GT9
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt10
+    name: Cold fluid in GT10
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt11
+    name: Cold fluid out GT11
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt3x
+    name: External hot water GT3X
+    unit_of_measurement: °C
+    state_class: measurement

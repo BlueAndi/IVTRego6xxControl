@@ -96,11 +96,18 @@ static const NameToSysReg NAME_TO_SYS_REG[] = {
 
 void IVTRego6xxCtrl::setup()
 {
-    /* Nothing to do. */
+    m_timer.start(SENSOR_READ_INITIAL);
 }
 
 void IVTRego6xxCtrl::loop()
 {
+    /* Read sensors? */
+    if ((true == m_timer.isTimerRunning()) &&
+        (true == m_timer.isTimeout()))
+    {
+    }
+
+    /* Process the heatpump Rego6xx controller. */
     m_ctrl.process();
 }
 
@@ -116,6 +123,115 @@ void IVTRego6xxCtrl::dump_config()
 /******************************************************************************
  * Private Methods
  *****************************************************************************/
+
+void IVTRego6xxCtrl::readSensors()
+{
+    /* If no command is pending, request next sensor. */
+    if (nullptr == m_rego6xxRsp)
+    {
+        /* If the pause between two requests is finished, go ahead with next sensor. */
+        if ((false == m_pauseTimer.isTimerRunning()) ||
+            (true == m_pauseTimer.isTimeout()))
+        {
+            /* If all sensors are read, start from the beginning. */
+            if (m_sensorCount <= m_currentSensorIndex)
+            {
+                m_currentSensorIndex = 0U;
+                m_timer.start(SENSOR_READ_PERIOD);
+            }
+            else
+            {
+                IVTRego6xxSensor*       currentSensor = m_sensors[m_currentSensorIndex];
+                Rego6xxCtrl::SysRegAddr sysRegAddr;
+                bool                    isFound = getSysRegAddr(currentSensor->getSensorType(), sysRegAddr);
+
+                if (false == isFound)
+                {
+                    ESP_LOGE(TAG, "Invalid sensor type '%s'!", currentSensor->getSensorType());
+                }
+                else
+                {
+                    m_rego6xxRsp = m_ctrl.readSysReg(sysRegAddr);
+
+                    if (nullptr == m_rego6xxRsp)
+                    {
+                        ESP_LOGE(TAG, "Failed to read sensor '%s'!", currentSensor->getSensorType());
+                    }
+                }
+            }
+        }
+    }
+    /* Command response received? */
+    else if ((true == m_rego6xxRsp->isUsed()) &&
+             (false == m_rego6xxRsp->isPending()))
+    {
+        /* The temperature is taken over only if the response is valid and there was no timeout. */
+        if ((true == m_rego6xxRsp->isValid()) &&
+            (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr()))
+        {
+            IVTRego6xxSensor* currentSensor = m_sensors[m_currentSensorIndex];
+            float             temperature   = calculateTemperature(m_rego6xxRsp->getValue());
+
+            currentSensor->publish_state(temperature);
+        }
+        else
+        {
+            /* Temperature skipped */
+            ;
+        }
+
+        m_ctrl.release();
+        m_rego6xxRsp = nullptr;
+
+        /* Pause sending requests, after response. */
+        m_timer.start(REGO6xx_REQ_PAUSE);
+    }
+    else
+    /* Wait for pending command response. */
+    {
+        /* Nothing to do */
+        ;
+    }
+}
+
+bool IVTRego6xxCtrl::getSysRegAddr(const char* sensorType, Rego6xxCtrl::SysRegAddr& sysRegAddr)
+{
+    bool   isFound = false;
+    size_t index   = 0U;
+
+    for (index = 0U; index < (sizeof(NAME_TO_SYS_REG) / sizeof(NAME_TO_SYS_REG[0])); ++index)
+    {
+        if (0 == strcmp(sensorType, NAME_TO_SYS_REG[index].name))
+        {
+            sysRegAddr = NAME_TO_SYS_REG[index].sysRegAddr;
+            isFound    = true;
+            break;
+        }
+    }
+
+    return isFound;
+}
+
+float IVTRego6xxCtrl::calculateTemperature(uint16_t rawTemperature)
+{
+    int8_t sign = 1;
+    float  floorPart;
+    float  fracPart;
+    float  temperature;
+
+    if (0U != (rawTemperature & 0x8000U))
+    {
+        rawTemperature = (0xFFFFU - rawTemperature) + 1U;
+        sign           = -1;
+    }
+
+    floorPart   = sign * static_cast<int8_t>(rawTemperature / 10U);
+    fracPart    = static_cast<uint8_t>(rawTemperature % 10U) / 10.0F;
+
+    temperature = (0.0f > floorPart) ? (floorPart - fracPart) : (floorPart + fracPart);
+
+    return temperature;
+}
 
 /******************************************************************************
  * External Functions
