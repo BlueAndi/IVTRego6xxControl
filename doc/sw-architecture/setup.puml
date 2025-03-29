@@ -1,5 +1,7 @@
 @startuml setup
 
+title Setup
+
 participant "main" as main
 participant "Arduino" as arduino
 participant "IVTRego6xxCtrl" as ivtRego6xxCtrl
@@ -8,6 +10,10 @@ participant "IVTRego6xxSensor" as ivtRego6xxSensor
 autoactivate on
 
 -> main
+
+    note over main,uart
+        Perform Arduino setup.
+    end note
 
     main -> arduino: setup
         arduino -> ivtRego6xxCtrl: create instance
@@ -24,13 +30,10 @@ autoactivate on
         arduino <-- ivtRego6xxCtrl
     main <-- arduino
 
-    loop infinite
+    note over main,uart
+        Next step is the Arduino loop.
+    end note
 
-        main -> arduino: loop
-            arduino -> ivtRego6xxCtrl: loop
-            arduino <-- ivtRego6xxCtrl
-        main <-- arduino
-    end
 <-- main
 
 @enduml

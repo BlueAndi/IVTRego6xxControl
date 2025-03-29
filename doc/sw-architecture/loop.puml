@@ -1,0 +1,65 @@
+@startuml setup
+
+title Loop
+
+participant "main" as main
+participant "Arduino" as arduino
+participant "IVTRego6xxCtrl" as ivtRego6xxCtrl
+participant "IVTRego6xxSensor" as ivtRego6xxSensor
+participant "Rego6xxCtrl" as rego6xxCtrl
+participant "StreamUartDevAdapter" as streamUartDevAdapter
+participant "UART" as uart
+
+autoactivate on
+
+-> main
+
+    note over main,uart
+        After setup is done.
+    end note
+
+    loop infinite
+
+        main -> arduino: loop
+            arduino -> ivtRego6xxCtrl: loop
+
+                note over ivtRego6xxCtrl, uart
+                    Every 5 minutes, the IVTRego6xxCtrl will read the system register for each sensor
+                    in cooperative manner. The following flow shows only the principle.
+                end note
+
+                alt every 5 minutes
+                    alt sensor by sensor in cooperative manner
+                        ivtRego6xxCtrl -> ivtRego6xxSensor: get sensor type
+                        ivtRego6xxCtrl <-- ivtRego6xxSensor: sensor type, e.g. "gt1"
+                        ivtRego6xxCtrl -> rego6xxCtrl: read system register for sensor type
+                            rego6xxCtrl -> streamUartDevAdapter: write
+                                streamUartDevAdapter -> ivtRego6xxCtrl: write
+                                    ivtRego6xxCtrl -> uart: write
+                                    ivtRego6xxCtrl <-- uart: write
+                                streamUartDevAdapter <-- ivtRego6xxCtrl
+                            rego6xxCtrl <-- streamUartDevAdapter
+                        ivtRego6xxCtrl <-- rego6xxCtrl: pending response
+                    end
+                end
+
+                note over ivtRego6xxCtrl, uart
+                    Process the rego6xx controller to handle incoming data.
+                end note
+
+                ivtRego6xxCtrl -> rego6xxCtrl: process
+                    rego6xxCtrl -> streamUartDevAdapter: read
+                        streamUartDevAdapter -> ivtRego6xxCtrl: read
+                            ivtRego6xxCtrl -> uart: read
+                            ivtRego6xxCtrl <-- uart: data
+                        streamUartDevAdapter <-- ivtRego6xxCtrl: data
+                    rego6xxCtrl <-- streamUartDevAdapter: data
+                    rego6xxCtrl -> rego6xxCtrl: handle data
+                    rego6xxCtrl <-- rego6xxCtrl: data
+                ivtRego6xxCtrl <-- rego6xxCtrl
+            arduino <-- ivtRego6xxCtrl
+        main <-- arduino
+    end
+<-- main
+
+@enduml
