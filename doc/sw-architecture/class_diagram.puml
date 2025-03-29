@@ -31,9 +31,13 @@ package "esphome" {
             - m_adapter : StreamUartDevAdapter
             + setup()
             + loop()
+            + registerSensor(sensor: IVTRego6xxSensor*)
         }
 
         class "IVTRego6xxSensor" as ivtRego6xxSensor {
+            - m_sensorType: const char*
+            + IVTRego6xxSensor(sensorType: const char*)
+            + getSensorType() : const char*
         }
     }
 }
@@ -86,5 +90,7 @@ uartDevice <.. streamUartDevAdapter: <<use>>
 rego6xxCtrl ..> stream: <<use>>
 
 sensor <|--- ivtRego6xxSensor
+
+ivtRego6xxSensor "*" <-o ivtRego6xxCtrl
 
 @enduml

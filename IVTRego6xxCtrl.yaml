@@ -76,7 +76,8 @@ ivt_rego6xx_ctrl:
 
 sensor:
   - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
+    ivt_rego6xx_variable: gt1
     name: Radiator return GT1
-    ivt_rego_variable: gt1
     unit_of_measurement: °C
     state_class: measurement

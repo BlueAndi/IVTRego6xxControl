@@ -71,7 +71,8 @@ public:
     /**
      * Constructs the IVT rego6xx controller component.
      */
-    IVTRego6xxSensor()
+    IVTRego6xxSensor(const char* sensorType) :
+        m_sensorType(sensorType)
     {
     }
 
@@ -82,19 +83,25 @@ public:
     {
     }
 
-    void setIvtRegoVariable(const String& ivtRegoVariable)
-    {
-    }
-
 private:
 
+    const char* m_sensorType; /**< Sensor type */
+
+    /** No default constructor. */
+    IVTRego6xxSensor();
+    /** No copy constructor. */
+    IVTRego6xxSensor(const IVTRego6xxSensor& other) = delete;
+    /** No assignment operator. */
+    IVTRego6xxSensor& operator=(const IVTRego6xxSensor& other) = delete;
+    /** No move constructor. */
+    IVTRego6xxSensor(IVTRego6xxSensor&& other) = delete;
 };
 
-}  /* namespace ivt_rego6xx_ctrl */
-}  /* namespace esphome */
+} /* namespace ivt_rego6xx_ctrl */
+} /* namespace esphome */
 
 /******************************************************************************
  * Functions
  *****************************************************************************/
 
- /** @} */
+/** @} */

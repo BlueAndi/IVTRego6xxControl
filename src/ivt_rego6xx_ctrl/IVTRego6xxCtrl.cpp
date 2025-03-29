@@ -43,12 +43,22 @@
  * Macros
  *****************************************************************************/
 
- namespace esphome {
- namespace ivt_rego6xx_ctrl {
+namespace esphome
+{
+namespace ivt_rego6xx_ctrl
+{
 
 /******************************************************************************
  * Types and classes
  *****************************************************************************/
+
+/** This type defines a mapping between a string and a system register. */
+typedef struct
+{
+    const char*             name;       /**< Sensor name. */
+    Rego6xxCtrl::SysRegAddr sysRegAddr; /**< Sensor system register address. */
+
+} NameToSysReg;
 
 /******************************************************************************
  * Prototypes
@@ -61,22 +71,39 @@
 /**
  * Logger tag of this component.
  */
-static const char *TAG = "ivt_rego6xx_ctrl.component";
+static const char* TAG                      = "ivt_rego6xx_ctrl.component";
+
+/**
+ * Mapping table between a string and a system register.
+ */
+static const NameToSysReg NAME_TO_SYS_REG[] = {
+    { "gt1", Rego6xxCtrl::SYSREG_ADDR_GT1 },
+    { "gt2", Rego6xxCtrl::SYSREG_ADDR_GT2 },
+    { "gt3", Rego6xxCtrl::SYSREG_ADDR_GT3 },
+    { "gt4", Rego6xxCtrl::SYSREG_ADDR_GT4 },
+    { "gt5", Rego6xxCtrl::SYSREG_ADDR_GT5 },
+    { "gt6", Rego6xxCtrl::SYSREG_ADDR_GT6 },
+    { "gt8", Rego6xxCtrl::SYSREG_ADDR_GT8 },
+    { "gt9", Rego6xxCtrl::SYSREG_ADDR_GT9 },
+    { "gt10", Rego6xxCtrl::SYSREG_ADDR_GT10 },
+    { "gt11", Rego6xxCtrl::SYSREG_ADDR_GT11 },
+    { "gt3x", Rego6xxCtrl::SYSREG_ADDR_GT3X }
+};
 
 /******************************************************************************
  * Public Methods
  *****************************************************************************/
- 
- void IVTRego6xxCtrl::setup()
- {
+
+void IVTRego6xxCtrl::setup()
+{
     /* Nothing to do. */
- }
- 
- void IVTRego6xxCtrl::loop()
- {
+}
+
+void IVTRego6xxCtrl::loop()
+{
     m_ctrl.process();
- }
- 
+}
+
 void IVTRego6xxCtrl::dump_config()
 {
     ESP_LOGCONFIG(TAG, "IVT rego6xx controller component");
@@ -98,7 +125,6 @@ void IVTRego6xxCtrl::dump_config()
  * Local Functions
  *****************************************************************************/
 
-  
- }  /* namespace ivt_rego6xx_ctrl */
- }  /* namespace esphome */
- 
+
+} /* namespace ivt_rego6xx_ctrl */
+} /* namespace esphome */

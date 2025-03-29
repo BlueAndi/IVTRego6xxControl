@@ -44,7 +44,8 @@ ivt_rego6xx_sensor = ivt_rego6xx_ctrl_ns.class_(
 )
 
 # Sensor variables
-CONF_IVT_REGO_VARIABLE = "ivt_rego_variable"
+CONF_IVT_REGO6XX_CTRL_ID = "ivt_rego6xx_ctrl_id"
+CONF_IVT_REGO6XX_VARIABLE = "ivt_rego6xx_variable"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
@@ -53,7 +54,8 @@ CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend(
         cv.GenerateID(): cv.declare_id(ivt_rego6xx_sensor),
 
         # Mandatory variables
-        cv.Required(CONF_IVT_REGO_VARIABLE): cv.string
+        cv.Required(CONF_IVT_REGO6XX_CTRL_ID): cv.use_id(ivt_rego6xx_ctrl_ns.IVTRego6xxCtrl),
+        cv.Required(CONF_IVT_REGO6XX_VARIABLE): cv.string
     })
 )
 
@@ -70,11 +72,9 @@ async def to_code(config: dict) -> None:
     Args:
         config (dict): Configuration
     """
-    var = cg.new_Pvariable(config[CONF_ID])
+    # Create a new variable for the sensor.
+    var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_VARIABLE])
     await sensor.register_sensor(var, config)
-
-    # Add the mandatory variables.
-    cg.add(var.setIvtRegoVariable(config[CONF_IVT_REGO_VARIABLE]))
 
     # Add the optional variables.
     if CONF_UNIT_OF_MEASUREMENT in config:
@@ -82,6 +82,10 @@ async def to_code(config: dict) -> None:
 
     if CONF_STATE_CLASS in config:
         cg.add(var.set_state_class(config[CONF_STATE_CLASS]))
+
+    # Register sensor at the IVT Rego6xx control component.
+    ivt_rego6xx_ctrl = await cg.get_variable(config[CONF_IVT_REGO6XX_CTRL_ID])
+    cg.add(ivt_rego6xx_ctrl.registerSensor(var))
 
 ################################################################################
 # Main

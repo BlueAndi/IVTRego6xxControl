@@ -16,6 +16,7 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
   - [Usage](#usage)
 - [REST API](#rest-api)
 - [MQTT API](#mqtt-api)
+- [SW-Architecture](#sw-architecture)
 - [Used Libraries](#used-libraries)
 - [Issues, Ideas And Bugs](#issues-ideas-and-bugs)
 - [License](#license)
@@ -74,6 +75,12 @@ TODO
 ## MQTT API
 
 TODO
+
+## SW-Architecture
+
+![ClassDiagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/BlueAndi/IVTRego6xxControl/refs/heads/main/doc/sw-architecture/class_diagram.puml)
+
+![Setup](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/BlueAndi/IVTRego6xxControl/refs/heads/main/doc/sw-architecture/setup.puml)
 
 ## Used Libraries
 

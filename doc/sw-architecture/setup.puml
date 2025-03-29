@@ -1,0 +1,36 @@
+@startuml setup
+
+participant "main" as main
+participant "Arduino" as arduino
+participant "IVTRego6xxCtrl" as ivtRego6xxCtrl
+participant "IVTRego6xxSensor" as ivtRego6xxSensor
+
+autoactivate on
+
+-> main
+
+    main -> arduino: setup
+        arduino -> ivtRego6xxCtrl: create instance
+        arduino <-- ivtRego6xxCtrl
+        arduino -> ivtRego6xxCtrl: set component source "ivt_rego6xx_ctrl"
+        arduino <-- ivtRego6xxCtrl
+        arduino -> ivtRego6xxSensor: create instance
+        arduino <-- ivtRego6xxSensor
+        arduino -> ivtRego6xxSensor: set sensor type,\ndefined by ivt_rego6xx_variable in IVTRego6xxCtrl.yaml
+        arduino <-- ivtRego6xxSensor
+        arduino -> ivtRego6xxCtrl: register sensor IVTRego6xxSensor
+        arduino <-- ivtRego6xxCtrl
+        arduino -> ivtRego6xxCtrl: setup
+        arduino <-- ivtRego6xxCtrl
+    main <-- arduino
+
+    loop infinite
+
+        main -> arduino: loop
+            arduino -> ivtRego6xxCtrl: loop
+            arduino <-- ivtRego6xxCtrl
+        main <-- arduino
+    end
+<-- main
+
+@enduml
