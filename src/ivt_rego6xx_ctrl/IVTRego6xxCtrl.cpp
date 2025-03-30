@@ -71,16 +71,47 @@ static const char* TAG = "ivt_rego6xx_ctrl.component";
 
 void IVTRego6xxCtrl::setup()
 {
-    m_timer.start(SENSOR_READ_INITIAL);
+    /* Start all timers responsible for reading from heatpump.
+     * The exact order will be determined by the loop() method.
+     */
+    m_sensorTimer.start(SENSOR_READ_INITIAL);
+    m_binarySensorTimer.start(SENSOR_READ_INITIAL);
 }
 
 void IVTRego6xxCtrl::loop()
 {
-    /* Read sensors? */
-    if ((true == m_timer.isTimerRunning()) &&
-        (true == m_timer.isTimeout()))
+    /* Pause? */
+    if (true == m_pauseTimer.isTimerRunning())
     {
-        readSensors();
+        /* Continue with any kind of next sensor? */
+        if (true == m_pauseTimer.isTimeout())
+        {
+            m_pauseTimer.stop();
+        }
+    }
+
+    if (false == m_pauseTimer.isTimerRunning())
+    {
+        /* Start or continue reading sensor, but only the bunch of binary sensors
+         * are not complete read.
+         */
+        if ((true == m_sensorTimer.isTimerRunning()) &&
+            (true == m_sensorTimer.isTimeout()) &&
+            (MAX_BINARY_SENSORS == m_currentBinarySensorIndex))
+        {
+            readSensors();
+        }
+        /* Read binary sensors? */
+        else if ((true == m_binarySensorTimer.isTimerRunning()) &&
+                 (true == m_binarySensorTimer.isTimeout()))
+        {
+            readBinarySensors();
+        }
+        else
+        {
+            /* Nothing to do */
+            ;
+        }
     }
 
     /* Process the heatpump Rego6xx controller. */
@@ -102,31 +133,28 @@ void IVTRego6xxCtrl::dump_config()
 
 void IVTRego6xxCtrl::readSensors()
 {
+    bool nextSensor = false;
+
     /* If no command is pending, request next sensor. */
     if (nullptr == m_rego6xxRsp)
     {
-        /* If the pause between two requests is finished, go ahead with next sensor. */
-        if ((false == m_pauseTimer.isTimerRunning()) ||
-            (true == m_pauseTimer.isTimeout()))
+        /* If all sensors are read, start from the beginning. */
+        if (m_sensorCount <= m_currentSensorIndex)
         {
-            /* If all sensors are read, start from the beginning. */
-            if (m_sensorCount <= m_currentSensorIndex)
-            {
-                m_currentSensorIndex = 0U;
-                m_timer.start(SENSOR_READ_PERIOD);
-            }
-            else
-            {
-                IVTRego6xxSensor*       currentSensor = m_sensors[m_currentSensorIndex];
-                Rego6xxCtrl::SysRegAddr sysRegAddr    = static_cast<Rego6xxCtrl::SysRegAddr>(currentSensor->getSysRegAddr());
+            m_currentSensorIndex = 0U;
+        }
 
-                ESP_LOGI(TAG, "Request sensor '%s' at 0x%04X ...", currentSensor->get_name().c_str(), currentSensor->getSysRegAddr());
-                m_rego6xxRsp = m_ctrl.readSysReg(sysRegAddr);
+        {
+            IVTRego6xxSensor*       currentSensor = m_sensors[m_currentSensorIndex];
+            Rego6xxCtrl::SysRegAddr sysRegAddr    = static_cast<Rego6xxCtrl::SysRegAddr>(currentSensor->getSysRegAddr());
 
-                if (nullptr == m_rego6xxRsp)
-                {
-                    ESP_LOGE(TAG, "Failed to read sensor '%s' at 0x%04X!", currentSensor->get_name().c_str(), currentSensor->getSysRegAddr());
-                }
+            ESP_LOGI(TAG, "Request sensor '%s' at 0x%04X ...", currentSensor->get_name().c_str(), sysRegAddr);
+            m_rego6xxRsp = m_ctrl.readSysReg(sysRegAddr);
+
+            if (nullptr == m_rego6xxRsp)
+            {
+                ESP_LOGE(TAG, "Failed to read sensor '%s' at 0x%04X!", currentSensor->get_name().c_str(), sysRegAddr);
+                nextSensor = true;
             }
         }
     }
@@ -152,14 +180,100 @@ void IVTRego6xxCtrl::readSensors()
         m_ctrl.release();
         m_rego6xxRsp = nullptr;
 
-        /* Pause sending requests, after response. */
-        m_timer.start(REGO6xx_REQ_PAUSE);
+        nextSensor   = true;
     }
     else
     /* Wait for pending command response. */
     {
         /* Nothing to do */
         ;
+    }
+
+    if (true == nextSensor)
+    {
+        ++m_currentSensorIndex;
+
+        /* Pause sending requests, after response. */
+        m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+
+        if (m_sensorCount <= m_currentSensorIndex)
+        {
+            /* Start timer for next sensor read. */
+            m_sensorTimer.start(SENSOR_READ_PERIOD);
+        }
+    }
+}
+
+void IVTRego6xxCtrl::readBinarySensors()
+{
+    bool nextSensor = false;
+
+    /* If no command is pending, request next binary sensor. */
+    if (nullptr == m_rego6xxBoolRsp)
+    {
+        /* If all sensors are read, start from the beginning. */
+        if (m_binarySensorCount <= m_currentBinarySensorIndex)
+        {
+            m_currentBinarySensorIndex = 0U;
+        }
+
+        {
+            IVTRego6xxBinarySensor*     currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
+            Rego6xxCtrl::FrontPanelAddr frontPanelAddr      = static_cast<Rego6xxCtrl::FrontPanelAddr>(currentBinarySensor->getSysRegAddr());
+
+            ESP_LOGI(TAG, "Request binary sensor '%s' at 0x%04X ...", currentBinarySensor->get_name().c_str(), frontPanelAddr);
+            m_rego6xxBoolRsp = m_ctrl.readFrontPanel(frontPanelAddr);
+
+            if (nullptr == m_rego6xxBoolRsp)
+            {
+                ESP_LOGE(TAG, "Failed to read binary sensor '%s' at 0x%04X!", currentBinarySensor->get_name().c_str(), frontPanelAddr);
+                nextSensor = true;
+            }
+        }
+    }
+    /* Command response received? */
+    else if ((true == m_rego6xxBoolRsp->isUsed()) &&
+             (false == m_rego6xxBoolRsp->isPending()))
+    {
+        /* The temperature is taken over only if the response is valid and there was no timeout. */
+        if ((true == m_rego6xxBoolRsp->isValid()) &&
+            (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxBoolRsp->getDevAddr()))
+        {
+            IVTRego6xxBinarySensor* currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
+            bool                    state               = m_rego6xxBoolRsp->getValue();
+
+            currentBinarySensor->publish_state(state);
+        }
+        else
+        {
+            /* Temperature skipped */
+            ;
+        }
+
+        m_ctrl.release();
+        m_rego6xxBoolRsp = nullptr;
+
+        nextSensor       = true;
+    }
+    else
+    /* Wait for pending command response. */
+    {
+        /* Nothing to do */
+        ;
+    }
+
+    if (true == nextSensor)
+    {
+        ++m_currentBinarySensorIndex;
+
+        /* Pause sending requests, after response. */
+        m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+
+        if (m_binarySensorCount <= m_currentBinarySensorIndex)
+        {
+            /* Start timer for next sensor read. */
+            m_binarySensorTimer.start(BINARY_SENSOR_READ_PERIOD);
+        }
     }
 }
 

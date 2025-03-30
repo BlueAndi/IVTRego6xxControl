@@ -26,7 +26,7 @@
 
 import esphome.codegen as cg # Code generation API
 import esphome.config_validation as cv # Configuration validation API
-from esphome.components import sensor # Sensor component
+from esphome.components import binary_sensor # Binary sensor component
 from esphome.const import CONF_ID, CONF_UNIT_OF_MEASUREMENT, CONF_STATE_CLASS
 from .. import ivt_rego6xx_ctrl_ns # IVT Rego6xx control component namespace
 
@@ -37,8 +37,8 @@ from .. import ivt_rego6xx_ctrl_ns # IVT Rego6xx control component namespace
 DEPENDENCIES = ["ivt_rego6xx_ctrl"]
 
 # The class of the component.
-ivt_rego6xx_sensor = ivt_rego6xx_ctrl_ns.class_(
-    "IVTRego6xxSensor", sensor.Sensor
+ivt_rego6xx_binary_sensor = ivt_rego6xx_ctrl_ns.class_(
+    "IVTRego6xxBinarySensor", binary_sensor.BinarySensor
 )
 
 # Sensor variables
@@ -47,9 +47,9 @@ CONF_IVT_REGO6XX_ADDR = "ivt_rego6xx_ctrl_addr"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
-CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend(
+CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
     cv.Schema({
-        cv.GenerateID(): cv.declare_id(ivt_rego6xx_sensor),
+        cv.GenerateID(): cv.declare_id(ivt_rego6xx_binary_sensor),
 
         # Mandatory variables
         cv.Required(CONF_IVT_REGO6XX_CTRL_ID): cv.use_id(ivt_rego6xx_ctrl_ns.IVTRego6xxCtrl),
@@ -72,7 +72,7 @@ async def to_code(config: dict) -> None:
     """
     # Create a new variable for the sensor.
     var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_ADDR])
-    await sensor.register_sensor(var, config)
+    await binary_sensor.register_binary_sensor(var, config)
 
     # Add the optional variables.
     if CONF_UNIT_OF_MEASUREMENT in config:
@@ -83,7 +83,7 @@ async def to_code(config: dict) -> None:
 
     # Register sensor at the IVT Rego6xx control component.
     ivt_rego6xx_ctrl = await cg.get_variable(config[CONF_IVT_REGO6XX_CTRL_ID])
-    cg.add(ivt_rego6xx_ctrl.registerSensor(var))
+    cg.add(ivt_rego6xx_ctrl.registerBinarySensor(var))
 
 ################################################################################
 # Main

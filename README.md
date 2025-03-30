@@ -15,8 +15,8 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
   - [Flash to target and monitor](#flash-to-target-and-monitor)
   - [Usage](#usage)
 - [Sensors](#sensors)
-- [REST API](#rest-api)
-  - [Sensor API Endpoints](#sensor-api-endpoints)
+- [Binary Sensors](#binary-sensors)
+- [API Endpoints and MQTT Topics](#api-endpoints-and-mqtt-topics)
 - [SW-Architecture](#sw-architecture)
 - [Used Libraries](#used-libraries)
 - [Issues, Ideas And Bugs](#issues-ideas-and-bugs)
@@ -73,37 +73,49 @@ TODO
 
 | **Name** | **Description**                  | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
 |----------|----------------------------------|------------------------------------------------|------------------------------------------------|
-| **GT1**  | Radiator return temperature      | 0x0209                                         | 0x020B                                         |
-| **GT2**  | Outdoor temperature              | 0x020A                                         | 0x020C                                         |
-| **GT3**  | Hot water temperature            | 0x020B                                         | 0x020D                                         |
-| **GT4**  | Forward temperature              | 0x020C                                         | 0x020E                                         |
-| **GT5**  | Room temperature                 | 0x020D                                         | 0x020F                                         |
-| **GT6**  | Compressor temperature           | 0x020E                                         | 0x0210                                         |
-| **GT8**  | Heat fluid out temperature       | 0x020F                                         | 0x0211                                         |
-| **GT9**  | Heat fluid in temperature        | 0x0210                                         | 0x0212                                         |
-| **GT10** | Cold fluid in temperature        | 0x0211                                         | 0x0213                                         |
-| **GT11** | Cold fluid out temperature       | 0x0212                                         | 0x0214                                         |
-| **GT3X** | External hot water temperature   | 0x0213                                         | 0x0215                                         |
+| **gt1**  | Radiator return temperature      | 0x0209                                         | 0x020B                                         |
+| **gt2**  | Outdoor temperature              | 0x020A                                         | 0x020C                                         |
+| **gt3**  | Hot water temperature            | 0x020B                                         | 0x020D                                         |
+| **gt4**  | Forward temperature              | 0x020C                                         | 0x020E                                         |
+| **gt5**  | Room temperature                 | 0x020D                                         | 0x020F                                         |
+| **gt6**  | Compressor temperature           | 0x020E                                         | 0x0210                                         |
+| **gt8**  | Heat fluid out temperature       | 0x020F                                         | 0x0211                                         |
+| **gt9**  | Heat fluid in temperature        | 0x0210                                         | 0x0212                                         |
+| **gt10** | Cold fluid in temperature        | 0x0211                                         | 0x0213                                         |
+| **gt11** | Cold fluid out temperature       | 0x0212                                         | 0x0214                                         |
+| **gt3X** | External hot water temperature   | 0x0213                                         | 0x0215                                         |
 
-## REST API
+## Binary Sensors
 
-### Sensor API Endpoints
+| **Name**   | **Description** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
+|------------|-----------------|------------------------------------------------|------------------------------------------------|
+| **power**  | Power           | 0x0012                                         | 0x0012                                         |
+| **pump**   | Pump            | 0x0013                                         | 0x0013                                         |
+| **heating**| Heating         | 0x0014                                         | 0x0014                                         |
+| **boiler** | Boiler          | 0x0015                                         | 0x0015                                         |
+| **alarm**  | Alarm           | 0x0016                                         | 0x0016                                         |
+
+## API Endpoints and MQTT Topics
 
 The following table provides an overview of the REST API endpoints and MQTT topics for each sensor:
 
-| **Name**   | **Description**                | **REST API**                                         | **MQTT Topic**                                      |
-|------------|--------------------------------|------------------------------------------------------|-----------------------------------------------------|
-| **GT1**    | Radiator return temperature    | `http://<IP-ADDRESS>/sensor/radiator_return_gt1`     | `heatpumpctrl/sensor/radiator_return_gt1/state`     |
-| **GT2**    | Outdoor temperature            | `http://<IP-ADDRESS>/sensor/outdoor_gt2`             | `heatpumpctrl/sensor/outdoor_gt2/state`             |
-| **GT3**    | Hot water temperature          | `http://<IP-ADDRESS>/sensor/hot_water_gt3`           | `heatpumpctrl/sensor/hot_water_gt3/state`           |
-| **GT4**    | Forward temperature            | `http://<IP-ADDRESS>/sensor/forward_gt4`             | `heatpumpctrl/sensor/forward_gt4/state`             |
-| **GT5**    | Room temperature               | `http://<IP-ADDRESS>/sensor/room_gt5`                | `heatpumpctrl/sensor/room_gt5/state`                |
-| **GT6**    | Compressor temperature         | `http://<IP-ADDRESS>/sensor/compressor_gt6`          | `heatpumpctrl/sensor/compressor_gt6/state`          |
-| **GT8**    | Heat fluid out temperature     | `http://<IP-ADDRESS>/sensor/heat_fluid_out_gt8`      | `heatpumpctrl/sensor/heat_fluid_out_gt8/state`      |
-| **GT9**    | Heat fluid in temperature      | `http://<IP-ADDRESS>/sensor/heat_fluid_in_gt9`       | `heatpumpctrl/sensor/heat_fluid_in_gt9/state`       |
-| **GT10**   | Cold fluid in temperature      | `http://<IP-ADDRESS>/sensor/cold_fluid_in_gt10`      | `heatpumpctrl/sensor/cold_fluid_in_gt10/state`      |
-| **GT11**   | Cold fluid out temperature     | `http://<IP-ADDRESS>/sensor/cold_fluid_out_gt11`     | `heatpumpctrl/sensor/cold_fluid_out_gt11/state`     |
-| **GT3X**   | External hot water temperature | `http://<IP-ADDRESS>/sensor/external_hot_water_gt3x` | `heatpumpctrl/sensor/external_hot_water_gt3x/state` |
+| **Name**    | **Description**                | **REST API**                               | **MQTT Topic**                            |
+|-------------|--------------------------------|--------------------------------------------|-------------------------------------------|
+| **gt1**     | Radiator return temperature    | `http://<IP-ADDRESS>/sensor/gt1`           | `heatpumpctrl/sensor/gt1/state`           |
+| **gt2**     | Outdoor temperature            | `http://<IP-ADDRESS>/sensor/gt2`           | `heatpumpctrl/sensor/gt2/state`           |
+| **gt3**     | Hot water temperature          | `http://<IP-ADDRESS>/sensor/gt3`           | `heatpumpctrl/sensor/gt3/state`           |
+| **gt4**     | Forward temperature            | `http://<IP-ADDRESS>/sensor/gt4`           | `heatpumpctrl/sensor/gt4/state`           |
+| **gt5**     | Room temperature               | `http://<IP-ADDRESS>/sensor/gt5`           | `heatpumpctrl/sensor/gt5/state`           |
+| **gt6**     | Compressor temperature         | `http://<IP-ADDRESS>/sensor/gt6`           | `heatpumpctrl/sensor/gt6/state`           |
+| **gt8**     | Heat fluid out temperature     | `http://<IP-ADDRESS>/sensor/gt8`           | `heatpumpctrl/sensor/gt8/state`           |
+| **gt9**     | Heat fluid in temperature      | `http://<IP-ADDRESS>/sensor/gt9`           | `heatpumpctrl/sensor/gt9/state`           |
+| **gt10**    | Cold fluid in temperature      | `http://<IP-ADDRESS>/sensor/gt10`          | `heatpumpctrl/sensor/gt10/state`          |
+| **gt3X**    | External hot water temperature | `http://<IP-ADDRESS>/sensor/gt3x`          | `heatpumpctrl/sensor/gt3x/state`          |
+| **power**   | Power                          | `http://<IP-ADDRESS>/binary_sensor/power`  | `heatpumpctrl/binary_sensor/power/state`  |
+| **pump**    | Pump                           | `http://<IP-ADDRESS>/binary_sensor/pump`   | `heatpumpctrl/binary_sensor/pump/state`   |
+| **heating** | Heating                        | `http://<IP-ADDRESS>/binary_sensor/heating`| `heatpumpctrl/binary_sensor/heating/state`|
+| **boiler**  | Boiler                         | `http://<IP-ADDRESS>/binary_sensor/boiler` | `heatpumpctrl/binary_sensor/boiler/state` |
+| **alarm**   | Alarm                          | `http://<IP-ADDRESS>/binary_sensor/alarm`  | `heatpumpctrl/binary_sensor/alarm/state`  |
 
 ## SW-Architecture
 
@@ -112,7 +124,6 @@ The following table provides an overview of the REST API endpoints and MQTT topi
 ![Setup](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/BlueAndi/IVTRego6xxControl/refs/heads/main/doc/sw-architecture/setup.puml)
 
 ![Loop](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/BlueAndi/IVTRego6xxControl/refs/heads/main/doc/sw-architecture/loop.puml)
-
 
 ## Used Libraries
 

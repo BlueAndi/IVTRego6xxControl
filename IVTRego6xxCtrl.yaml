@@ -168,3 +168,29 @@ sensor:
     name: gt3x
     unit_of_measurement: °C
     state_class: measurement
+
+binary_sensor:
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0012
+    name: power
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0013
+    name: pump
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0014
+    name: heating
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0015
+    name: boiler
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0016
+    name: alarm

@@ -1,8 +1,8 @@
 @startuml class_diagram
 
-package "esphome" {
+package "esphome" <<namespace>> {
 
-    package "uart" as uartPckg {
+    package "uart" <<namespace>> as uartPckg {
 
         class "UARTDevice" as uartDevice {
             + available() : int
@@ -17,14 +17,21 @@ package "esphome" {
         + loop()
     }
 
-    package "sensor" as sensorPckg {
+    package "sensor" <<namespace>> as sensorPckg {
 
         class "Sensor" as sensor {
             + publish_state(state: float)
         }
     }
 
-    package "ivt_rego6xx_ctrl" as ivtRego6xxCtrlPckg {
+    package "binary_sensor" <<namespace>> as binarySensorPckg {
+
+        class "BinarySensor" as binarySensor {
+            + publish_state(state: bool)
+        }
+    }
+
+    package "ivt_rego6xx_ctrl" <<namespace>> as ivtRego6xxCtrlPckg {
 
         class "IVTRego6xxCtrl" as ivtRego6xxCtrl {
             - m_ctrl : Rego6xxCtrl
@@ -39,20 +46,31 @@ package "esphome" {
             + IVTRego6xxSensor(addr: uint16_t)
             + getSysRegAddr() : uint16_t
         }
+
+        class "IVTRego6xxBinarySensor" as ivtRego6xxBinarySensor {
+            - m_addr: uint16_t
+            + IVTRego6xxBinarySensor(addr: uint16_t)
+            + getSysRegAddr() : uint16_t
+        }
+
+        note bottom of ivtRego6xxCtrl
+            This class is responsible for controlling the
+            IVT Rego6xx series heat pump. It is responsible
+            for reading and publishing the sensor values,
+            as well as controlling the heat pump.
+        end note
+
+        note bottom of ivtRego6xxSensor
+            This class is responsible for publishing the
+            float sensor values of the IVT Rego6xx series heat pump.
+        end note
+
+        note bottom of ivtRego6xxBinarySensor
+            This class is responsible for publishing the
+            boolean sensor values of the IVT Rego6xx series heat pump.
+        end note
     }
 }
-
-note bottom of ivtRego6xxCtrl
-    This class is responsible for controlling the
-    IVT Rego6xx series heat pump. It is responsible
-    for reading and publishing the sensor values,
-    as well as controlling the heat pump.
-end note
-
-note bottom of ivtRego6xxSensor
-    This class is responsible for publishing the
-    sensor values of the IVT Rego6xx series heat pump.
-end note
 
 class "StreamUartDevAdapter" as streamUartDevAdapter {
     - m_uartDevice: UARTDevice&
@@ -64,25 +82,33 @@ note bottom of streamUartDevAdapter
     class to the Stream interface.
 end note
 
-class "Rego6xxCtrl" as rego6xxCtrl {
-    + Rego6xxCtrl(stream: Stream&)
-    + process()
-}
+package "lib" <<folder>> as libPckg {
 
-note top of rego6xxCtrl
-    This class communicates with the heatpump controller
-    via stream interface. It provides the high-level
-    control of the heat pump.
-end note
+    package "Rego6xx" <<folder>> as rego6xxPckg {
+
+        class "Rego6xxCtrl" as rego6xxCtrl {
+            + Rego6xxCtrl(stream: Stream&)
+            + process()
+        }
+
+        note top of rego6xxCtrl
+            This class communicates with the heatpump controller
+            via stream interface. It provides the high-level
+            control of the heat pump.
+        end note
+    }
+}
 
 package "Arduino" as arduinoPckg {
     interface "Stream" as stream
 }
 
-uartDevice <|--- ivtRego6xxCtrl
-comp <|-- ivtRego6xxCtrl
+uartDevice <|----- ivtRego6xxCtrl
+comp <|- ivtRego6xxCtrl
 rego6xxCtrl <-- ivtRego6xxCtrl: <<own>>
 streamUartDevAdapter <-- ivtRego6xxCtrl: <<own>>
+ivtRego6xxSensor "*" <---o ivtRego6xxCtrl: <<own>>
+ivtRego6xxBinarySensor "*" <---o ivtRego6xxCtrl: <<own>>
 
 stream <|.. streamUartDevAdapter: <<realize>>
 uartDevice <.. streamUartDevAdapter: <<use>>
@@ -90,7 +116,6 @@ uartDevice <.. streamUartDevAdapter: <<use>>
 rego6xxCtrl ..> stream: <<use>>
 
 sensor <|--- ivtRego6xxSensor
-
-ivtRego6xxSensor "*" <-o ivtRego6xxCtrl
+binarySensor <--- ivtRego6xxBinarySensor
 
 @enduml
