@@ -62,49 +62,51 @@ namespace ivt_rego6xx_ctrl
 {
 
 /**
- * IVT Rego6xx controller sensor for ESPHome.
+ * IVT Rego6xx sensor for ESPHome.
  */
 class IVTRego6xxSensor : public sensor::Sensor
 {
 public:
 
     /**
-     * Constructs the IVT rego6xx controller component.
+     * Constructs the IVT rego6xx sensor.
+     *
+     * @param[in] addr  System register address of the sensor.
      */
-    IVTRego6xxSensor(const char* sensorType) :
-        m_sensorType(sensorType)
+    IVTRego6xxSensor(uint16_t addr) :
+        m_addr(addr)
     {
     }
 
     /**
-     * Destroys the IVT rego6xx controller component.
+     * Destroys the IVT rego6xx sensor.
      */
     ~IVTRego6xxSensor()
     {
     }
 
     /**
-     * Get the sensor type.
+     * Get the system register address.
      *
-     * @return The sensor type.
+     * @return The system register address of the sensor.
      */
-    const char* getSensorType() const
+    uint16_t getSysRegAddr() const
     {
-        return m_sensorType;
+        return m_addr;
     }
 
 private:
 
-    const char* m_sensorType; /**< Sensor type */
+    uint16_t m_addr; /**< System register address of the sensor. */
 
     /** No default constructor. */
     IVTRego6xxSensor();
     /** No copy constructor. */
-    IVTRego6xxSensor(const IVTRego6xxSensor& other) = delete;
+    IVTRego6xxSensor(const IVTRego6xxSensor& other)            = delete;
     /** No assignment operator. */
     IVTRego6xxSensor& operator=(const IVTRego6xxSensor& other) = delete;
     /** No move constructor. */
-    IVTRego6xxSensor(IVTRego6xxSensor&& other) = delete;
+    IVTRego6xxSensor(IVTRego6xxSensor&& other)                 = delete;
 };
 
 } /* namespace ivt_rego6xx_ctrl */

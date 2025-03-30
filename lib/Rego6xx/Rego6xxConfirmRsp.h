@@ -104,7 +104,7 @@ public:
 private:
 
     /** Response size in bytes */
-    static const size_t RSP_SIZE    = 1;
+    static const size_t RSP_SIZE    = 1U;
 
     uint8_t m_response[RSP_SIZE];   /**< Response message */
 

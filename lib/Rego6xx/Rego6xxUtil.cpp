@@ -64,8 +64,8 @@
 
 uint8_t Rego6xxUtil::calculateChecksum(const uint8_t* buffer, size_t size)
 {
-    uint8_t idx         = 0;
-    uint8_t checksum    = 0;
+    uint8_t idx         = 0U;
+    uint8_t checksum    = 0U;
 
     while(size > idx)
     {

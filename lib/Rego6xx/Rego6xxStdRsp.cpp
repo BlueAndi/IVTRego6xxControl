@@ -65,7 +65,7 @@ bool Rego6xxStdRsp::isValid() const
 
     if (false == isPending())
     {
-        if (m_response[RSP_SIZE - 1] == Rego6xxUtil::calculateChecksum(&m_response[1], RSP_SIZE - 2))
+        if (m_response[RSP_SIZE - 1U] == Rego6xxUtil::calculateChecksum(&m_response[1], RSP_SIZE - 2U))
         {
             isValid = true;
         }
@@ -76,7 +76,7 @@ bool Rego6xxStdRsp::isValid() const
 
 uint8_t Rego6xxStdRsp::getDevAddr() const
 {
-    uint8_t devAddr = 0;
+    uint8_t devAddr = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))
@@ -89,7 +89,7 @@ uint8_t Rego6xxStdRsp::getDevAddr() const
 
 uint16_t Rego6xxStdRsp::getValue() const
 {
-    uint16_t data = 0;
+    uint16_t data = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))
@@ -100,9 +100,9 @@ uint16_t Rego6xxStdRsp::getValue() const
                 e.g. register address 0x1234 in binary form 00010010 001101000
                 will be expanded to 7bit form 00 0100100 01101000
         */
-        data  = ((uint16_t)(m_response[1] & 0x03)) << 14;
-        data |= ((uint16_t)(m_response[2] & 0x7f)) <<  7;
-        data |= ((uint16_t)(m_response[3] & 0x7f)) <<  0;
+        data  = ((uint16_t)(m_response[1] & 0x03U)) << 14U;
+        data |= ((uint16_t)(m_response[2] & 0x7FU)) <<  7U;
+        data |= ((uint16_t)(m_response[3] & 0x7FU)) <<  0U;
     }
 
     return data;

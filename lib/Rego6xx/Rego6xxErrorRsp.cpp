@@ -55,6 +55,36 @@
  * Local Variables
  *****************************************************************************/
 
+/**
+ * Error messsage table ordered by error id.
+ */
+static const char* ERROR_MSGS[] =
+{
+    "Sensor radiator return (GT1)",
+    "Outdoor sensor (GT2)",
+    "Sensor hot water (GT3)",
+    "Mixing valve sensor (GT4)",
+    "Room sensor (GT5)",
+    "Sensor compressor (GT6)",
+    "Sensor heat tran fluid out (GT8)",
+    "Sensor heat tran fluid in (GT9)",
+    "Sensor cold tran fluid in (GT10)",
+    "Sensor cold tran fluid in (GT11)",
+    "Compresor circuit switch",
+    "Electrical cassette",
+    "HTF C=pump switch (MB2)",
+    "Low pressure switch (LP)",
+    "High pressure switch (HP)",
+    "High return HP (GT9)",
+    "HTF out max (GT8)",
+    "HTF in under limit (GT10)",
+    "HTF out under limit (GT11)",
+    "Compressor superhear (GT6)",
+    "3-phase incorrect order",
+    "Power failure",
+    "Varmetr. delta high"
+};
+
 /******************************************************************************
  * Public Methods
  *****************************************************************************/
@@ -65,7 +95,7 @@ bool Rego6xxErrorRsp::isValid() const
 
     if (false == isPending())
     {
-        if (m_response[RSP_SIZE - 1] == Rego6xxUtil::calculateChecksum(&m_response[1], RSP_SIZE - 2))
+        if (m_response[RSP_SIZE - 1U] == Rego6xxUtil::calculateChecksum(&m_response[1], RSP_SIZE - 2U))
         {
             isValid = true;
         }
@@ -76,7 +106,7 @@ bool Rego6xxErrorRsp::isValid() const
 
 uint8_t Rego6xxErrorRsp::getDevAddr() const
 {
-    uint8_t devAddr = 0;
+    uint8_t devAddr = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))
@@ -89,16 +119,16 @@ uint8_t Rego6xxErrorRsp::getDevAddr() const
 
 uint8_t Rego6xxErrorRsp::getErrorId() const
 {
-    uint8_t errorId = 0;
+    uint8_t errorId = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))
     {
-        const uint8_t   ERROR_ID_START_IDX  = 1;
-        uint8_t         column              = m_response[ERROR_ID_START_IDX + 0] & 0x0f;
-        uint8_t         row                 = m_response[ERROR_ID_START_IDX + 1] & 0x0f;
+        const uint8_t   ERROR_ID_START_IDX  = 1U;
+        uint8_t         column              = m_response[ERROR_ID_START_IDX + 0U] & 0x0FU;
+        uint8_t         row                 = m_response[ERROR_ID_START_IDX + 1U] & 0x0FU;
         
-        errorId = (column << 4) | (row << 0);
+        errorId = (column << 4U) | (row << 0U);
     }
 
     return errorId;
@@ -111,8 +141,8 @@ String Rego6xxErrorRsp::getErrorLog() const
     if ((false == isPending()) &&
         (true == isValid()))
     {
-        const uint8_t   MAX_LEN         = 30;
-        const uint8_t   TEXT_START_IDX  = 3;
+        const uint8_t   MAX_LEN         = 30U;
+        const uint8_t   TEXT_START_IDX  = 3U;
         uint8_t         idx             = TEXT_START_IDX;
 
         /* Characters are coded as four bit pairs. First character informing
@@ -122,125 +152,35 @@ String Rego6xxErrorRsp::getErrorLog() const
          */
         while((MAX_LEN + TEXT_START_IDX) > idx)
         {
-            uint8_t column      = m_response[idx + 0] & 0x0f;
-            uint8_t row         = m_response[idx + 1] & 0x0f;
-            uint8_t character   = (column << 4) | (row << 0);
+            uint8_t column      = m_response[idx + 0U] & 0x0FU;
+            uint8_t row         = m_response[idx + 1U] & 0x0FU;
+            uint8_t character   = (column << 4U) | (row << 0U);
 
             text.concat(static_cast<char>(character));
 
-            idx += 2;
+            idx += 2U;
         }
     }
 
     return text;
 }
 
-String Rego6xxErrorRsp::getErrorDescription() const
+const char* Rego6xxErrorRsp::getErrorDescription() const
 {
-    String description;
+    const char* description = "";
 
     if ((false == isPending()) &&
         (true == isValid()))
     {
         uint8_t errorId = getErrorId();
 
-        switch(errorId)
+        if ((sizeof(ERROR_MSGS) / sizeof(ERROR_MSGS[0U])) <= errorId)
         {
-        case 0:
-            description = F("Sensor radiator return (GT1)");
-            break;
-
-        case 1:
-            description = F("Outdoor sensor (GT2)");
-            break;
-
-        case 2:
-            description = F("Sensor hot water (GT3)");
-            break;
-
-        case 3:
-            description = F("Mixing valve sensor (GT4)");
-            break;
-
-        case 4:
-            description = F("Room sensor (GT5)");
-            break;
-
-        case 5:
-            description = F("Sensor compressor (GT6)");
-            break;
-
-        case 6:
-            description = F("Sensor heat tran fluid out (GT8)");
-            break;
-        
-        case 7:
-            description = F("Sensor heat tran fluid in (GT9)");
-            break;
-
-        case 8:
-            description = F("Sensor cold tran fluid in (GT10)");
-            break;
-
-        case 9:
-            description = F("Sensor cold tran fluid in (GT11)");
-            break;
-
-        case 10:
-            description = F("Compresor circuit switch");
-            break;
-
-        case 11:
-            description = F("Electrical cassette");
-            break;
-
-        case 12:
-            description = F("HTF C=pump switch (MB2)");
-            break;
-
-        case 13:
-            description = F("Low pressure switch (LP)");
-            break;
-
-        case 14:
-            description = F("High pressure switch (HP)");
-            break;
-
-        case 15:
-            description = F("High return HP (GT9)");
-            break;
-
-        case 16:
-            description = F("HTF out max (GT8)");
-            break;
-
-        case 17:
-            description = F("HTF in under limit (GT10)");
-            break;
-
-        case 18:
-            description = F("HTF out under limit (GT11)");
-            break;
-
-        case 19:
-            description = F("Compressor superhear (GT6)");
-            break;
-
-        case 20:
-            description = F("3-phase incorrect order");
-            break;
-
-        case 21:
-            description = F("Power failure");
-            break;
-
-        case 22:
-            description = F("Varmetr. delta high");
-            break;
-
-        default:
-            description = F("?");
-            break;
+            description = "?";
+        }
+        else
+        {
+            description = ERROR_MSGS[errorId];
         }
     }
 

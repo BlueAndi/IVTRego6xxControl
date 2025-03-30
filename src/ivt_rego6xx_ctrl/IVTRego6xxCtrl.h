@@ -46,6 +46,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 #include "Rego6xxCtrl.h"
+
 #include "SimpleTimer.hpp"
 #include "StreamUartDevAdapter.h"
 #include "sensor/IVTRego6xxSensor.h"
@@ -131,7 +132,7 @@ private:
 
     static const size_t MAX_SENSORS           = 11U; /**< Maximum number of sensors. */
 
-    /** Duration after the first time all sensors are read. */
+    /** Duration in ms after the first time all sensors are read. */
     static const uint32_t SENSOR_READ_INITIAL = (2UL * 1000UL);
 
     /** Period in ms for reading all sensors from heatpump. */
@@ -154,16 +155,6 @@ private:
      * This will be called periodically.
      */
     void readSensors();
-
-    /**
-     * Get system register value from the sensor type.
-     *
-     * @param[in] sensorType   The sensor type.
-     * @param[out] sysRegAddr  The system register address.
-     *
-     * @return True if the system register address is valid, otherwise false.
-     */
-    bool getSysRegAddr(const char* sensorType, Rego6xxCtrl::SysRegAddr& sysRegAddr);
 
     /**
      * Calculate the temperature in °C from the raw temperature value.

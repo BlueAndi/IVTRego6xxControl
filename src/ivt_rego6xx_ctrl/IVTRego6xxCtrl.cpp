@@ -52,14 +52,6 @@ namespace ivt_rego6xx_ctrl
  * Types and classes
  *****************************************************************************/
 
-/** This type defines a mapping between a string and a system register. */
-typedef struct
-{
-    const char*             name;       /**< Sensor name. */
-    Rego6xxCtrl::SysRegAddr sysRegAddr; /**< Sensor system register address. */
-
-} NameToSysReg;
-
 /******************************************************************************
  * Prototypes
  *****************************************************************************/
@@ -71,24 +63,7 @@ typedef struct
 /**
  * Logger tag of this component.
  */
-static const char* TAG                      = "ivt_rego6xx_ctrl.component";
-
-/**
- * Mapping table between a string and a system register.
- */
-static const NameToSysReg NAME_TO_SYS_REG[] = {
-    { "gt1", Rego6xxCtrl::SYSREG_ADDR_GT1 },
-    { "gt2", Rego6xxCtrl::SYSREG_ADDR_GT2 },
-    { "gt3", Rego6xxCtrl::SYSREG_ADDR_GT3 },
-    { "gt4", Rego6xxCtrl::SYSREG_ADDR_GT4 },
-    { "gt5", Rego6xxCtrl::SYSREG_ADDR_GT5 },
-    { "gt6", Rego6xxCtrl::SYSREG_ADDR_GT6 },
-    { "gt8", Rego6xxCtrl::SYSREG_ADDR_GT8 },
-    { "gt9", Rego6xxCtrl::SYSREG_ADDR_GT9 },
-    { "gt10", Rego6xxCtrl::SYSREG_ADDR_GT10 },
-    { "gt11", Rego6xxCtrl::SYSREG_ADDR_GT11 },
-    { "gt3x", Rego6xxCtrl::SYSREG_ADDR_GT3X }
-};
+static const char* TAG = "ivt_rego6xx_ctrl.component";
 
 /******************************************************************************
  * Public Methods
@@ -105,6 +80,7 @@ void IVTRego6xxCtrl::loop()
     if ((true == m_timer.isTimerRunning()) &&
         (true == m_timer.isTimeout()))
     {
+        readSensors();
     }
 
     /* Process the heatpump Rego6xx controller. */
@@ -142,21 +118,14 @@ void IVTRego6xxCtrl::readSensors()
             else
             {
                 IVTRego6xxSensor*       currentSensor = m_sensors[m_currentSensorIndex];
-                Rego6xxCtrl::SysRegAddr sysRegAddr;
-                bool                    isFound = getSysRegAddr(currentSensor->getSensorType(), sysRegAddr);
+                Rego6xxCtrl::SysRegAddr sysRegAddr    = static_cast<Rego6xxCtrl::SysRegAddr>(currentSensor->getSysRegAddr());
 
-                if (false == isFound)
-                {
-                    ESP_LOGE(TAG, "Invalid sensor type '%s'!", currentSensor->getSensorType());
-                }
-                else
-                {
-                    m_rego6xxRsp = m_ctrl.readSysReg(sysRegAddr);
+                ESP_LOGI(TAG, "Request sensor '%s' at 0x%04X ...", currentSensor->get_name().c_str(), currentSensor->getSysRegAddr());
+                m_rego6xxRsp = m_ctrl.readSysReg(sysRegAddr);
 
-                    if (nullptr == m_rego6xxRsp)
-                    {
-                        ESP_LOGE(TAG, "Failed to read sensor '%s'!", currentSensor->getSensorType());
-                    }
+                if (nullptr == m_rego6xxRsp)
+                {
+                    ESP_LOGE(TAG, "Failed to read sensor '%s' at 0x%04X!", currentSensor->get_name().c_str(), currentSensor->getSysRegAddr());
                 }
             }
         }
@@ -192,24 +161,6 @@ void IVTRego6xxCtrl::readSensors()
         /* Nothing to do */
         ;
     }
-}
-
-bool IVTRego6xxCtrl::getSysRegAddr(const char* sensorType, Rego6xxCtrl::SysRegAddr& sysRegAddr)
-{
-    bool   isFound = false;
-    size_t index   = 0U;
-
-    for (index = 0U; index < (sizeof(NAME_TO_SYS_REG) / sizeof(NAME_TO_SYS_REG[0])); ++index)
-    {
-        if (0 == strcmp(sensorType, NAME_TO_SYS_REG[index].name))
-        {
-            sysRegAddr = NAME_TO_SYS_REG[index].sysRegAddr;
-            isFound    = true;
-            break;
-        }
-    }
-
-    return isFound;
 }
 
 float IVTRego6xxCtrl::calculateTemperature(uint16_t rawTemperature)

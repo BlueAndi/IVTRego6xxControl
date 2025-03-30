@@ -45,7 +45,7 @@ ivt_rego6xx_sensor = ivt_rego6xx_ctrl_ns.class_(
 
 # Sensor variables
 CONF_IVT_REGO6XX_CTRL_ID = "ivt_rego6xx_ctrl_id"
-CONF_IVT_REGO6XX_VARIABLE = "ivt_rego6xx_variable"
+CONF_IVT_REGO6XX_ADDR = "ivt_rego6xx_ctrl_addr"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
@@ -55,7 +55,7 @@ CONFIG_SCHEMA = sensor.SENSOR_SCHEMA.extend(
 
         # Mandatory variables
         cv.Required(CONF_IVT_REGO6XX_CTRL_ID): cv.use_id(ivt_rego6xx_ctrl_ns.IVTRego6xxCtrl),
-        cv.Required(CONF_IVT_REGO6XX_VARIABLE): cv.string
+        cv.Required(CONF_IVT_REGO6XX_ADDR): cv.hex_int_range(0x0000, 0x0300),
     })
 )
 
@@ -73,7 +73,7 @@ async def to_code(config: dict) -> None:
         config (dict): Configuration
     """
     # Create a new variable for the sensor.
-    var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_VARIABLE])
+    var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_ADDR])
     await sensor.register_sensor(var, config)
 
     # Add the optional variables.

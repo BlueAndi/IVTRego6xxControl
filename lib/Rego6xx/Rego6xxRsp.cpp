@@ -68,13 +68,13 @@ void Rego6xxRsp::receive()
     if (true == m_isPending)
     {
         uint8_t*    buffer  = nullptr;
-        size_t      size    = 0;
+        size_t      size    = 0U;
 
         getResponse(buffer, size);
 
         /* Buffer for response available? */
         if ((nullptr == buffer) ||
-            (0 == size))
+            (0U == size))
         {
             m_stream.flush();
             m_isPending = false;
@@ -96,7 +96,7 @@ void Rego6xxRsp::receive()
         /* Response complete received? */
         else if (static_cast<int>(size) <= m_stream.available())
         {
-            uint8_t idx = 0;
+            uint8_t idx = 0U;
 
             while(size > idx)
             {

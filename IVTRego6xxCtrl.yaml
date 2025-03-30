@@ -1,4 +1,5 @@
-# ESPHome configuration for the IVT Rego 600/601 heat pump controller
+# ESPHome configuration for the IVT Rego 600/601 heat pump controller.
+# https://esphome.io/index.html
 esphome:
   name: heatpumpctrl
   includes:
@@ -9,26 +10,31 @@ esphome:
       - -I src/Rego6xx
       - -I src/Utilities
 
-# Platform configuration
+# Platform configuration.
+# https://esphome.io/components/esp32.html
 esp32:
   board: esp32-poe-iso
   framework:
     type: arduino
 
-# Enable logging
+# Enable logging.
+# https://esphome.io/components/logger.html
 logger:
   level: DEBUG
 
-# Enable Home Assistant API
+# Enable Home Assistant API.
+# https://esphome.io/components/api.html
 api:
   password: ""
 
-# Enable OTA updates
+# Enable OTA updates.
+# https://esphome.io/components/ota.html
 ota:
   - platform: esphome
     password: ""
 
-# Enable ethernet interface
+# Enable ethernet interface.
+# https://esphome.io/components/ethernet.html
 ethernet:
   type: LAN8720
   mdc_pin: GPIO23
@@ -39,14 +45,21 @@ ethernet:
     number: GPIO12
     ignore_strapping_warning: true
 
-# Configure UART interface for heatpump communication
+# Configure UART interface for heatpump communication.
+# https://esphome.io/components/uart.html
 uart:
   id: uart_heatpump
   rx_pin: GPIO4
   tx_pin: GPIO3
   baud_rate: 115200
+  debug:
+    direction: BOTH
+    dummy_receiver: true
+    after:
+      timeout: 500ms
 
 # Webserver configuration
+# https://esphome.io/components/web_server.html
 web_server:
   port: 80
 
@@ -58,10 +71,10 @@ mqtt:
   password: !secret mqtt_password
   reboot_timeout: 0s
   birth_message:
-    topic: devices/heatpumpctrl
+    topic: heatpumpctrl/status
     payload: 'online'
   will_message:
-    topic: devices/heatpumpctrl
+    topic: heatpumpctrl/status
     payload: 'offline'
 
 # Custom component configuration
@@ -74,66 +87,84 @@ ivt_rego6xx_ctrl:
   id: ivt_rego6xx_ctrl_id
   uart_id: uart_heatpump
 
+# Sensor configuration
+# https://esphome.io/components/sensor/index.html
+# ivt_rego6xx_ctrl_id is the ID of the custom component.
+# ivt_rego6xx_ctrl_addr is the address of the system register to read.
 sensor:
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt1
-    name: Radiator return GT1
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0209
+    name: gt1
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt2
-    name: Outddor GT2
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x020a
+    name: gt2
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt3
-    name: Hot water GT3
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x020b
+    name: gt3
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt4
-    name: Forward GT4
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x020c
+    name: gt4
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt8
-    name: Heat fluid out GT8
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x020d
+    name: gt5
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt9
-    name: Heat fluid in GT9
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x020e
+    name: gt6
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt10
-    name: Cold fluid in GT10
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x020f
+    name: gt8
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt11
-    name: Cold fluid out GT11
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0210
+    name: gt9
     unit_of_measurement: °C
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
-    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id # Reference to the custom component
-    ivt_rego6xx_variable: gt3x
-    name: External hot water GT3X
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0211
+    name: gt10
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0212
+    name: gt11
+    unit_of_measurement: °C
+    state_class: measurement
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_addr: 0x0213
+    name: gt3x
     unit_of_measurement: °C
     state_class: measurement

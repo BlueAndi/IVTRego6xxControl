@@ -35,9 +35,9 @@ package "esphome" {
         }
 
         class "IVTRego6xxSensor" as ivtRego6xxSensor {
-            - m_sensorType: const char*
-            + IVTRego6xxSensor(sensorType: const char*)
-            + getSensorType() : const char*
+            - m_addr: uint16_t
+            + IVTRego6xxSensor(addr: uint16_t)
+            + getSysRegAddr() : uint16_t
         }
     }
 }

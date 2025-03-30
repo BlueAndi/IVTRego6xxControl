@@ -30,8 +30,8 @@ autoactivate on
 
                 alt every 5 minutes
                     alt sensor by sensor in cooperative manner
-                        ivtRego6xxCtrl -> ivtRego6xxSensor: get sensor type
-                        ivtRego6xxCtrl <-- ivtRego6xxSensor: sensor type, e.g. "gt1"
+                        ivtRego6xxCtrl -> ivtRego6xxSensor: get system register address
+                        ivtRego6xxCtrl <-- ivtRego6xxSensor: system register address
                         ivtRego6xxCtrl -> rego6xxCtrl: read system register for sensor type
                             rego6xxCtrl -> streamUartDevAdapter: write
                                 streamUartDevAdapter -> ivtRego6xxCtrl: write

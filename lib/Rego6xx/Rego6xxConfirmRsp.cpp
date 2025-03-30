@@ -73,7 +73,7 @@ bool Rego6xxConfirmRsp::isValid() const
 
 uint8_t Rego6xxConfirmRsp::getDevAddr() const
 {
-    uint8_t devAddr = 0;
+    uint8_t devAddr = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))

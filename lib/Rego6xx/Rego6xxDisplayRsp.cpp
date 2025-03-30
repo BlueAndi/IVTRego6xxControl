@@ -65,7 +65,7 @@ bool Rego6xxDisplayRsp::isValid() const
 
     if (false == isPending())
     {
-        if (m_response[RSP_SIZE - 1] == Rego6xxUtil::calculateChecksum(&m_response[1], RSP_SIZE - 2))
+        if (m_response[RSP_SIZE - 1U] == Rego6xxUtil::calculateChecksum(&m_response[1], RSP_SIZE - 2U))
         {
             isValid = true;
         }
@@ -76,7 +76,7 @@ bool Rego6xxDisplayRsp::isValid() const
 
 uint8_t Rego6xxDisplayRsp::getDevAddr() const
 {
-    uint8_t devAddr = 0;
+    uint8_t devAddr = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))
@@ -94,8 +94,8 @@ String Rego6xxDisplayRsp::getMsg() const
     if ((false == isPending()) &&
         (true == isValid()))
     {
-        const uint8_t   MAX_LEN         = 40;
-        const uint8_t   TEXT_START_IDX  = 1;
+        const uint8_t   MAX_LEN         = 40U;
+        const uint8_t   TEXT_START_IDX  = 1U;
         uint8_t         idx             = TEXT_START_IDX;
 
         /* Characters are coded as four bit pairs. First character informing
@@ -105,9 +105,9 @@ String Rego6xxDisplayRsp::getMsg() const
          */
         while((MAX_LEN + TEXT_START_IDX) > idx)
         {
-            uint8_t column      = m_response[idx + 0] & 0x0f;
-            uint8_t row         = m_response[idx + 1] & 0x0f;
-            uint8_t character   = (column << 4) | (row << 0);
+            uint8_t column      = m_response[idx + 0U] & 0x0FU;
+            uint8_t row         = m_response[idx + 1U] & 0x0FU;
+            uint8_t character   = (column << 4U) | (row << 0U);
             char    uChar       = static_cast<char>(character);
 
             if ('\0' != uChar)
@@ -115,7 +115,7 @@ String Rego6xxDisplayRsp::getMsg() const
                 text.concat(uChar);
             }
 
-            idx += 2;
+            idx += 2U;
         }
     }
 
