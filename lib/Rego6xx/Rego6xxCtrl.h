@@ -249,11 +249,12 @@ public:
     /**
      * Read from display.
      * 
-     * @param[in] row   Display row
+     * @param[in] cmdId Command id
+     * @param[in] addr  Address
      * 
      * @return Asynchronous response
      */
-    const Rego6xxDisplayRsp* readDisplay(Row row);
+    const Rego6xxDisplayRsp* readDisplay(uint8_t cmdId, uint16_t addr);
 
     /**
      * Write a value to the given address.

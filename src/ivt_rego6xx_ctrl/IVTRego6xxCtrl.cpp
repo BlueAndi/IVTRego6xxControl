@@ -34,6 +34,7 @@
  *****************************************************************************/
 #include "IVTRego6xxCtrl.h"
 #include "esphome/core/log.h"
+#include <string>
 
 /******************************************************************************
  * Compiler Switches
@@ -76,6 +77,7 @@ void IVTRego6xxCtrl::setup()
      */
     m_sensorTimer.start(SENSOR_READ_INITIAL);
     m_binarySensorTimer.start(SENSOR_READ_INITIAL);
+    m_textSensorTimer.start(SENSOR_READ_INITIAL);
 }
 
 void IVTRego6xxCtrl::loop()
@@ -97,15 +99,23 @@ void IVTRego6xxCtrl::loop()
          */
         if ((true == m_sensorTimer.isTimerRunning()) &&
             (true == m_sensorTimer.isTimeout()) &&
-            (MAX_BINARY_SENSORS == m_currentBinarySensorIndex))
+            (MAX_BINARY_SENSORS == m_currentBinarySensorIndex) &&
+            (MAX_TEXT_SENSORS == m_currentTextSensorIndex))
         {
             readSensors();
         }
         /* Read binary sensors? */
         else if ((true == m_binarySensorTimer.isTimerRunning()) &&
-                 (true == m_binarySensorTimer.isTimeout()))
+                 (true == m_binarySensorTimer.isTimeout()) &&
+                 (MAX_TEXT_SENSORS == m_currentTextSensorIndex))
         {
             readBinarySensors();
+        }
+        /* Read text sensors? */
+        else if ((true == m_textSensorTimer.isTimerRunning()) &&
+                 (true == m_textSensorTimer.isTimeout()))
+        {
+            readTextSensors();
         }
         else
         {
@@ -275,6 +285,80 @@ void IVTRego6xxCtrl::readBinarySensors()
         {
             /* Start timer for next sensor read. */
             m_binarySensorTimer.start(BINARY_SENSOR_READ_PERIOD);
+        }
+    }
+}
+
+void IVTRego6xxCtrl::readTextSensors()
+{
+    bool nextSensor = false;
+
+    /* If no command is pending, request next binary sensor. */
+    if (nullptr == m_displayRsp)
+    {
+        /* If all sensors are read, start from the beginning. */
+        if (m_textSensorCount <= m_currentTextSensorIndex)
+        {
+            m_currentTextSensorIndex = 0U;
+        }
+
+        {
+            IVTRego6xxTextSensor* currentTextSensor = m_textSensors[m_currentTextSensorIndex];
+            uint8_t               cmdId             = currentTextSensor->getCmdId();
+            uint16_t              addr              = currentTextSensor->getAddr();
+
+            ESP_LOGI(TAG, "Read text sensor '%s' with 0x%02X (cmd id) at 0x%04X ...", currentTextSensor->get_name().c_str(), cmdId, addr);
+            m_displayRsp = m_ctrl.readDisplay(cmdId, addr);
+
+            if (nullptr == m_displayRsp)
+            {
+                ESP_LOGE(TAG, "Failed to read text sensor '%s' with 0x%02X (cmd id) at 0x%04X!", currentTextSensor->get_name().c_str(), cmdId, addr);
+                nextSensor = true;
+            }
+        }
+    }
+    /* Command response received? */
+    else if ((true == m_displayRsp->isUsed()) &&
+             (false == m_displayRsp->isPending()))
+    {
+        /* The temperature is taken over only if the response is valid and there was no timeout. */
+        if ((true == m_displayRsp->isValid()) &&
+            (Rego6xxCtrl::DEV_ADDR_HOST == m_displayRsp->getDevAddr()))
+        {
+            IVTRego6xxTextSensor* currentTextSensor = m_textSensors[m_currentTextSensorIndex];
+            std::string           msg               = m_displayRsp->getMsg().c_str();
+
+            currentTextSensor->publish_state(msg);
+        }
+        else
+        {
+            /* Temperature skipped */
+            ;
+        }
+
+        m_ctrl.release();
+        m_displayRsp = nullptr;
+
+        nextSensor   = true;
+    }
+    else
+    /* Wait for pending command response. */
+    {
+        /* Nothing to do */
+        ;
+    }
+
+    if (true == nextSensor)
+    {
+        ++m_currentTextSensorIndex;
+
+        /* Pause sending requests, after response. */
+        m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+
+        if (m_textSensorCount <= m_currentTextSensorIndex)
+        {
+            /* Start timer for next sensor read. */
+            m_textSensorTimer.start(BINARY_SENSOR_READ_PERIOD);
         }
     }
 }

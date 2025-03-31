@@ -197,28 +197,61 @@ binary_sensor:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0012
-    name: power
+    name: power led
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0013
-    name: pump
+    name: pump led
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0014
-    name: heating
+    name: heating led
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0015
-    name: boiler
+    name: boiler led
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0016
-    name: alarm
+    name: alarm led
+
+# Text sensor configuration
+# https://esphome.io/components/text_sensor/index.html
+#
+# ivt_rego6xx_ctrl_id  : The ID of the custom component.
+# ivt_rego6xx_ctrl_cmd : The command to send to the heat pump.
+# ivt_rego6xx_ctrl_addr: The address to read by the command.
+#
+# Important: The system register response will be interpreted as string.
+text_sensor:
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
+    ivt_rego6xx_ctrl_addr: 0x0000 # Display row 1
+    name: display row 1
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
+    ivt_rego6xx_ctrl_addr: 0x0001 # Display row 2
+    name: display row 2
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
+    ivt_rego6xx_ctrl_addr: 0x0002 # Display row 3
+    name: display row 3
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
+    ivt_rego6xx_ctrl_addr: 0x0003 # Display row 4
+    name: display row 4
