@@ -145,13 +145,13 @@ const Rego6xxStdRsp* Rego6xxCtrl::readRegoVersion()
     return rsp;
 }
 
-const Rego6xxDisplayRsp* Rego6xxCtrl::readDisplay(Rego6xxCtrl::Row row)
+const Rego6xxDisplayRsp* Rego6xxCtrl::readDisplay(uint8_t cmdId, uint16_t addr)
 {
     const Rego6xxDisplayRsp* rsp = nullptr;
 
     if (nullptr == m_pendingRsp)
     {
-        writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_READ_DISPLAY, row, 0U);
+        writeCmd(DEV_ADDR_HEATPUMP, cmdId, addr, 0U);
         m_displayRsp.acquire();
         m_pendingRsp = &m_displayRsp;
         rsp          = &m_displayRsp;

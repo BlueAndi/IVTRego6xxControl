@@ -31,14 +31,26 @@ package "esphome" <<namespace>> {
         }
     }
 
+    package "text_sensor" <<namespace>> as textSensorPckg {
+
+        class "TextSensor" as textSensor {
+            + publish_state(state: std::string)
+        }
+    }
+
     package "ivt_rego6xx_ctrl" <<namespace>> as ivtRego6xxCtrlPckg {
 
         class "IVTRego6xxCtrl" as ivtRego6xxCtrl {
             - m_ctrl : Rego6xxCtrl
             - m_adapter : StreamUartDevAdapter
+            - m_sensors[] : IVTRego6xxSensor*
+            - m_binarySensors[] : IVTRego6xxBinarySensor*
+            - m_textSensors[] : IVTRego6xxTextSensor*
             + setup()
             + loop()
             + registerSensor(sensor: IVTRego6xxSensor*)
+            + registerBinarySensor(sensor: IVTRego6xxBinarySensor*)
+            + registerTextSensor(sensor: IVTRego6xxTextSensor*)
         }
 
         class "IVTRego6xxSensor" as ivtRego6xxSensor {
@@ -53,6 +65,14 @@ package "esphome" <<namespace>> {
             - m_cmdId: uint8_t
             - m_addr: uint16_t
             + IVTRego6xxBinarySensor(cmdId: uint8_t, addr: uint16_t)
+            + getCmdId() : uint8_t
+            + getAddr() : uint16_t
+        }
+
+        class "IVTRego6xxTextSensor" as ivtRego6xxTextSensor {
+            - m_cmdId: uint8_t
+            - m_addr: uint16_t
+            + IVTRego6xxTextSensor(cmdId: uint8_t, addr: uint16_t)
             + getCmdId() : uint8_t
             + getAddr() : uint16_t
         }
@@ -72,6 +92,11 @@ package "esphome" <<namespace>> {
         note bottom of ivtRego6xxBinarySensor
             This class is responsible for publishing the
             boolean sensor values of the IVT Rego6xx series heat pump.
+        end note
+
+        note bottom of ivtRego6xxTextSensor
+            This class is responsible for publishing the
+            text sensor values of the IVT Rego6xx series heat pump.
         end note
     }
 }
@@ -113,6 +138,7 @@ rego6xxCtrl <-- ivtRego6xxCtrl: <<own>>
 streamUartDevAdapter <-- ivtRego6xxCtrl: <<own>>
 ivtRego6xxSensor "*" <---o ivtRego6xxCtrl: <<own>>
 ivtRego6xxBinarySensor "*" <---o ivtRego6xxCtrl: <<own>>
+ivtRego6xxTextSensor "*" <---o ivtRego6xxCtrl: <<own>>
 
 stream <|.. streamUartDevAdapter: <<realize>>
 uartDevice <.. streamUartDevAdapter: <<use>>
@@ -120,6 +146,7 @@ uartDevice <.. streamUartDevAdapter: <<use>>
 rego6xxCtrl ..> stream: <<use>>
 
 sensor <|--- ivtRego6xxSensor
-binarySensor <--- ivtRego6xxBinarySensor
+binarySensor <|--- ivtRego6xxBinarySensor
+textSensor <|--- ivtRego6xxTextSensor
 
 @enduml

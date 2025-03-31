@@ -36,7 +36,7 @@ from .. import ivt_rego6xx_ctrl_ns # IVT Rego6xx control component namespace
 
 DEPENDENCIES = ["ivt_rego6xx_ctrl"]
 
-# The class of the component.
+# The class of the sensor.
 ivt_rego6xx_sensor = ivt_rego6xx_ctrl_ns.class_(
     "IVTRego6xxSensor", sensor.Sensor
 )
@@ -73,7 +73,9 @@ async def to_code(config: dict) -> None:
         config (dict): Configuration
     """
     # Create a new variable for the sensor.
-    var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_CMD], config[CONF_IVT_REGO6XX_ADDR])
+    var = cg.new_Pvariable(config[CONF_ID],
+                           config[CONF_IVT_REGO6XX_CMD],
+                           config[CONF_IVT_REGO6XX_ADDR])
     await sensor.register_sensor(var, config)
 
     # Add the optional variables.

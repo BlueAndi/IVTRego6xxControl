@@ -26,7 +26,7 @@
 
 import esphome.codegen as cg # Code generation API
 import esphome.config_validation as cv # Configuration validation API
-from esphome.components import binary_sensor # Binary sensor component
+from esphome.components import text_sensor # Text sensor component
 from esphome.const import CONF_ID, CONF_STATE_CLASS
 from .. import ivt_rego6xx_ctrl_ns # IVT Rego6xx control component namespace
 
@@ -36,9 +36,9 @@ from .. import ivt_rego6xx_ctrl_ns # IVT Rego6xx control component namespace
 
 DEPENDENCIES = ["ivt_rego6xx_ctrl"]
 
-# The class of the binary sensor.
-ivt_rego6xx_binary_sensor = ivt_rego6xx_ctrl_ns.class_(
-    "IVTRego6xxBinarySensor", binary_sensor.BinarySensor
+# The class of the text sensor.
+ivt_rego6xx_text_sensor = ivt_rego6xx_ctrl_ns.class_(
+    "IVTRego6xxTextSensor", text_sensor.TextSensor
 )
 
 # Sensor variables
@@ -48,9 +48,9 @@ CONF_IVT_REGO6XX_ADDR = "ivt_rego6xx_ctrl_addr"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
-CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
+CONFIG_SCHEMA = text_sensor.TEXT_SENSOR_SCHEMA.extend(
     cv.Schema({
-        cv.GenerateID(): cv.declare_id(ivt_rego6xx_binary_sensor),
+        cv.GenerateID(): cv.declare_id(ivt_rego6xx_text_sensor),
 
         # Mandatory variables
         cv.Required(CONF_IVT_REGO6XX_CTRL_ID): cv.use_id(ivt_rego6xx_ctrl_ns.IVTRego6xxCtrl),
@@ -76,14 +76,14 @@ async def to_code(config: dict) -> None:
     var = cg.new_Pvariable(config[CONF_ID],
                            config[CONF_IVT_REGO6XX_CMD],
                            config[CONF_IVT_REGO6XX_ADDR])
-    await binary_sensor.register_binary_sensor(var, config)
+    await text_sensor.register_text_sensor(var, config)
 
     if CONF_STATE_CLASS in config:
         cg.add(var.set_state_class(config[CONF_STATE_CLASS]))
 
     # Register sensor at the IVT Rego6xx control component.
     ivt_rego6xx_ctrl = await cg.get_variable(config[CONF_IVT_REGO6XX_CTRL_ID])
-    cg.add(ivt_rego6xx_ctrl.registerBinarySensor(var))
+    cg.add(ivt_rego6xx_ctrl.registerTextSensor(var))
 
 ################################################################################
 # Main
