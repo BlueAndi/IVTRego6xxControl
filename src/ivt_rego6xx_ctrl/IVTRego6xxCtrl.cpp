@@ -145,15 +145,16 @@ void IVTRego6xxCtrl::readSensors()
         }
 
         {
-            IVTRego6xxSensor*       currentSensor = m_sensors[m_currentSensorIndex];
-            Rego6xxCtrl::SysRegAddr sysRegAddr    = static_cast<Rego6xxCtrl::SysRegAddr>(currentSensor->getSysRegAddr());
+            IVTRego6xxSensor* currentSensor = m_sensors[m_currentSensorIndex];
+            uint8_t           cmdId         = currentSensor->getCmdId();
+            uint16_t          addr          = currentSensor->getAddr();
 
-            ESP_LOGI(TAG, "Request sensor '%s' at 0x%04X ...", currentSensor->get_name().c_str(), sysRegAddr);
-            m_rego6xxRsp = m_ctrl.readSysReg(sysRegAddr);
+            ESP_LOGI(TAG, "Read sensor '%s' with 0x%02X (cmd id) at 0x%04X ...", currentSensor->get_name().c_str(), cmdId, addr);
+            m_rego6xxRsp = m_ctrl.readStd(cmdId, addr);
 
             if (nullptr == m_rego6xxRsp)
             {
-                ESP_LOGE(TAG, "Failed to read sensor '%s' at 0x%04X!", currentSensor->get_name().c_str(), sysRegAddr);
+                ESP_LOGE(TAG, "Failed to read sensor '%s' with 0x%02X (cmd id) at 0x%04X!", currentSensor->get_name().c_str(), cmdId, addr);
                 nextSensor = true;
             }
         }
@@ -162,18 +163,18 @@ void IVTRego6xxCtrl::readSensors()
     else if ((true == m_rego6xxRsp->isUsed()) &&
              (false == m_rego6xxRsp->isPending()))
     {
-        /* The temperature is taken over only if the response is valid and there was no timeout. */
+        /* The value is taken over only if the response is valid and there was no timeout. */
         if ((true == m_rego6xxRsp->isValid()) &&
             (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr()))
         {
             IVTRego6xxSensor* currentSensor = m_sensors[m_currentSensorIndex];
-            float             temperature   = calculateTemperature(m_rego6xxRsp->getValue());
+            float             value         = m_ctrl.toFloat(m_rego6xxRsp->getValue());
 
-            currentSensor->publish_state(temperature);
+            currentSensor->publish_state(value);
         }
         else
         {
-            /* Temperature skipped */
+            /* Skipped */
             ;
         }
 
@@ -209,7 +210,7 @@ void IVTRego6xxCtrl::readBinarySensors()
     bool nextSensor = false;
 
     /* If no command is pending, request next binary sensor. */
-    if (nullptr == m_rego6xxBoolRsp)
+    if (nullptr == m_rego6xxRsp)
     {
         /* If all sensors are read, start from the beginning. */
         if (m_binarySensorCount <= m_currentBinarySensorIndex)
@@ -218,29 +219,30 @@ void IVTRego6xxCtrl::readBinarySensors()
         }
 
         {
-            IVTRego6xxBinarySensor*     currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
-            Rego6xxCtrl::FrontPanelAddr frontPanelAddr      = static_cast<Rego6xxCtrl::FrontPanelAddr>(currentBinarySensor->getSysRegAddr());
+            IVTRego6xxBinarySensor* currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
+            uint8_t                 cmdId               = currentBinarySensor->getCmdId();
+            uint16_t                addr                = currentBinarySensor->getAddr();
 
-            ESP_LOGI(TAG, "Request binary sensor '%s' at 0x%04X ...", currentBinarySensor->get_name().c_str(), frontPanelAddr);
-            m_rego6xxBoolRsp = m_ctrl.readFrontPanel(frontPanelAddr);
+            ESP_LOGI(TAG, "Read binary sensor '%s' with 0x%02X (cmd id) at 0x%04X ...", currentBinarySensor->get_name().c_str(), cmdId, addr);
+            m_rego6xxRsp = m_ctrl.readStd(cmdId, addr);
 
-            if (nullptr == m_rego6xxBoolRsp)
+            if (nullptr == m_rego6xxRsp)
             {
-                ESP_LOGE(TAG, "Failed to read binary sensor '%s' at 0x%04X!", currentBinarySensor->get_name().c_str(), frontPanelAddr);
+                ESP_LOGE(TAG, "Failed to read binary sensor '%s' with 0x%02X (cmd id) at 0x%04X!", currentBinarySensor->get_name().c_str(), cmdId, addr);
                 nextSensor = true;
             }
         }
     }
     /* Command response received? */
-    else if ((true == m_rego6xxBoolRsp->isUsed()) &&
-             (false == m_rego6xxBoolRsp->isPending()))
+    else if ((true == m_rego6xxRsp->isUsed()) &&
+             (false == m_rego6xxRsp->isPending()))
     {
         /* The temperature is taken over only if the response is valid and there was no timeout. */
-        if ((true == m_rego6xxBoolRsp->isValid()) &&
-            (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxBoolRsp->getDevAddr()))
+        if ((true == m_rego6xxRsp->isValid()) &&
+            (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr()))
         {
             IVTRego6xxBinarySensor* currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
-            bool                    state               = m_rego6xxBoolRsp->getValue();
+            bool                    state               = m_ctrl.toBool(m_rego6xxRsp->getValue());
 
             currentBinarySensor->publish_state(state);
         }
@@ -251,9 +253,9 @@ void IVTRego6xxCtrl::readBinarySensors()
         }
 
         m_ctrl.release();
-        m_rego6xxBoolRsp = nullptr;
+        m_rego6xxRsp = nullptr;
 
-        nextSensor       = true;
+        nextSensor   = true;
     }
     else
     /* Wait for pending command response. */
@@ -277,27 +279,6 @@ void IVTRego6xxCtrl::readBinarySensors()
     }
 }
 
-float IVTRego6xxCtrl::calculateTemperature(uint16_t rawTemperature)
-{
-    int8_t sign = 1;
-    float  floorPart;
-    float  fracPart;
-    float  temperature;
-
-    if (0U != (rawTemperature & 0x8000U))
-    {
-        rawTemperature = (0xFFFFU - rawTemperature) + 1U;
-        sign           = -1;
-    }
-
-    floorPart   = sign * static_cast<int8_t>(rawTemperature / 10U);
-    fracPart    = static_cast<uint8_t>(rawTemperature % 10U) / 10.0F;
-
-    temperature = (0.0f > floorPart) ? (floorPart - fracPart) : (floorPart + fracPart);
-
-    return temperature;
-}
-
 /******************************************************************************
  * External Functions
  *****************************************************************************/
@@ -305,7 +286,6 @@ float IVTRego6xxCtrl::calculateTemperature(uint16_t rawTemperature)
 /******************************************************************************
  * Local Functions
  *****************************************************************************/
-
 
 } /* namespace ivt_rego6xx_ctrl */
 } /* namespace esphome */

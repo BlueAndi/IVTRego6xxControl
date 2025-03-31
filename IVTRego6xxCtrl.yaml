@@ -89,11 +89,16 @@ ivt_rego6xx_ctrl:
 
 # Sensor configuration
 # https://esphome.io/components/sensor/index.html
-# ivt_rego6xx_ctrl_id is the ID of the custom component.
-# ivt_rego6xx_ctrl_addr is the address of the system register to read.
+#
+# ivt_rego6xx_ctrl_id  : The ID of the custom component.
+# ivt_rego6xx_ctrl_cmd : The command to send to the heat pump.
+# ivt_rego6xx_ctrl_addr: The address to read by the command.
+#
+# Important: The system register response will be interpreted as float.
 sensor:
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0209
     name: gt1
     unit_of_measurement: °C
@@ -101,6 +106,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020a
     name: gt2
     unit_of_measurement: °C
@@ -108,6 +114,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020b
     name: gt3
     unit_of_measurement: °C
@@ -115,6 +122,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020c
     name: gt4
     unit_of_measurement: °C
@@ -122,6 +130,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020d
     name: gt5
     unit_of_measurement: °C
@@ -129,6 +138,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020e
     name: gt6
     unit_of_measurement: °C
@@ -136,6 +146,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020f
     name: gt8
     unit_of_measurement: °C
@@ -143,6 +154,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0210
     name: gt9
     unit_of_measurement: °C
@@ -150,6 +162,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0211
     name: gt10
     unit_of_measurement: °C
@@ -157,6 +170,7 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0212
     name: gt11
     unit_of_measurement: °C
@@ -164,33 +178,47 @@ sensor:
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0213
     name: gt3x
     unit_of_measurement: °C
     state_class: measurement
 
+# Binary sensor configuration
+# https://esphome.io/components/binary_sensor/index.html
+#
+# ivt_rego6xx_ctrl_id  : The ID of the custom component.
+# ivt_rego6xx_ctrl_cmd : The command to send to the heat pump.
+# ivt_rego6xx_ctrl_addr: The address to read by the command.
+#
+# Important: The system register response will be interpreted as boolean.
 binary_sensor:
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0012
     name: power
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0013
     name: pump
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0014
     name: heating
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0015
     name: boiler
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0016
     name: alarm

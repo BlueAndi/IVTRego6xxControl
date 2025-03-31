@@ -43,6 +43,7 @@ ivt_rego6xx_binary_sensor = ivt_rego6xx_ctrl_ns.class_(
 
 # Sensor variables
 CONF_IVT_REGO6XX_CTRL_ID = "ivt_rego6xx_ctrl_id"
+CONF_IVT_REGO6XX_CMD = "ivt_rego6xx_ctrl_cmd"
 CONF_IVT_REGO6XX_ADDR = "ivt_rego6xx_ctrl_addr"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
@@ -53,6 +54,7 @@ CONFIG_SCHEMA = binary_sensor.BINARY_SENSOR_SCHEMA.extend(
 
         # Mandatory variables
         cv.Required(CONF_IVT_REGO6XX_CTRL_ID): cv.use_id(ivt_rego6xx_ctrl_ns.IVTRego6xxCtrl),
+        cv.Required(CONF_IVT_REGO6XX_CMD): cv.hex_int_range(0x00, 0x7F),
         cv.Required(CONF_IVT_REGO6XX_ADDR): cv.hex_int_range(0x0000, 0x0300),
     })
 )
@@ -71,7 +73,7 @@ async def to_code(config: dict) -> None:
         config (dict): Configuration
     """
     # Create a new variable for the sensor.
-    var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_ADDR])
+    var = cg.new_Pvariable(config[CONF_ID], config[CONF_IVT_REGO6XX_CMD], config[CONF_IVT_REGO6XX_ADDR])
     await binary_sensor.register_binary_sensor(var, config)
 
     # Add the optional variables.

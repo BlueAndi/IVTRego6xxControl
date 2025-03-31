@@ -83,7 +83,6 @@ public:
         m_ctrl(m_adapter),
         m_pauseTimer(),
         m_rego6xxRsp(nullptr),
-        m_rego6xxBoolRsp(nullptr),
         m_sensorTimer(),
         m_sensorCount(0U),
         m_sensors{ nullptr },
@@ -174,7 +173,6 @@ private:
     Rego6xxCtrl             m_ctrl;           /**< IVT rego6xx controller. */
     SimpleTimer             m_pauseTimer;     /**< Timer used to pause between each heatpump request. This shall avoid problems with the Rego6xx controller. */
     const Rego6xxStdRsp*    m_rego6xxRsp;     /**< Pending Rego6xx response, used to read sensors. */
-    const Rego6xxBoolRsp*   m_rego6xxBoolRsp; /**< Pending Rego6xx response, used to read binary sensors. */
 
     SimpleTimer             m_sensorTimer;          /**< Timer used to read cyclic all registered sensors values from the heatpump. */
     size_t                  m_sensorCount;          /**< Number of registered sensors. */
@@ -197,15 +195,6 @@ private:
      * This will be called periodically.
      */
     void readBinarySensors();
-
-    /**
-     * Calculate the temperature in °C from the raw temperature value.
-     *
-     * @param[in] rawTemperature   The raw temperature value.
-     *
-     * @return The temperature in °C.
-     */
-    float calculateTemperature(uint16_t rawTemperature);
 };
 
 } /* namespace ivt_rego6xx_ctrl */

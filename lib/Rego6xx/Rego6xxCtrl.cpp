@@ -59,46 +59,72 @@
  * Public Methods
  *****************************************************************************/
 
-const Rego6xxStdRsp* Rego6xxCtrl::readSysReg(Rego6xxCtrl::SysRegAddr sysRegAddr)
+const Rego6xxStdRsp* Rego6xxCtrl::readStd(uint8_t cmdId, uint16_t addr)
 {
-    const Rego6xxStdRsp*    rsp = nullptr;
+    const Rego6xxStdRsp* rsp = nullptr;
 
     if (nullptr == m_pendingRsp)
     {
-        writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_READ_SYSTEM_REG, sysRegAddr, 0U);
+        writeCmd(DEV_ADDR_HEATPUMP, cmdId, addr, 0U);
         m_stdRsp.acquire();
-        m_pendingRsp    = &m_stdRsp;
-        rsp             = &m_stdRsp;
+        m_pendingRsp = &m_stdRsp;
+        rsp          = &m_stdRsp;
     }
 
     return rsp;
 }
 
-const Rego6xxConfirmRsp* Rego6xxCtrl::writeSysReg(Rego6xxCtrl::SysRegAddr sysRegAddr, uint16_t data)
+const Rego6xxConfirmRsp* Rego6xxCtrl::writeStd(uint8_t cmdId, uint16_t addr, uint16_t value)
 {
-    const Rego6xxConfirmRsp*    rsp = nullptr;
+    const Rego6xxConfirmRsp* rsp = nullptr;
 
     if (nullptr == m_pendingRsp)
     {
-        writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_WRITE_SYSTEM_REG, sysRegAddr, data);
+        writeCmd(DEV_ADDR_HEATPUMP, cmdId, addr, value);
         m_confirmRsp.acquire();
-        m_pendingRsp    = &m_confirmRsp;
-        rsp             = &m_confirmRsp;
+        m_pendingRsp = &m_confirmRsp;
+        rsp          = &m_confirmRsp;
     }
 
     return rsp;
+}
+
+float Rego6xxCtrl::toFloat(uint16_t value)
+{
+    int8_t sign = 1;
+    float  floorPart;
+    float  fracPart;
+    float  result;
+
+    if (0U != (value & 0x8000U))
+    {
+        value = (0xFFFFU - value) + 1U;
+        sign  = -1;
+    }
+
+    floorPart = sign * static_cast<int8_t>(value / 10U);
+    fracPart  = static_cast<uint8_t>(value % 10U) / 10.0F;
+
+    result    = (0.0f > floorPart) ? (floorPart - fracPart) : (floorPart + fracPart);
+
+    return result;
+}
+
+bool Rego6xxCtrl::toBool(uint16_t value)
+{
+    return (0U == value) ? false : true;
 }
 
 const Rego6xxErrorRsp* Rego6xxCtrl::readLastError()
 {
-    const Rego6xxErrorRsp*  rsp = nullptr;
+    const Rego6xxErrorRsp* rsp = nullptr;
 
     if (nullptr == m_pendingRsp)
     {
         writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_READ_LAST_ERROR, 0U, 0U);
         m_errorRsp.acquire();
-        m_pendingRsp    = &m_errorRsp;
-        rsp             = &m_errorRsp;
+        m_pendingRsp = &m_errorRsp;
+        rsp          = &m_errorRsp;
     }
 
     return rsp;
@@ -106,44 +132,14 @@ const Rego6xxErrorRsp* Rego6xxCtrl::readLastError()
 
 const Rego6xxStdRsp* Rego6xxCtrl::readRegoVersion()
 {
-    const Rego6xxStdRsp*    rsp = nullptr;
+    const Rego6xxStdRsp* rsp = nullptr;
 
     if (nullptr == m_pendingRsp)
     {
         writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_READ_REGO_VERSION, 0U, 0U);
         m_stdRsp.acquire();
-        m_pendingRsp    = &m_stdRsp;
-        rsp             = &m_stdRsp;
-    }
-
-    return rsp;
-}
-
-const Rego6xxBoolRsp* Rego6xxCtrl::readFrontPanel(Rego6xxCtrl::FrontPanelAddr addr)
-{
-    const Rego6xxBoolRsp*   rsp = nullptr;
-
-    if (nullptr == m_pendingRsp)
-    {
-        writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_READ_FRONT_PANEL, addr, 0U);
-        m_boolRsp.acquire();
-        m_pendingRsp    = &m_boolRsp;
-        rsp             = &m_boolRsp;
-    }
-
-    return rsp;
-}
-
-const Rego6xxConfirmRsp* Rego6xxCtrl::writeFrontPanel(Rego6xxCtrl::FrontPanelAddr addr, uint16_t value)
-{
-    const Rego6xxConfirmRsp*    rsp = nullptr;
-
-    if (nullptr == m_pendingRsp)
-    {
-        writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_WRITE_FRONT_PANEL, addr, value);
-        m_confirmRsp.acquire();
-        m_pendingRsp    = &m_confirmRsp;
-        rsp             = &m_confirmRsp;
+        m_pendingRsp = &m_stdRsp;
+        rsp          = &m_stdRsp;
     }
 
     return rsp;
@@ -151,14 +147,14 @@ const Rego6xxConfirmRsp* Rego6xxCtrl::writeFrontPanel(Rego6xxCtrl::FrontPanelAdd
 
 const Rego6xxDisplayRsp* Rego6xxCtrl::readDisplay(Rego6xxCtrl::Row row)
 {
-    const Rego6xxDisplayRsp*    rsp = nullptr;
+    const Rego6xxDisplayRsp* rsp = nullptr;
 
     if (nullptr == m_pendingRsp)
     {
         writeCmd(DEV_ADDR_HEATPUMP, CMD_ID_READ_DISPLAY, row, 0U);
         m_displayRsp.acquire();
-        m_pendingRsp    = &m_displayRsp;
-        rsp             = &m_displayRsp;
+        m_pendingRsp = &m_displayRsp;
+        rsp          = &m_displayRsp;
     }
 
     return rsp;
@@ -169,10 +165,10 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
     uint8_t             cmdBuffer[CMD_SIZE];
     const size_t        RCV_BUFFER_SIZE = 64;
     uint8_t             rcvBuffer[RCV_BUFFER_SIZE];
-    const unsigned long TIMEOUT         = 4000U;
-    unsigned long       lastTimeout     = m_stream.getTimeout();
-    size_t              read            = 0U;
-    size_t              idx             = 0U;
+    const unsigned long TIMEOUT     = 4000U;
+    unsigned long       lastTimeout = m_stream.getTimeout();
+    size_t              read        = 0U;
+    size_t              idx         = 0U;
     String              rsp;
 
     /*
@@ -182,7 +178,7 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
         | Device Address | Command ID | Register Address | Data | Checksum |
         *----------------*------------*------------------*------*----------*
     */
-    
+
     /* Common rules:
         - MSB first
         - 7 bit communication is used,
@@ -192,11 +188,11 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
     cmdBuffer[0] = DEV_ADDR_HEATPUMP;
     cmdBuffer[1] = cmdId;
     cmdBuffer[2] = (addr >> 14U) & 0x03U;
-    cmdBuffer[3] = (addr >>  7U) & 0x7FU;
-    cmdBuffer[4] = (addr >>  0U) & 0x7FU;
+    cmdBuffer[3] = (addr >> 7U) & 0x7FU;
+    cmdBuffer[4] = (addr >> 0U) & 0x7FU;
     cmdBuffer[5] = (data >> 14U) & 0x03U;
-    cmdBuffer[6] = (data >>  7U) & 0x7FU;
-    cmdBuffer[7] = (data >>  0U) & 0x7FU;
+    cmdBuffer[6] = (data >> 7U) & 0x7FU;
+    cmdBuffer[7] = (data >> 0U) & 0x7FU;
     cmdBuffer[8] = Rego6xxUtil::calculateChecksum(&cmdBuffer[2], CMD_SIZE - 3U);
 
     (void)m_stream.write(cmdBuffer, CMD_SIZE);
@@ -205,7 +201,7 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
     read = m_stream.readBytes(rcvBuffer, RCV_BUFFER_SIZE);
     m_stream.setTimeout(lastTimeout);
 
-    while(read > idx)
+    while (read > idx)
     {
         char buffer[3];
 
@@ -226,7 +222,7 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
  * Private Methods
  *****************************************************************************/
 
-void Rego6xxCtrl::writeCmd(uint8_t devAddr, CmdId cmdId, uint16_t regAddr, uint16_t data)
+void Rego6xxCtrl::writeCmd(uint8_t devAddr, uint8_t cmdId, uint16_t regAddr, uint16_t data)
 {
     uint8_t cmdBuffer[CMD_SIZE];
 
@@ -237,7 +233,7 @@ void Rego6xxCtrl::writeCmd(uint8_t devAddr, CmdId cmdId, uint16_t regAddr, uint1
         | Device Address | Command ID | Register Address | Data | Checksum |
         *----------------*------------*------------------*------*----------*
     */
-    
+
     /* Common rules:
         - MSB first
         - 7 bit communication is used,
@@ -247,11 +243,11 @@ void Rego6xxCtrl::writeCmd(uint8_t devAddr, CmdId cmdId, uint16_t regAddr, uint1
     cmdBuffer[0] = devAddr;
     cmdBuffer[1] = cmdId;
     cmdBuffer[2] = (regAddr >> 14U) & 0x03U;
-    cmdBuffer[3] = (regAddr >>  7U) & 0x7FU;
-    cmdBuffer[4] = (regAddr >>  0U) & 0x7FU;
+    cmdBuffer[3] = (regAddr >> 7U) & 0x7FU;
+    cmdBuffer[4] = (regAddr >> 0U) & 0x7FU;
     cmdBuffer[5] = (data >> 14U) & 0x03U;
-    cmdBuffer[6] = (data >>  7U) & 0x7FU;
-    cmdBuffer[7] = (data >>  0U) & 0x7FU;
+    cmdBuffer[6] = (data >> 7U) & 0x7FU;
+    cmdBuffer[7] = (data >> 0U) & 0x7FU;
     cmdBuffer[8] = Rego6xxUtil::calculateChecksum(&cmdBuffer[2], CMD_SIZE - 3U);
 
     (void)m_stream.write(cmdBuffer, CMD_SIZE);

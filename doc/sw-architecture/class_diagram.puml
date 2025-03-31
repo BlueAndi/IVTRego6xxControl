@@ -42,15 +42,19 @@ package "esphome" <<namespace>> {
         }
 
         class "IVTRego6xxSensor" as ivtRego6xxSensor {
+            - m_cmdId: uint8_t
             - m_addr: uint16_t
-            + IVTRego6xxSensor(addr: uint16_t)
-            + getSysRegAddr() : uint16_t
+            + IVTRego6xxSensor(cmdId: uint8_t, addr: uint16_t)
+            + getCmdId() : uint8_t
+            + getAddr() : uint16_t
         }
 
         class "IVTRego6xxBinarySensor" as ivtRego6xxBinarySensor {
+            - m_cmdId: uint8_t
             - m_addr: uint16_t
-            + IVTRego6xxBinarySensor(addr: uint16_t)
-            + getSysRegAddr() : uint16_t
+            + IVTRego6xxBinarySensor(cmdId: uint8_t, addr: uint16_t)
+            + getCmdId() : uint8_t
+            + getAddr() : uint16_t
         }
 
         note bottom of ivtRego6xxCtrl

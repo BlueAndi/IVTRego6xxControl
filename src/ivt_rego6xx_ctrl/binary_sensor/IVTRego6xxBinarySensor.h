@@ -71,9 +71,11 @@ public:
     /**
      * Constructs the IVT rego6xx sensor.
      *
-     * @param[in] addr  System register address of the sensor.
+     * @param[in] cmdId Command id to send to the heatpump.
+     * @param[in] addr  Address to read by the command.
      */
-    IVTRego6xxBinarySensor(uint16_t addr) :
+    IVTRego6xxBinarySensor(uint8_t cmdId, uint16_t addr) :
+        m_cmdId(cmdId),
         m_addr(addr)
     {
     }
@@ -86,18 +88,29 @@ public:
     }
 
     /**
-     * Get the system register address.
+     * Get the command id to send to the heatpump.
      *
-     * @return The system register address of the sensor.
+     * @return The command id to send to the heatpump.
      */
-    uint16_t getSysRegAddr() const
+    uint8_t getCmdId() const
+    {
+        return m_cmdId;
+    }
+
+    /**
+     * Get the address to read by the command.
+     *
+     * @return The address to read by the command.
+     */
+    uint16_t getAddr() const
     {
         return m_addr;
     }
 
 private:
 
-    uint16_t m_addr; /**< System register address of the sensor. */
+    uint8_t  m_cmdId; /**< Command id to send to the heatpump. */
+    uint16_t m_addr;  /**< Address to read by the command. */
 
     /** No default constructor. */
     IVTRego6xxBinarySensor();

@@ -68,7 +68,7 @@ class Rego6xxCtrl
 public:
 
     /** Commands of the heat pump regulator */
-    enum CmdId
+    enum CmdId : uint8_t
     {
         CMD_ID_READ_FRONT_PANEL     = 0x00, /**< Read from front panel (register 0x09ff) */
         CMD_ID_WRITE_FRONT_PANEL    = 0x01, /**< Write to front panel (register 0x09ff) */
@@ -85,7 +85,7 @@ public:
     };
 
     /** System register adresses of Rego600 */
-    enum SysRegAddr
+    enum SysRegAddr : uint16_t
     {
         /* Settings */
         SYSREG_ADDR_HEAT_CURVE          = 0x0000,   /**< Heat curve */
@@ -143,7 +143,7 @@ public:
     /**
      * Front panel LED addresses of Rego600
      */
-    enum FrontPanelAddr
+    enum FrontPanelAddr : uint16_t
     {
         FRONTPANEL_ADDR_POWER_BUTTON    = 0x0008,   /**< Power button */
         FRONTPANEL_ADDR_LEFT_BUTTON     = 0x0009,   /**< Left button */
@@ -160,7 +160,7 @@ public:
     /**
      * Display row identifiers of Rego600
      */
-    enum Row
+    enum Row : uint16_t
     {
         DISPLAY_ROW_1 = 0x00,   /**< Row 1 */
         DISPLAY_ROW_2 = 0x01,   /**< Row 2 */
@@ -192,23 +192,43 @@ public:
     }
 
     /**
-     * Read from system register.
+     * Standard read from address
      * 
-     * @param[in] sysRegAddr    System register address
+     * @param[in] cmdId     Command id
+     * @param[in] addr      Address
      * 
      * @return Asynchronous response
      */
-    const Rego6xxStdRsp* readSysReg(SysRegAddr sysRegAddr);
+    const Rego6xxStdRsp* readStd(uint8_t cmdId, uint16_t addr);
 
     /**
-     * Write value to system register.
+     * Standard write value to addres.
      * 
-     * @param[in] sysRegAddr    System register address
-     * @param[in] value         Value which to write to the system register address
+     * @param[in] cmdId Command id
+     * @param[in] addr  Address
+     * @param[in] value Value
      * 
      * @return Asynchronous response
      */
-    const Rego6xxConfirmRsp* writeSysReg(SysRegAddr sysRegAddr, uint16_t value);
+    const Rego6xxConfirmRsp* writeStd(uint8_t cmdId, uint16_t addr, uint16_t value);
+
+    /**
+     * Convert 16 bit value to float.
+     * 
+     * @param[in] value The 16-bit value, received from the heatpump controller.
+     * 
+     * @return The float value, converted from the 16-bit value.
+     */
+    float toFloat(uint16_t value);
+
+    /**
+     * Convert 16 bit value to bool.
+     * 
+     * @param[in] value The 16-bit value, received from the heatpump controller.
+     * 
+     * @return The boolean value, converted from the 16-bit value.
+     */
+    bool toBool(uint16_t value);
 
     /**
      * Read last error description.
@@ -225,25 +245,6 @@ public:
      * @return Asynchronous response
      */
     const Rego6xxStdRsp* readRegoVersion();
-
-    /**
-     * Read from front panel.
-     * 
-     * @param[in] frontPanelAddr    Front panel address
-     * 
-     * @return Asynchronous response
-     */
-    const Rego6xxBoolRsp* readFrontPanel(FrontPanelAddr addr);
-
-    /**
-     * Write to front panel.
-     * 
-     * @param[in] frontPanelAddr    Front panel address
-     * @param[in] value             Value to write
-     * 
-     * @return Asynchronous response
-     */
-    const Rego6xxConfirmRsp* writeFrontPanel(FrontPanelAddr addr, uint16_t value);
 
     /**
      * Read from display.
@@ -336,7 +337,7 @@ private:
      * @param[in] cmdId     Command id
      * @param[in] data      Command data
      */
-    void writeCmd(uint8_t devAddr, CmdId cmdId, uint16_t regAddr, uint16_t data);
+    void writeCmd(uint8_t devAddr, uint8_t cmdId, uint16_t regAddr, uint16_t data);
 
 };
 
