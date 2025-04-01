@@ -1,0 +1,59 @@
+@startuml deployment_diagram
+
+title Deployment Diagram
+
+node "Olimex ESP23-POE-ISO-IND" {
+
+    node "ESP32" as esp32 {
+        component "Software" as sw
+        component "UART" as uart
+        component "UEXT" as uext
+
+        sw - uart
+        uart - uext
+    }
+}
+
+node "MOD-RS232" as modRS232
+
+node "Heatpump" as heatPump {
+    node "RS232 Level Shifter" as rs232LevelShifter
+    interface "Serial with\n5V-TTL levels" as iSerialTTL
+
+    node "Electronic" as electronic {
+        component "Service Interface\nSub-D9" as serviceInterface
+    }
+    
+    rs232LevelShifter --( iSerialTTL
+    iSerialTTL -- serviceInterface
+
+    note right of rs232LevelShifter
+        DIY RS232 level shifter based
+        on a MAX232 chip. This one is
+        inside the compartment of the
+        heatpump. It is connected to
+        the service interface.
+    end note
+}
+
+interface "Serial with\nRS232 levels" as iSerialRS232_1
+interface "Serial with\nRS232 levels" as iSerialRS232_2
+node "Gender Changer\nSub-D9" as genderChanger
+
+uext -- modRS232
+modRS232 -- iSerialRS232_1
+iSerialRS232_1 )-- genderChanger
+genderChanger --( iSerialRS232_2
+iSerialRS232_2 -- rs232LevelShifter
+
+note right of modRS232
+    Olimex MOD-RS232 is a RS232 to TTL converter
+    with 5V-TTL levels.
+
+    SUB-D9 Pinout:
+    * Pin 2: PC RXD
+    * Pin 3: PC TXD
+    * Pin 5: GND
+end note
+
+@enduml

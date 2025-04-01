@@ -9,6 +9,7 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
 
 - [Motivation](#motivation)
 - [Supported Hardware](#supported-hardware)
+- [Deployment](#deployment)
 - [Software](#software)
   - [Installation](#installation)
   - [Build](#build)
@@ -36,12 +37,21 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
 ## Motivation
 
 Unfortunately my Junkers heatpump (original build by IVT) has no smart interface out of the box. Therefore the service interface of the build-in rego6xx controller shall be used to read sensor data or to modify temperature threshold and etc.
+
+The first adapter I created was the [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv) based on a ATmega644P, which is still up and running. But meanwhile the ATmega644P board I used is obsolete since 2024-01-01 and regarding my ideas the resources are very limited. Therefore the decision was made to create a secon adapter with less resource constraints and easier integration into a home automation.
+
 The protocol for the Rego6xx controller was original derived from http://rago600.sourceforge.net/.
 
 ## Supported Hardware
 
 - [Olimex ESP32-POE](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE/open-source-hardware)
 - [Olimex ESP32-POE-ISO](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware)
+
+with the RS-232 level shifter [Olimex MOD-RS232](https://www.olimex.com/Products/Modules/Interface/MOD-RS232/open-source-hardware).
+
+## Deployment
+
+![ClassDiagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/BlueAndi/IVTRego6xxControl/refs/heads/main/doc/sw-architecture/deployment_diagram.puml)
 
 ## Software
 
