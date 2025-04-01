@@ -26,6 +26,7 @@ logger:
 # https://esphome.io/components/api.html
 api:
   password: ""
+  reboot_timeout: 0s
 
 # Enable OTA updates.
 # https://esphome.io/components/ota.html
@@ -255,3 +256,46 @@ text_sensor:
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0003 # Display row 4
     name: display row 4
+
+button:
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
+    ivt_rego6xx_ctrl_addr: 0x0008
+    ivt_rego6xx_ctrl_value: 0x0001
+    name: power button
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
+    ivt_rego6xx_ctrl_addr: 0x0009
+    ivt_rego6xx_ctrl_value: 0x0001
+    name: left button
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
+    ivt_rego6xx_ctrl_addr: 0x000A
+    ivt_rego6xx_ctrl_value: 0x0001
+    name: middle button
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
+    ivt_rego6xx_ctrl_addr: 0x000B
+    ivt_rego6xx_ctrl_value: 0x0001
+    name: right button
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
+    ivt_rego6xx_ctrl_addr: 0x0044
+    ivt_rego6xx_ctrl_value: 0x01FF
+    name: turn wheel left
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
+    ivt_rego6xx_ctrl_addr: 0x0044
+    ivt_rego6xx_ctrl_value: 0x0001
+    name: turn wheel right

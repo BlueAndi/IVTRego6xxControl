@@ -73,7 +73,7 @@ static const char* TAG = "ivt_rego6xx_ctrl.component";
 void IVTRego6xxCtrl::setup()
 {
     /* Start all timers responsible for reading from heatpump.
-     * The exact order will be determined by the loop() method.
+     * The exact order will be determined by the state machine.
      */
     m_sensorTimer.start(SENSOR_READ_INITIAL);
     m_binarySensorTimer.start(SENSOR_READ_INITIAL);
@@ -82,46 +82,24 @@ void IVTRego6xxCtrl::setup()
 
 void IVTRego6xxCtrl::loop()
 {
-    /* Pause? */
+    /* Between each heatpump command/response there shall be a pause to avoid
+     * the Rego6xx controller to be overloaded.
+     */
     if (true == m_pauseTimer.isTimerRunning())
     {
-        /* Continue with any kind of next sensor? */
+        /* Continue heatpump communication? */
         if (true == m_pauseTimer.isTimeout())
         {
             m_pauseTimer.stop();
+
+            /* Check buttons first for fast user experience. */
+            m_state = STATE_BUTTONS;
         }
     }
 
     if (false == m_pauseTimer.isTimerRunning())
     {
-        /* Start or continue reading sensor, but only the bunch of binary sensors
-         * are not complete read.
-         */
-        if ((true == m_sensorTimer.isTimerRunning()) &&
-            (true == m_sensorTimer.isTimeout()) &&
-            (MAX_BINARY_SENSORS == m_currentBinarySensorIndex) &&
-            (MAX_TEXT_SENSORS == m_currentTextSensorIndex))
-        {
-            readSensors();
-        }
-        /* Read binary sensors? */
-        else if ((true == m_binarySensorTimer.isTimerRunning()) &&
-                 (true == m_binarySensorTimer.isTimeout()) &&
-                 (MAX_TEXT_SENSORS == m_currentTextSensorIndex))
-        {
-            readBinarySensors();
-        }
-        /* Read text sensors? */
-        else if ((true == m_textSensorTimer.isTimerRunning()) &&
-                 (true == m_textSensorTimer.isTimeout()))
-        {
-            readTextSensors();
-        }
-        else
-        {
-            /* Nothing to do */
-            ;
-        }
+        processStateMachine();
     }
 
     /* Process the heatpump Rego6xx controller. */
@@ -141,6 +119,238 @@ void IVTRego6xxCtrl::dump_config()
  * Private Methods
  *****************************************************************************/
 
+IVTRego6xxCtrl::State IVTRego6xxCtrl::getPendingState(IVTRego6xxCtrl::State currentState)
+{
+    State prevState = currentState;
+
+    if (m_sensorCount > m_currentSensorIndex)
+    {
+        prevState = STATE_SENSORS;
+    }
+    else if (m_binarySensorCount > m_currentBinarySensorIndex)
+    {
+        prevState = STATE_BINARY_SENSORS;
+    }
+    else if (m_textSensorCount > m_currentTextSensorIndex)
+    {
+        prevState = STATE_TEXT_SENSORS;
+    }
+    else if (m_buttonCount > m_currentButtonIndex)
+    {
+        prevState = STATE_BUTTONS;
+    }
+    else
+    {
+        ;
+    }
+
+    return prevState;
+}
+
+void IVTRego6xxCtrl::processStateMachine()
+{
+    State nextState = m_state;
+
+    switch (m_state)
+    {
+    case STATE_BUTTONS:
+        /* If all buttons handled, continue with the pending state.
+         * The pending state is the one, which has been paused before
+         * because of the button press.
+         */
+        if (false == processButtons())
+        {
+            nextState = getPendingState(STATE_BUTTONS);
+
+            if (STATE_BUTTONS == nextState)
+            {
+                nextState = STATE_SENSORS;
+            }
+        }
+        break;
+
+    case STATE_SENSORS:
+        if (false == processSensors())
+        {
+            nextState = STATE_BINARY_SENSORS;
+        }
+        break;
+
+    case STATE_BINARY_SENSORS:
+        if (false == processBinarySensors())
+        {
+            nextState = STATE_TEXT_SENSORS;
+        }
+        break;
+
+    case STATE_TEXT_SENSORS:
+        if (false == processTextSensors())
+        {
+            nextState = STATE_SENSORS;
+        }
+        break;
+
+    default:
+        nextState = STATE_BUTTONS;
+        break;
+    }
+
+    m_state = nextState;
+}
+
+bool IVTRego6xxCtrl::processButtons()
+{
+    bool isPending = false;
+
+    /* If no command is pending, request next button. */
+    if (nullptr == m_confirmRsp)
+    {
+        size_t buttonIndex;
+
+        /* If all buttons are handled, start from the beginning. */
+        if (m_buttonCount <= m_currentButtonIndex)
+        {
+            m_currentButtonIndex = 0U;
+        }
+        else
+        {
+            ++m_currentButtonIndex;
+        }
+
+        while (m_buttonCount > m_currentButtonIndex)
+        {
+            IVTRego6xxButton* currentButton = m_buttons[m_currentButtonIndex];
+            bool              isPressed     = currentButton->isPressed();
+
+            if (true == isPressed)
+            {
+                uint8_t  cmdId = currentButton->getCmdId();
+                uint16_t addr  = currentButton->getAddr();
+                uint16_t value = currentButton->getValue();
+
+                ESP_LOGI(TAG, "Write button '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X ...", currentButton->get_name().c_str(), value, cmdId, addr);
+                m_confirmRsp = m_ctrl.writeStd(cmdId, addr, value);
+
+                if (nullptr == m_confirmRsp)
+                {
+                    ESP_LOGE(TAG, "Failed to write button '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X!", currentButton->get_name().c_str(), value, cmdId, addr);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            ++m_currentButtonIndex;
+        }
+    }
+    /* Command response received? */
+    else if ((true == m_confirmRsp->isUsed()) &&
+             (false == m_confirmRsp->isPending()))
+    {
+        IVTRego6xxButton* currentButton = m_buttons[m_currentButtonIndex];
+
+        if (true == m_confirmRsp->isTimeout())
+        {
+            ESP_LOGW(TAG, "Write button '%s' response timeout.", currentButton->get_name().c_str());
+        }
+        else if (false == m_confirmRsp->isValid())
+        {
+            ESP_LOGW(TAG, "Write button '%s' response invalid.", currentButton->get_name().c_str());
+        }
+        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_confirmRsp->getDevAddr())
+        {
+            ESP_LOGW(TAG, "Write button '%s' response has wrong destination.", currentButton->get_name().c_str());
+        }
+        else
+        {
+            ESP_LOGI(TAG, "Write button '%s' successful.", currentButton->get_name().c_str());
+        }
+
+        m_ctrl.release();
+        m_confirmRsp = nullptr;
+
+        ++m_currentButtonIndex;
+
+        /* Pause until next sensor will be read. */
+        m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+    }
+    else
+    /* Wait for pending command response. */
+    {
+        /* Nothing to do */
+        ;
+    }
+
+    if (m_buttonCount > m_currentButtonIndex)
+    {
+        /* Continue reading the buttons. */
+        isPending = true;
+    }
+
+    return isPending;
+}
+
+bool IVTRego6xxCtrl::processSensors()
+{
+    bool isPending = false;
+
+    /* Is it time to start reading the sensors or reading already in progess? */
+    if (((true == m_sensorTimer.isTimerRunning()) && (true == m_sensorTimer.isTimeout())) ||
+        (m_sensorCount > m_currentSensorIndex))
+    {
+        readSensors();
+    }
+
+    if (m_sensorCount > m_currentSensorIndex)
+    {
+        /* Continue reading the sensors. */
+        isPending = true;
+    }
+
+    return isPending;
+}
+
+bool IVTRego6xxCtrl::processBinarySensors()
+{
+    bool isPending = false;
+
+    /* Is it time to start reading the binary sensors or reading already in progess? */
+    if (((true == m_binarySensorTimer.isTimerRunning()) && (true == m_binarySensorTimer.isTimeout())) ||
+        (m_binarySensorCount > m_currentBinarySensorIndex))
+    {
+        readBinarySensors();
+    }
+
+    if (m_binarySensorCount > m_currentBinarySensorIndex)
+    {
+        /* Continue reading the binary sensors. */
+        isPending = true;
+    }
+
+    return isPending;
+}
+
+bool IVTRego6xxCtrl::processTextSensors()
+{
+    bool isPending = false;
+
+    /* Is it time to start reading the text sensors or reading already in progess? */
+    if (((true == m_textSensorTimer.isTimerRunning()) && (true == m_textSensorTimer.isTimeout())) ||
+        (m_textSensorCount > m_currentTextSensorIndex))
+    {
+        readTextSensors();
+    }
+
+    if (m_textSensorCount > m_currentTextSensorIndex)
+    {
+        /* Continue reading the text sensors. */
+        isPending = true;
+    }
+
+    return isPending;
+}
+
 void IVTRego6xxCtrl::readSensors()
 {
     bool nextSensor = false;
@@ -152,6 +362,9 @@ void IVTRego6xxCtrl::readSensors()
         if (m_sensorCount <= m_currentSensorIndex)
         {
             m_currentSensorIndex = 0U;
+
+            /* Start timer for next sensor read immediately to keep the cycle. */
+            m_sensorTimer.start(SENSOR_READ_PERIOD);
         }
 
         {
@@ -173,19 +386,27 @@ void IVTRego6xxCtrl::readSensors()
     else if ((true == m_rego6xxRsp->isUsed()) &&
              (false == m_rego6xxRsp->isPending()))
     {
-        /* The value is taken over only if the response is valid and there was no timeout. */
-        if ((true == m_rego6xxRsp->isValid()) &&
-            (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr()))
-        {
-            IVTRego6xxSensor* currentSensor = m_sensors[m_currentSensorIndex];
-            float             value         = m_ctrl.toFloat(m_rego6xxRsp->getValue());
+        IVTRego6xxSensor* currentSensor = m_sensors[m_currentSensorIndex];
 
-            currentSensor->publish_state(value);
+        if (true == m_rego6xxRsp->isTimeout())
+        {
+            ESP_LOGW(TAG, "Read sensor '%s' response timeout.", currentSensor->get_name().c_str());
+        }
+        else if (false == m_rego6xxRsp->isValid())
+        {
+            ESP_LOGW(TAG, "Read sensor '%s' response invalid.", currentSensor->get_name().c_str());
+        }
+        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr())
+        {
+            ESP_LOGW(TAG, "Read sensor '%s' response has wrong destination.", currentSensor->get_name().c_str());
         }
         else
         {
-            /* Skipped */
-            ;
+            float value = m_ctrl.toFloat(m_rego6xxRsp->getValue());
+
+            currentSensor->publish_state(value);
+
+            ESP_LOGI(TAG, "Read sensor '%s' successful.", currentSensor->get_name().c_str());
         }
 
         m_ctrl.release();
@@ -204,14 +425,8 @@ void IVTRego6xxCtrl::readSensors()
     {
         ++m_currentSensorIndex;
 
-        /* Pause sending requests, after response. */
+        /* Pause until next sensor will be read. */
         m_pauseTimer.start(REGO6xx_REQ_PAUSE);
-
-        if (m_sensorCount <= m_currentSensorIndex)
-        {
-            /* Start timer for next sensor read. */
-            m_sensorTimer.start(SENSOR_READ_PERIOD);
-        }
     }
 }
 
@@ -226,6 +441,9 @@ void IVTRego6xxCtrl::readBinarySensors()
         if (m_binarySensorCount <= m_currentBinarySensorIndex)
         {
             m_currentBinarySensorIndex = 0U;
+
+            /* Start timer for next binary sensor read immediately to keep the cycle. */
+            m_binarySensorTimer.start(BINARY_SENSOR_READ_PERIOD);
         }
 
         {
@@ -247,19 +465,27 @@ void IVTRego6xxCtrl::readBinarySensors()
     else if ((true == m_rego6xxRsp->isUsed()) &&
              (false == m_rego6xxRsp->isPending()))
     {
-        /* The temperature is taken over only if the response is valid and there was no timeout. */
-        if ((true == m_rego6xxRsp->isValid()) &&
-            (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr()))
-        {
-            IVTRego6xxBinarySensor* currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
-            bool                    state               = m_ctrl.toBool(m_rego6xxRsp->getValue());
+        IVTRego6xxBinarySensor* currentBinarySensor = m_binarySensors[m_currentBinarySensorIndex];
 
-            currentBinarySensor->publish_state(state);
+        if (true == m_rego6xxRsp->isTimeout())
+        {
+            ESP_LOGW(TAG, "Read binary sensor '%s' response timeout.", currentBinarySensor->get_name().c_str());
+        }
+        else if (false == m_rego6xxRsp->isValid())
+        {
+            ESP_LOGW(TAG, "Read binary sensor '%s' response invalid.", currentBinarySensor->get_name().c_str());
+        }
+        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr())
+        {
+            ESP_LOGW(TAG, "Read binary sensor '%s' response has wrong destination.", currentBinarySensor->get_name().c_str());
         }
         else
         {
-            /* Temperature skipped */
-            ;
+            bool state = m_ctrl.toBool(m_rego6xxRsp->getValue());
+
+            currentBinarySensor->publish_state(state);
+
+            ESP_LOGI(TAG, "Read binary sensor '%s' successful.", currentBinarySensor->get_name().c_str());
         }
 
         m_ctrl.release();
@@ -278,14 +504,8 @@ void IVTRego6xxCtrl::readBinarySensors()
     {
         ++m_currentBinarySensorIndex;
 
-        /* Pause sending requests, after response. */
+        /* Pause until next binary sensor will be read. */
         m_pauseTimer.start(REGO6xx_REQ_PAUSE);
-
-        if (m_binarySensorCount <= m_currentBinarySensorIndex)
-        {
-            /* Start timer for next sensor read. */
-            m_binarySensorTimer.start(BINARY_SENSOR_READ_PERIOD);
-        }
     }
 }
 
@@ -293,13 +513,16 @@ void IVTRego6xxCtrl::readTextSensors()
 {
     bool nextSensor = false;
 
-    /* If no command is pending, request next binary sensor. */
+    /* If no command is pending, request next text sensor. */
     if (nullptr == m_displayRsp)
     {
         /* If all sensors are read, start from the beginning. */
         if (m_textSensorCount <= m_currentTextSensorIndex)
         {
             m_currentTextSensorIndex = 0U;
+
+            /* Start timer for next text sensor read immediately to keep the cycle. */
+            m_textSensorTimer.start(TEXT_SENSOR_READ_PERIOD);
         }
 
         {
@@ -321,19 +544,27 @@ void IVTRego6xxCtrl::readTextSensors()
     else if ((true == m_displayRsp->isUsed()) &&
              (false == m_displayRsp->isPending()))
     {
-        /* The temperature is taken over only if the response is valid and there was no timeout. */
-        if ((true == m_displayRsp->isValid()) &&
-            (Rego6xxCtrl::DEV_ADDR_HOST == m_displayRsp->getDevAddr()))
-        {
-            IVTRego6xxTextSensor* currentTextSensor = m_textSensors[m_currentTextSensorIndex];
-            std::string           msg               = m_displayRsp->getMsg().c_str();
+        IVTRego6xxTextSensor* currentTextSensor = m_textSensors[m_currentTextSensorIndex];
 
-            currentTextSensor->publish_state(msg);
+        if (true == m_displayRsp->isTimeout())
+        {
+            ESP_LOGW(TAG, "Read text sensor '%s' response timeout.", currentTextSensor->get_name().c_str());
+        }
+        else if (false == m_displayRsp->isValid())
+        {
+            ESP_LOGW(TAG, "Read text sensor '%s' response invalid.", currentTextSensor->get_name().c_str());
+        }
+        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_displayRsp->getDevAddr())
+        {
+            ESP_LOGW(TAG, "Read text sensor '%s' response has wrong destination.", currentTextSensor->get_name().c_str());
         }
         else
         {
-            /* Temperature skipped */
-            ;
+            std::string msg = m_displayRsp->getMsg().c_str();
+
+            currentTextSensor->publish_state(msg);
+
+            ESP_LOGI(TAG, "Read text sensor '%s' successful.", currentTextSensor->get_name().c_str());
         }
 
         m_ctrl.release();
@@ -352,14 +583,8 @@ void IVTRego6xxCtrl::readTextSensors()
     {
         ++m_currentTextSensorIndex;
 
-        /* Pause sending requests, after response. */
+        /* Pause until next binary sensor will be read. */
         m_pauseTimer.start(REGO6xx_REQ_PAUSE);
-
-        if (m_textSensorCount <= m_currentTextSensorIndex)
-        {
-            /* Start timer for next sensor read. */
-            m_textSensorTimer.start(BINARY_SENSOR_READ_PERIOD);
-        }
     }
 }
 

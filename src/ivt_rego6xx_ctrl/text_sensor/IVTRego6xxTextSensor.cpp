@@ -59,7 +59,7 @@
  *****************************************************************************/
 
 /**
- * Logger tag of this sensor.
+ * Logger tag of this text sensor.
  */
 static const char *TAG = "ivt_rego6xx_ctrl.text_sensor";
 

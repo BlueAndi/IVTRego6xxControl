@@ -89,6 +89,7 @@ void Rego6xxRsp::receive()
         else if (true == m_timer.isTimeout())
         {
             m_stream.flush();
+            m_isTimeout = true;
             m_isPending = false;
             memset(buffer, 0, size);
             m_timer.stop();

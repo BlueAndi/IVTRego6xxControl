@@ -64,12 +64,13 @@ public:
 
     /**
      * Constructs a empty response.
-     * 
+     *
      * @param[in] stream    Input stream from heatpump controller.
      */
     Rego6xxRsp(Stream& stream) :
         m_stream(stream),
         m_isUsed(false),
+        m_isTimeout(false),
         m_isPending(false),
         m_timer()
     {
@@ -84,7 +85,7 @@ public:
 
     /**
      * Is response used?
-     * 
+     *
      * @return If response is in use by the controller, it will return true otherwise false.
      */
     bool isUsed() const
@@ -93,8 +94,18 @@ public:
     }
 
     /**
+     * Is response timed out?
+     *
+     * @return If response is timed out, it will return true otherwise false.
+     */
+    bool isTimeout() const
+    {
+        return m_isTimeout;
+    }
+
+    /**
      * Is response pending?
-     * 
+     *
      * @return If response is pending, it will return true otherwise false.
      */
     bool isPending() const
@@ -104,14 +115,14 @@ public:
 
     /**
      * Is response valid?
-     * 
+     *
      * @return If response is valid it will return true otherwise false.
      */
-    virtual bool isValid() const = 0;
+    virtual bool isValid() const       = 0;
 
     /**
      * Get device address.
-     * 
+     *
      * @return Device address
      */
     virtual uint8_t getDevAddr() const = 0;
@@ -119,12 +130,13 @@ public:
 protected:
 
     /** Timeout in ms */
-    static const uint32_t   TIMEOUT     = (30UL * 1000UL);
+    static const uint32_t TIMEOUT = (10UL * 1000UL);
 
-    Stream&     m_stream;               /**< Input stream from heatpump controller. */
-    bool        m_isUsed;               /**< Is response used by application. If no, the controller can use it again. */
-    bool        m_isPending;            /**< Is response pending or not. */
-    SimpleTimer m_timer;                /**< Used for response timeout observation. */
+    Stream&               m_stream;    /**< Input stream from heatpump controller. */
+    bool                  m_isUsed;    /**< Is response used by application. If no, the controller can use it again. */
+    bool                  m_isTimeout; /**< Is response timed out or not. */
+    bool                  m_isPending; /**< Is response pending or not. */
+    SimpleTimer           m_timer;     /**< Used for response timeout observation. */
 
     Rego6xxRsp();
 
@@ -135,6 +147,7 @@ protected:
     void acquire()
     {
         m_isUsed    = true;
+        m_isTimeout = false;
         m_isPending = true;
     }
 
@@ -155,7 +168,7 @@ protected:
 
     /**
      * Get response buffer and its size.
-     * 
+     *
      * @param[out]  buffer  Response buffer
      * @param[out]  size    Response buffer size in byte
      */
@@ -168,6 +181,6 @@ protected:
  * Functions
  *****************************************************************************/
 
-#endif  /* __REGO6XX_RSP_H__ */
+#endif /* __REGO6XX_RSP_H__ */
 
 /** @} */

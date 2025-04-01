@@ -25,14 +25,14 @@
     DESCRIPTION
 *******************************************************************************/
 /**
- * @brief  IVT rego6xx controller sensor.
+ * @brief  IVT rego6xx controller button.
  * @author Andreas Merkle <web@blue-andi.de>
  */
 
 /******************************************************************************
  * Includes
  *****************************************************************************/
-#include "IVTRego6xxBinarySensor.h"
+#include "IVTRego6xxButton.h"
 #include "esphome/core/log.h"
 
 /******************************************************************************
@@ -59,9 +59,9 @@
  *****************************************************************************/
 
 /**
- * Logger tag of this binary sensor.
+ * Logger tag of this button.
  */
-static const char *TAG = "ivt_rego6xx_ctrl.binary_sensor";
+static const char *TAG = "ivt_rego6xx_ctrl.button";
 
 /******************************************************************************
  * Public Methods
@@ -83,7 +83,6 @@ static const char *TAG = "ivt_rego6xx_ctrl.binary_sensor";
  * Local Functions
  *****************************************************************************/
 
-  
  }  /* namespace ivt_rego6xx_ctrl */
  }  /* namespace esphome */
  

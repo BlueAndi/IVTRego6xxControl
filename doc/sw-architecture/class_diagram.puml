@@ -1,5 +1,7 @@
 @startuml class_diagram
 
+title Class Diagram of IVT Rego6xx Controller
+
 package "esphome" <<namespace>> {
 
     package "uart" <<namespace>> as uartPckg {
@@ -38,6 +40,13 @@ package "esphome" <<namespace>> {
         }
     }
 
+    package "button" <<namespace>> as buttonPckg {
+
+        class "Button" as button {
+            # {abstract} press_action()
+        }
+    }
+
     package "ivt_rego6xx_ctrl" <<namespace>> as ivtRego6xxCtrlPckg {
 
         class "IVTRego6xxCtrl" as ivtRego6xxCtrl {
@@ -46,11 +55,13 @@ package "esphome" <<namespace>> {
             - m_sensors[] : IVTRego6xxSensor*
             - m_binarySensors[] : IVTRego6xxBinarySensor*
             - m_textSensors[] : IVTRego6xxTextSensor*
+            - m_buttons[] : IVTRego6xxButton*
             + setup()
             + loop()
             + registerSensor(sensor: IVTRego6xxSensor*)
             + registerBinarySensor(sensor: IVTRego6xxBinarySensor*)
             + registerTextSensor(sensor: IVTRego6xxTextSensor*)
+            + registerButton(button: IVTRego6xxButton*)
         }
 
         class "IVTRego6xxSensor" as ivtRego6xxSensor {
@@ -77,6 +88,17 @@ package "esphome" <<namespace>> {
             + getAddr() : uint16_t
         }
 
+        class "IVTRego6xxButton" as ivtRego6xxButton {
+            - m_cmdId: uint8_t
+            - m_addr: uint16_t
+            - m_value: uint16_t
+            + IVTRego6xxButton(cmdId: uint8_t, addr: uint16_t, value: uint16_t)
+            + getCmdId() : uint8_t
+            + getAddr() : uint16_t
+            + getValue() : uint16_t
+            - press_action() : void
+        }
+
         note bottom of ivtRego6xxCtrl
             This class is responsible for controlling the
             IVT Rego6xx series heat pump. It is responsible
@@ -97,6 +119,11 @@ package "esphome" <<namespace>> {
         note bottom of ivtRego6xxTextSensor
             This class is responsible for publishing the
             text sensor values of the IVT Rego6xx series heat pump.
+        end note
+
+        note bottom of ivtRego6xxButton
+            This class is responsible to retrieve the
+            button press action of the IVT Rego6xx series heat pump.
         end note
     }
 }
@@ -148,5 +175,6 @@ rego6xxCtrl ..> stream: <<use>>
 sensor <|--- ivtRego6xxSensor
 binarySensor <|--- ivtRego6xxBinarySensor
 textSensor <|--- ivtRego6xxTextSensor
+button <|--- ivtRego6xxButton
 
 @enduml

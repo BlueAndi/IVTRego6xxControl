@@ -17,6 +17,7 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
 - [Sensors](#sensors)
 - [Binary Sensors](#binary-sensors)
 - [Text Sensors](#text-sensors)
+- [Buttons](#buttons)
 - [API Endpoints and MQTT Topics](#api-endpoints-and-mqtt-topics)
 - [SW-Architecture](#sw-architecture)
 - [Details](#details)
@@ -76,66 +77,81 @@ esphome run IVTRego6xxCtrl.yaml
 
 ### Usage
 
-TODO
-
 ## Sensors
 
-| **Name** | **Description**                  | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|----------|----------------------------------|------------------------------------------------|------------------------------------------------|
-| **gt1**  | Radiator return temperature      | 0x0209                                         | 0x020B                                         |
-| **gt2**  | Outdoor temperature              | 0x020A                                         | 0x020C                                         |
-| **gt3**  | Hot water temperature            | 0x020B                                         | 0x020D                                         |
-| **gt4**  | Forward temperature              | 0x020C                                         | 0x020E                                         |
-| **gt5**  | Room temperature                 | 0x020D                                         | 0x020F                                         |
-| **gt6**  | Compressor temperature           | 0x020E                                         | 0x0210                                         |
-| **gt8**  | Heat fluid out temperature       | 0x020F                                         | 0x0211                                         |
-| **gt9**  | Heat fluid in temperature        | 0x0210                                         | 0x0212                                         |
-| **gt10** | Cold fluid in temperature        | 0x0211                                         | 0x0213                                         |
-| **gt11** | Cold fluid out temperature       | 0x0212                                         | 0x0214                                         |
-| **gt3X** | External hot water temperature   | 0x0213                                         | 0x0215                                         |
+| **Name**   | **Description**                | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
+|------------|--------------------------------|----------------|------------------------------------------------|------------------------------------------------|
+| **gt1**    | Radiator return temperature    | 0x02           | 0x0209                                         | 0x020B                                         |
+| **gt2**    | Outdoor temperature            | 0x02           | 0x020A                                         | 0x020C                                         |
+| **gt3**    | Hot water temperature          | 0x02           | 0x020B                                         | 0x020D                                         |
+| **gt4**    | Forward temperature            | 0x02           | 0x020C                                         | 0x020E                                         |
+| **gt5**    | Room temperature               | 0x02           | 0x020D                                         | 0x020F                                         |
+| **gt6**    | Compressor temperature         | 0x02           | 0x020E                                         | 0x0210                                         |
+| **gt8**    | Heat fluid out temperature     | 0x02           | 0x020F                                         | 0x0211                                         |
+| **gt9**    | Heat fluid in temperature      | 0x02           | 0x0210                                         | 0x0212                                         |
+| **gt10**   | Cold fluid in temperature      | 0x02           | 0x0211                                         | 0x0213                                         |
+| **gt11**   | Cold fluid out temperature     | 0x02           | 0x0212                                         | 0x0214                                         |
+| **gt3X**   | External hot water temperature | 0x02           | 0x0213                                         | 0x0215                                         |
 
 ## Binary Sensors
 
-| **Name**   | **Description** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|------------|-----------------|------------------------------------------------|------------------------------------------------|
-| **power**  | Power           | 0x0012                                         | 0x0012                                         |
-| **pump**   | Pump            | 0x0013                                         | 0x0013                                         |
-| **heating**| Heating         | 0x0014                                         | 0x0014                                         |
-| **boiler** | Boiler          | 0x0015                                         | 0x0015                                         |
-| **alarm**  | Alarm           | 0x0016                                         | 0x0016                                         |
+| **Name**   | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
+|------------|-----------------|----------------|------------------------------------------------|------------------------------------------------|
+| **power**  | Power           | 0x00           | 0x0012                                         | 0x0012                                         |
+| **pump**   | Pump            | 0x00           | 0x0013                                         | 0x0013                                         |
+| **heating**| Heating         | 0x00           | 0x0014                                         | 0x0014                                         |
+| **boiler** | Boiler          | 0x00           | 0x0015                                         | 0x0015                                         |
+| **alarm**  | Alarm           | 0x00           | 0x0016                                         | 0x0016                                         |
 
 ## Text Sensors
 
-| **Name**          | **Description** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|-------------------|-----------------|------------------------------------------------|------------------------------------------------|
-| **display_row_1** | Display row 1   | 0x0000                                         | 0x0000                                         |
-| **display_row_2** | Display row 2   | 0x0000                                         | 0x0000                                         |
-| **display_row_3** | Display row 3   | 0x0000                                         | 0x0000                                         |
-| **display_row_4** | Display row 4   | 0x0000                                         | 0x0000                                         |
+| **Name**          | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
+|-------------------|-----------------|---------------|------------------------------------------------|------------------------------------------------|
+| **display_row_1** | Display row 1   | 0x20          | 0x0000                                         | 0x0000                                         |
+| **display_row_2** | Display row 2   | 0x20          | 0x0000                                         | 0x0000                                         |
+| **display_row_3** | Display row 3   | 0x20          | 0x0000                                         | 0x0000                                         |
+| **display_row_4** | Display row 4   | 0x20          | 0x0000                                         | 0x0000                                         |
+
+## Buttons
+
+| **Name**            | **Description**   | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
+|---------------------|-------------------|----------------|------------------------------------------------|------------------------------------------------|
+| **power_button**    | Power button      | 0x01           | 0x0008                                         | 0x0000                                         |
+| **left_button**     | Left button       | 0x01           | 0x0009                                         | 0x0000                                         |
+| **middle_button**   | Middle button     | 0x01           | 0x000A                                         | 0x0000                                         |
+| **right_button**    | Right button      | 0x01           | 0x000B                                         | 0x0000                                         |
+| **turn_wheel_left** | Turn wheel left   | 0x01           | 0x0044                                         | 0x01FF                                         |
+| **turn_wheel_right**| Turn wheel right  | 0x01           | 0x0044                                         | 0x0001                                         |
 
 ## API Endpoints and MQTT Topics
 
-| **Name**          | **Description**                | **REST API**                                    | **MQTT Topic**                                 |
-|-------------------|--------------------------------|-------------------------------------------------|------------------------------------------------|
-| **gt1**           | Radiator return temperature    | `http://<IP-ADDRESS>/sensor/gt1`                | `heatpumpctrl/sensor/gt1/state`                |
-| **gt2**           | Outdoor temperature            | `http://<IP-ADDRESS>/sensor/gt2`                | `heatpumpctrl/sensor/gt2/state`                |
-| **gt3**           | Hot water temperature          | `http://<IP-ADDRESS>/sensor/gt3`                | `heatpumpctrl/sensor/gt3/state`                |
-| **gt4**           | Forward temperature            | `http://<IP-ADDRESS>/sensor/gt4`                | `heatpumpctrl/sensor/gt4/state`                |
-| **gt5**           | Room temperature               | `http://<IP-ADDRESS>/sensor/gt5`                | `heatpumpctrl/sensor/gt5/state`                |
-| **gt6**           | Compressor temperature         | `http://<IP-ADDRESS>/sensor/gt6`                | `heatpumpctrl/sensor/gt6/state`                |
-| **gt8**           | Heat fluid out temperature     | `http://<IP-ADDRESS>/sensor/gt8`                | `heatpumpctrl/sensor/gt8/state`                |
-| **gt9**           | Heat fluid in temperature      | `http://<IP-ADDRESS>/sensor/gt9`                | `heatpumpctrl/sensor/gt9/state`                |
-| **gt10**          | Cold fluid in temperature      | `http://<IP-ADDRESS>/sensor/gt10`               | `heatpumpctrl/sensor/gt10/state`               |
-| **gt3X**          | External hot water temperature | `http://<IP-ADDRESS>/sensor/gt3x`               | `heatpumpctrl/sensor/gt3x/state`               |
-| **power**         | Power                          | `http://<IP-ADDRESS>/binary_sensor/power`       | `heatpumpctrl/binary_sensor/power/state`       |
-| **pump**          | Pump                           | `http://<IP-ADDRESS>/binary_sensor/pump`        | `heatpumpctrl/binary_sensor/pump/state`        |
-| **heating**       | Heating                        | `http://<IP-ADDRESS>/binary_sensor/heating`     | `heatpumpctrl/binary_sensor/heating/state`     |
-| **boiler**        | Boiler                         | `http://<IP-ADDRESS>/binary_sensor/boiler`      | `heatpumpctrl/binary_sensor/boiler/state`      |
-| **alarm**         | Alarm                          | `http://<IP-ADDRESS>/binary_sensor/alarm`       | `heatpumpctrl/binary_sensor/alarm/state`       |
-| **display_row_1** | Display row 1                  | `http://<IP-ADDRESS>/text_sensor/display_row_1` | `heatpumpctrl/text_sensor/display_row_1/state` |
-| **display_row_2** | Display row 2                  | `http://<IP-ADDRESS>/text_sensor/display_row_2` | `heatpumpctrl/text_sensor/display_row_2/state` |
-| **display_row_3** | Display row 3                  | `http://<IP-ADDRESS>/text_sensor/display_row_3` | `heatpumpctrl/text_sensor/display_row_3/state` |
-| **display_row_4** | Display row 4                  | `http://<IP-ADDRESS>/text_sensor/display_row_4` | `heatpumpctrl/text_sensor/display_row_4/state` |
+| **Name**            | **Description**                | **REST API**                                   | **MQTT Topic**                                |
+|---------------------|--------------------------------|------------------------------------------------|-----------------------------------------------|
+| **gt1**             | Radiator return temperature    | `http://<IP-ADDRESS>/sensor/gt1`               | `heatpumpctrl/sensor/gt1/state`               |
+| **gt2**             | Outdoor temperature            | `http://<IP-ADDRESS>/sensor/gt2`               | `heatpumpctrl/sensor/gt2/state`               |
+| **gt3**             | Hot water temperature          | `http://<IP-ADDRESS>/sensor/gt3`               | `heatpumpctrl/sensor/gt3/state`               |
+| **gt4**             | Forward temperature            | `http://<IP-ADDRESS>/sensor/gt4`               | `heatpumpctrl/sensor/gt4/state`               |
+| **gt5**             | Room temperature               | `http://<IP-ADDRESS>/sensor/gt5`               | `heatpumpctrl/sensor/gt5/state`               |
+| **gt6**             | Compressor temperature         | `http://<IP-ADDRESS>/sensor/gt6`               | `heatpumpctrl/sensor/gt6/state`               |
+| **gt8**             | Heat fluid out temperature     | `http://<IP-ADDRESS>/sensor/gt8`               | `heatpumpctrl/sensor/gt8/state`               |
+| **gt9**             | Heat fluid in temperature      | `http://<IP-ADDRESS>/sensor/gt9`               | `heatpumpctrl/sensor/gt9/state`               |
+| **gt10**            | Cold fluid in temperature      | `http://<IP-ADDRESS>/sensor/gt10`              | `heatpumpctrl/sensor/gt10/state`              |
+| **gt3X**            | External hot water temperature | `http://<IP-ADDRESS>/sensor/gt3x`              | `heatpumpctrl/sensor/gt3x/state`              |
+| **power**           | Power                          | `http://<IP-ADDRESS>/binary_sensor/power`      | `heatpumpctrl/binary_sensor/power/state`      |
+| **pump**            | Pump                           | `http://<IP-ADDRESS>/binary_sensor/pump`       | `heatpumpctrl/binary_sensor/pump/state`       |
+| **heating**         | Heating                        | `http://<IP-ADDRESS>/binary_sensor/heating`    | `heatpumpctrl/binary_sensor/heating/state`    |
+| **boiler**          | Boiler                         | `http://<IP-ADDRESS>/binary_sensor/boiler`     | `heatpumpctrl/binary_sensor/boiler/state`     |
+| **alarm**           | Alarm                          | `http://<IP-ADDRESS>/binary_sensor/alarm`      | `heatpumpctrl/binary_sensor/alarm/state`      |
+| **display_row_1**   | Display row 1                  | `http://<IP-ADDRESS>/text_sensor/display_row_1`| `heatpumpctrl/text_sensor/display_row_1/state`|
+| **display_row_2**   | Display row 2                  | `http://<IP-ADDRESS>/text_sensor/display_row_2`| `heatpumpctrl/text_sensor/display_row_2/state`|
+| **display_row_3**   | Display row 3                  | `http://<IP-ADDRESS>/text_sensor/display_row_3`| `heatpumpctrl/text_sensor/display_row_3/state`|
+| **display_row_4**   | Display row 4                  | `http://<IP-ADDRESS>/text_sensor/display_row_4`| `heatpumpctrl/text_sensor/display_row_4/state`|
+| **power_button**    | Power button                   | `http://<IP-ADDRESS>/button/power_button`      | `heatpumpctrl/button/power_button/state`      |
+| **left_button**     | Left button                    | `http://<IP-ADDRESS>/button/left_button`       | `heatpumpctrl/button/left_button/state`       |
+| **middle_button**   | Middle button                  | `http://<IP-ADDRESS>/button/middle_button`     | `heatpumpctrl/button/middle_button/state`     |
+| **right_button**    | Right button                   | `http://<IP-ADDRESS>/button/right_button`      | `heatpumpctrl/button/right_button/state`      |
+| **turn_wheel_left** | Turn wheel left                | `http://<IP-ADDRESS>/button/turn_wheel_left`   | `heatpumpctrl/button/turn_wheel_left/state`   |
+| **turn_wheel_right**| Turn wheel right               | `http://<IP-ADDRESS>/button/turn_wheel_right`  | `heatpumpctrl/button/turn_wheel_right/state`  |
 
 ## SW-Architecture
 

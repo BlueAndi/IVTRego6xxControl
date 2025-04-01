@@ -7,13 +7,12 @@ participant "Arduino" as arduino
 participant "IVTRego6xxCtrl" as ivtRego6xxCtrl
 participant "IVTRego6xxSensor" as ivtRego6xxSensor
 participant "IVTRego6xxBinarySensor" as ivtRego6xxBinarySensor
-participant "IVTRego6xxTextSensor" as ivtRego6xxTextSensor
 
 autoactivate on
 
 -> main
 
-    note over main,uart
+    note over main,ivtRego6xxBinarySensor
         Perform Arduino setup.
     end note
 
@@ -22,6 +21,11 @@ autoactivate on
         arduino <-- ivtRego6xxCtrl
         arduino -> ivtRego6xxCtrl: set component source "ivt_rego6xx_ctrl"
         arduino <-- ivtRego6xxCtrl
+
+        note over arduino,ivtRego6xxBinarySensor
+            The following loops just show the principle how to combine
+            any kind of sensor or button with the IVTRego6xxCtrl.
+        end note
 
         loop for all configured sensors
             arduino -> ivtRego6xxSensor: create instance with command id and address\ndefined by ivt_rego6xx_ctrl_cmd and ivt_rego6xx_ctrl_addr in IVTRego6xxCtrl.yaml
@@ -37,18 +41,11 @@ autoactivate on
             arduino <-- ivtRego6xxCtrl
         end
 
-        loop for all configured text sensors
-            arduino -> ivtRego6xxTextSensor: create instance with command id and address\ndefined by ivt_rego6xx_ctrl_cmd and ivt_rego6xx_ctrl_addr in IVTRego6xxCtrl.yaml
-            arduino <-- ivtRego6xxTextSensor
-            arduino -> ivtRego6xxCtrl: register text sensor IVTRego6xxTextSensor
-            arduino <-- ivtRego6xxCtrl
-        end
-
         arduino -> ivtRego6xxCtrl: setup
         arduino <-- ivtRego6xxCtrl
     main <-- arduino
 
-    note over main,uart
+    note over main,ivtRego6xxBinarySensor
         Next step is the Arduino loop.
     end note
 
