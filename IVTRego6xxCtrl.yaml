@@ -262,6 +262,13 @@ text_sensor:
     ivt_rego6xx_ctrl_addr: 0x0003 # Display row 4
     name: display row 4
 
+# Button configuration
+# https://esphome.io/components/button/index.html
+#
+# ivt_rego6xx_ctrl_id  : The ID of the custom component.
+# ivt_rego6xx_ctrl_cmd : The command to send to the heat pump.
+# ivt_rego6xx_ctrl_addr: The address to write by the command.
+# ivt_rego6xx_ctrl_value: The value to write by the command.
 button:
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
