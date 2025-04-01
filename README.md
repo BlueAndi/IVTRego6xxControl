@@ -108,9 +108,9 @@ esphome run IVTRego6xxCtrl.yaml
 | **Name**          | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
 |-------------------|-----------------|---------------|------------------------------------------------|------------------------------------------------|
 | **display_row_1** | Display row 1   | 0x20          | 0x0000                                         | 0x0000                                         |
-| **display_row_2** | Display row 2   | 0x20          | 0x0000                                         | 0x0000                                         |
-| **display_row_3** | Display row 3   | 0x20          | 0x0000                                         | 0x0000                                         |
-| **display_row_4** | Display row 4   | 0x20          | 0x0000                                         | 0x0000                                         |
+| **display_row_2** | Display row 2   | 0x20          | 0x0001                                         | 0x0001                                         |
+| **display_row_3** | Display row 3   | 0x20          | 0x0002                                         | 0x0002                                         |
+| **display_row_4** | Display row 4   | 0x20          | 0x0003                                         | 0x0003                                         |
 
 ## Buttons
 
