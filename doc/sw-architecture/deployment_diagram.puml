@@ -22,6 +22,9 @@ node "Heatpump" as heatPump {
 
     node "Electronic" as electronic {
         component "Service Interface\nSub-D9" as serviceInterface
+        node "Rego6xx Controller" as rego6xx
+
+        serviceInterface - rego6xx
     }
     
     rs232LevelShifter --( iSerialTTL
