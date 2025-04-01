@@ -2,6 +2,11 @@
 # https://esphome.io/index.html
 esphome:
   name: heatpumpctrl
+  friendly_name: IVT Heatpump
+  area: Heating room
+  project:
+    name: "BlueAndi.IVTRego6xxControl"
+    version: "0.1.0"
   includes:
     - lib/Rego6xx
     - lib/Utilities
