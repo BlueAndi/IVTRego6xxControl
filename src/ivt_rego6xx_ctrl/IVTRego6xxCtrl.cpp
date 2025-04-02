@@ -78,6 +78,7 @@ void IVTRego6xxCtrl::setup()
     m_sensorTimer.start(SENSOR_READ_INITIAL);
     m_binarySensorTimer.start(SENSOR_READ_INITIAL);
     m_textSensorTimer.start(SENSOR_READ_INITIAL);
+    m_numberTimer.start(SENSOR_READ_INITIAL);
 }
 
 void IVTRego6xxCtrl::loop()
@@ -92,7 +93,10 @@ void IVTRego6xxCtrl::loop()
         {
             m_pauseTimer.stop();
 
-            /* Check buttons first for fast user experience. */
+            /* Check buttons first and numbers as second whether there are updates required.
+             * This gurantees that the user can press a button or change a number and it will
+             * be processed immediately.
+             */
             m_state = STATE_BUTTONS;
         }
     }
@@ -109,6 +113,77 @@ void IVTRego6xxCtrl::loop()
 void IVTRego6xxCtrl::dump_config()
 {
     ESP_LOGCONFIG(TAG, "IVT rego6xx controller component");
+}
+
+void IVTRego6xxCtrl::registerSensor(IVTRego6xxSensor* sensor)
+{
+    if ((nullptr != sensor) && (m_sensorCount < MAX_SENSORS))
+    {
+        m_sensors[m_sensorCount] = sensor;
+
+        ++m_sensorCount;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to register sensor '%s'!", sensor->get_name().c_str());
+    }
+}
+
+void IVTRego6xxCtrl::registerBinarySensor(IVTRego6xxBinarySensor* binarySensor)
+{
+    if ((nullptr != binarySensor) && (m_binarySensorCount < MAX_BINARY_SENSORS))
+    {
+        m_binarySensors[m_binarySensorCount] = binarySensor;
+
+        ++m_binarySensorCount;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to register binary sensor '%s'!", binarySensor->get_name().c_str());
+    }
+
+}
+
+void IVTRego6xxCtrl::registerTextSensor(IVTRego6xxTextSensor* textSensor)
+{
+    if ((nullptr != textSensor) && (m_textSensorCount < MAX_TEXT_SENSORS))
+    {
+        m_textSensors[m_textSensorCount] = textSensor;
+
+        ++m_textSensorCount;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to register text sensor '%s'!", textSensor->get_name().c_str());
+    }
+}
+
+void IVTRego6xxCtrl::registerButton(IVTRego6xxButton* button)
+{
+    if ((nullptr != button) && (m_buttonCount < MAX_BUTTONS))
+    {
+        m_buttons[m_buttonCount] = button;
+
+        ++m_buttonCount;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to register button '%s'!", button->get_name().c_str());
+    }
+}
+
+void IVTRego6xxCtrl::registerNumber(IVTRego6xxNumber* number)
+{
+    if ((nullptr != number) && (m_numberCount < MAX_NUMBERS))
+    {
+        m_numbers[m_numberCount] = number;
+
+        ++m_numberCount;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to register number '%s'!", number->get_name().c_str());
+    }
 }
 
 /******************************************************************************
@@ -139,6 +214,10 @@ IVTRego6xxCtrl::State IVTRego6xxCtrl::getPendingState(IVTRego6xxCtrl::State curr
     {
         prevState = STATE_BUTTONS;
     }
+    else if (m_numberCount > m_currentNumberIndex)
+    {
+        prevState = STATE_NUMBERS;
+    }
     else
     {
         ;
@@ -154,15 +233,22 @@ void IVTRego6xxCtrl::processStateMachine()
     switch (m_state)
     {
     case STATE_BUTTONS:
-        /* If all buttons handled, continue with the pending state.
+        if (false == processButtons())
+        {
+            nextState = STATE_NUMBERS_UPDATE;
+        }
+        break;
+
+    case STATE_NUMBERS_UPDATE:
+        /* If all numbers handled, continue with the pending state.
          * The pending state is the one, which has been paused before
          * because of the button press.
          */
-        if (false == processButtons())
+        if (false == processNumberUpdates())
         {
-            nextState = getPendingState(STATE_BUTTONS);
+            nextState = getPendingState(STATE_NUMBERS_UPDATE);
 
-            if (STATE_BUTTONS == nextState)
+            if (STATE_NUMBERS_UPDATE == nextState)
             {
                 nextState = STATE_SENSORS;
             }
@@ -186,6 +272,13 @@ void IVTRego6xxCtrl::processStateMachine()
     case STATE_TEXT_SENSORS:
         if (false == processTextSensors())
         {
+            nextState = STATE_NUMBERS;
+        }
+        break;
+
+    case STATE_NUMBERS:
+        if (false == processNumbers())
+        {
             nextState = STATE_SENSORS;
         }
         break;
@@ -205,8 +298,6 @@ bool IVTRego6xxCtrl::processButtons()
     /* If no command is pending, request next button. */
     if (nullptr == m_confirmRsp)
     {
-        size_t buttonIndex;
-
         /* If all buttons are handled, start from the beginning. */
         if (m_buttonCount <= m_currentButtonIndex)
         {
@@ -291,6 +382,97 @@ bool IVTRego6xxCtrl::processButtons()
     return isPending;
 }
 
+bool IVTRego6xxCtrl::processNumberUpdates()
+{
+    bool isPending = false;
+
+    /* If no command is pending, request next button. */
+    if (nullptr == m_confirmRsp)
+    {
+        /* If all numbers are handled, start from the beginning. */
+        if (m_numberCount <= m_currentNumberUpdateIndex)
+        {
+            m_currentNumberUpdateIndex = 0U;
+        }
+        else
+        {
+            ++m_currentNumberUpdateIndex;
+        }
+
+        while (m_numberCount > m_currentNumberUpdateIndex)
+        {
+            IVTRego6xxNumber* currentNumber     = m_numbers[m_currentNumberUpdateIndex];
+            bool              isUpdateRequested = currentNumber->isUpdateRequested();
+
+            if (true == isUpdateRequested)
+            {
+                uint8_t  cmdId = currentNumber->getWriteCmdId();
+                uint16_t addr  = currentNumber->getAddr();
+                uint16_t value = m_ctrl.fromFloat(currentNumber->getValue());
+
+                ESP_LOGI(TAG, "Write number '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X ...", currentNumber->get_name().c_str(), value, cmdId, addr);
+                m_confirmRsp = m_ctrl.writeStd(cmdId, addr, value);
+
+                if (nullptr == m_confirmRsp)
+                {
+                    ESP_LOGE(TAG, "Failed to write number '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X!", currentNumber->get_name().c_str(), value, cmdId, addr);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            ++m_currentNumberUpdateIndex;
+        }
+    }
+    /* Command response received? */
+    else if ((true == m_confirmRsp->isUsed()) &&
+             (false == m_confirmRsp->isPending()))
+    {
+        IVTRego6xxNumber* currentNumber = m_numbers[m_currentNumberUpdateIndex];
+
+        if (true == m_confirmRsp->isTimeout())
+        {
+            ESP_LOGW(TAG, "Write number '%s' response timeout.", currentNumber->get_name().c_str());
+        }
+        else if (false == m_confirmRsp->isValid())
+        {
+            ESP_LOGW(TAG, "Write number '%s' response invalid.", currentNumber->get_name().c_str());
+        }
+        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_confirmRsp->getDevAddr())
+        {
+            ESP_LOGW(TAG, "Write number '%s' response has wrong destination.", currentNumber->get_name().c_str());
+        }
+        else
+        {
+            ESP_LOGI(TAG, "Write number '%s' successful.", currentNumber->get_name().c_str());
+        }
+
+        m_ctrl.release();
+        m_confirmRsp = nullptr;
+
+        ++m_currentNumberUpdateIndex;
+
+        /* Pause until next sensor will be read. */
+        m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+    }
+    else
+    /* Wait for pending command response. */
+    {
+        /* Nothing to do */
+        ;
+    }
+
+    if (m_numberCount > m_currentNumberUpdateIndex)
+    {
+        /* Continue reading the buttons. */
+        isPending = true;
+    }
+
+    return isPending;
+}
+
 bool IVTRego6xxCtrl::processSensors()
 {
     bool isPending = false;
@@ -345,6 +527,26 @@ bool IVTRego6xxCtrl::processTextSensors()
     if (m_textSensorCount > m_currentTextSensorIndex)
     {
         /* Continue reading the text sensors. */
+        isPending = true;
+    }
+
+    return isPending;
+}
+
+bool IVTRego6xxCtrl::processNumbers()
+{
+    bool isPending = false;
+
+    /* Is it time to start reading the numbers or reading already in progess? */
+    if (((true == m_numberTimer.isTimerRunning()) && (true == m_numberTimer.isTimeout())) ||
+        (m_numberCount > m_currentNumberIndex))
+    {
+        readNumbers();
+    }
+
+    if (m_numberCount > m_currentNumberIndex)
+    {
+        /* Continue reading the numbers. */
         isPending = true;
     }
 
@@ -584,6 +786,84 @@ void IVTRego6xxCtrl::readTextSensors()
         ++m_currentTextSensorIndex;
 
         /* Pause until next binary sensor will be read. */
+        m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+    }
+}
+
+void IVTRego6xxCtrl::readNumbers()
+{
+    bool nextSensor = false;
+
+    /* If no command is pending, request next number. */
+    if (nullptr == m_rego6xxRsp)
+    {
+        /* If all numbers are read, start from the beginning. */
+        if (m_numberCount <= m_currentNumberIndex)
+        {
+            m_currentNumberIndex = 0U;
+
+            /* Start timer for next number read immediately to keep the cycle. */
+            m_numberTimer.start(NUMBER_READ_PERIOD);
+        }
+
+        {
+            IVTRego6xxNumber* currentNumber = m_numbers[m_currentNumberIndex];
+            uint8_t           cmdId         = currentNumber->getReadCmdId();
+            uint16_t          addr          = currentNumber->getAddr();
+
+            ESP_LOGI(TAG, "Read number '%s' with 0x%02X (cmd id) at 0x%04X ...", currentNumber->get_name().c_str(), cmdId, addr);
+            m_rego6xxRsp = m_ctrl.readStd(cmdId, addr);
+
+            if (nullptr == m_rego6xxRsp)
+            {
+                ESP_LOGE(TAG, "Failed to read number '%s' with 0x%02X (cmd id) at 0x%04X!", currentNumber->get_name().c_str(), cmdId, addr);
+                nextSensor = true;
+            }
+        }
+    }
+    /* Command response received? */
+    else if ((true == m_rego6xxRsp->isUsed()) &&
+             (false == m_rego6xxRsp->isPending()))
+    {
+        IVTRego6xxNumber* currentNumber = m_numbers[m_currentNumberIndex];
+
+        if (true == m_rego6xxRsp->isTimeout())
+        {
+            ESP_LOGW(TAG, "Read number '%s' response timeout.", currentNumber->get_name().c_str());
+        }
+        else if (false == m_rego6xxRsp->isValid())
+        {
+            ESP_LOGW(TAG, "Read number '%s' response invalid.", currentNumber->get_name().c_str());
+        }
+        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr())
+        {
+            ESP_LOGW(TAG, "Read number '%s' response has wrong destination.", currentNumber->get_name().c_str());
+        }
+        else
+        {
+            float value = m_ctrl.toFloat(m_rego6xxRsp->getValue());
+
+            currentNumber->publish_state(value);
+
+            ESP_LOGI(TAG, "Read number '%s' successful.", currentNumber->get_name().c_str());
+        }
+
+        m_ctrl.release();
+        m_rego6xxRsp = nullptr;
+        nextSensor   = true;
+    }
+    else
+    /* Wait for pending command response. */
+    {
+        /* Nothing to do */
+        ;
+    }
+
+    if (true == nextSensor)
+    {
+        ++m_currentNumberIndex;
+
+        /* Pause until next number will be read. */
         m_pauseTimer.start(REGO6xx_REQ_PAUSE);
     }
 }

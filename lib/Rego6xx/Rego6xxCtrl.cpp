@@ -115,6 +115,26 @@ bool Rego6xxCtrl::toBool(uint16_t value)
     return (0U == value) ? false : true;
 }
 
+uint16_t Rego6xxCtrl::fromFloat(float value)
+{
+    uint16_t result     = 0U;
+    bool     isNegative = (0.0F > value) ? true : false;
+
+    if (true == isNegative)
+    {
+        value = -value;
+    }
+
+    result = static_cast<uint16_t>(value * 10.0F);
+
+    if (true == isNegative)
+    {
+        result = (0xFFFFU - result) + 1U;
+    }
+
+    return result;
+}
+
 const Rego6xxErrorRsp* Rego6xxCtrl::readLastError()
 {
     const Rego6xxErrorRsp* rsp = nullptr;

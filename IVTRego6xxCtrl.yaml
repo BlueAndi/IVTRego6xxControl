@@ -107,7 +107,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0209
     name: gt1
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -115,7 +116,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020a
     name: gt2
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -123,7 +125,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020b
     name: gt3
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -131,7 +134,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020c
     name: gt4
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -139,7 +143,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020d
     name: gt5
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -147,7 +152,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020e
     name: gt6
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -155,7 +161,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x020f
     name: gt8
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -163,7 +170,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0210
     name: gt9
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -171,7 +179,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0211
     name: gt10
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -179,7 +188,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0212
     name: gt11
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
   - platform: ivt_rego6xx_ctrl
@@ -187,7 +197,8 @@ sensor:
     ivt_rego6xx_ctrl_cmd: 0x02 # Read system register
     ivt_rego6xx_ctrl_addr: 0x0213
     name: gt3x
-    unit_of_measurement: °C
+    unit_of_measurement: "°C"
+    device_class: temperature
     state_class: measurement
 
 # Binary sensor configuration
@@ -311,3 +322,109 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0044
     ivt_rego6xx_ctrl_value: 0x0001
     name: turn wheel right
+
+# Number configuration
+# https://esphome.io/components/number/index.html
+#
+# ivt_rego6xx_ctrl_id  : The ID of the custom component.
+# ivt_rego6xx_ctrl_cmd : The command to send to the heat pump.
+# ivt_rego6xx_ctrl_addr: The address to write by the command.
+# ivt_rego6xx_ctrl_min_value: The minimum value for the number.
+# ivt_rego6xx_ctrl_max_value: The maximum value for the number.
+# ivt_rego6xx_ctrl_step: The step size for the number.
+number:
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x006E
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt1 target
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x006F
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt1 on
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x0070
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt1 off
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x002B
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt3 target
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x0073
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt3 on
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x0074
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt3 off
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x006D
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: gt4 target
+    unit_of_measurement: "°C"
+    device_class: temperature
+
+  - platform: ivt_rego6xx_ctrl
+    ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
+    ivt_rego6xx_ctrl_cmd_read: 0x02 # Read system register
+    ivt_rego6xx_ctrl_cmd_write: 0x03 # Write system register
+    ivt_rego6xx_ctrl_addr: 0x006C
+    ivt_rego6xx_ctrl_min_value: 0
+    ivt_rego6xx_ctrl_max_value: 100
+    ivt_rego6xx_ctrl_step: 0.5
+    name: add heat power
+    unit_of_measurement: "%"
+    device_class: temperature

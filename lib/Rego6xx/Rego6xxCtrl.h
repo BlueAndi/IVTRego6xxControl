@@ -231,6 +231,15 @@ public:
     bool toBool(uint16_t value);
 
     /**
+     * Convert float to 16 bit value.
+     * 
+     * @param[in] value The float value, which should be converted to a 16-bit value.
+     * 
+     * @return The 16-bit value, converted from the float value.
+     */
+    uint16_t fromFloat(float value);
+
+    /**
      * Read last error description.
      * 
      * @return Asynchronous response

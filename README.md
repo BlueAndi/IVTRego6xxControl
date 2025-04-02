@@ -19,6 +19,7 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
 - [Binary Sensors](#binary-sensors)
 - [Text Sensors](#text-sensors)
 - [Buttons](#buttons)
+- [Numbers](#numbers)
 - [API Endpoints and MQTT Topics](#api-endpoints-and-mqtt-topics)
 - [SW-Architecture](#sw-architecture)
 - [Details](#details)
@@ -133,6 +134,19 @@ esphome run IVTRego6xxCtrl.yaml
 | **turn_wheel_left** | Turn wheel left   | 0x01           | 0x0044                                         | 0x01FF                                         |
 | **turn_wheel_right**| Turn wheel right  | 0x01           | 0x0044                                         | 0x0001                                         |
 
+## Numbers
+
+| **Name**           | **Description**                 | **Command ID**    | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
+|--------------------|---------------------------------|-------------------|------------------------------------------------|------------------------------------------------|
+| **gt1_target**     | GT1 target temperature          | 0x02 / 0x03       | 0x006E                                         | 0x006E                                         |
+| **gt1_on**         | GT1 on temperature threshold    | 0x02 / 0x03       | 0x006F                                         | 0x006F                                         |
+| **gt1_off**        | GT1 off temperature threshold   | 0x02 / 0x03       | 0x0070                                         | 0x0070                                         |
+| **gt3_target**     | GT3 target temperature          | 0x02 / 0x03       | 0x002B                                         | 0x002B                                         |
+| **gt3_on**         | GT3 on temperature threshold    | 0x02 / 0x03       | 0x0073                                         | 0x0073                                         |
+| **gt3_off**        | GT3 off temperature threshold   | 0x02 / 0x03       | 0x0074                                         | 0x0074                                         |
+| **gt4_target**     | GT4 target temperature          | 0x02 / 0x03       | 0x006D                                         | 0x006D                                         |
+| **add_heat_power** | Add heat power                  | 0x02 / 0x03       | 0x006C                                         | 0x006C                                         |
+
 ## API Endpoints and MQTT Topics
 
 | **Name**            | **Description**                | **REST API**                                   | **MQTT Topic**                                |
@@ -160,8 +174,14 @@ esphome run IVTRego6xxCtrl.yaml
 | **left_button**     | Left button                    | `http://<IP-ADDRESS>/button/left_button`       | `heatpumpctrl/button/left_button/state`       |
 | **middle_button**   | Middle button                  | `http://<IP-ADDRESS>/button/middle_button`     | `heatpumpctrl/button/middle_button/state`     |
 | **right_button**    | Right button                   | `http://<IP-ADDRESS>/button/right_button`      | `heatpumpctrl/button/right_button/state`      |
-| **turn_wheel_left** | Turn wheel left                | `http://<IP-ADDRESS>/button/turn_wheel_left`   | `heatpumpctrl/button/turn_wheel_left/state`   |
-| **turn_wheel_right**| Turn wheel right               | `http://<IP-ADDRESS>/button/turn_wheel_right`  | `heatpumpctrl/button/turn_wheel_right/state`  |
+| **gt1_target**      | GT1 target temperature         | `http://<IP-ADDRESS>/number/gt1_target`        | `heatpumpctrl/number/gt1_target/state`        |
+| **gt1_on**          | GT1 on temperature threshold   | `http://<IP-ADDRESS>/number/gt1_on`            | `heatpumpctrl/number/gt1_on/state`            |
+| **gt1_off**         | GT1 off temperature threshold  | `http://<IP-ADDRESS>/number/gt1_off`           | `heatpumpctrl/number/gt1_off/state`           |
+| **gt3_target**      | GT3 target temperature         | `http://<IP-ADDRESS>/number/gt3_target`        | `heatpumpctrl/number/gt3_target/state`        |
+| **gt3_on**          | GT3 on temperature threshold   | `http://<IP-ADDRESS>/number/gt3_on`            | `heatpumpctrl/number/gt3_on/state`            |
+| **gt3_off**         | GT3 off temperature threshold  | `http://<IP-ADDRESS>/number/gt3_off`           | `heatpumpctrl/number/gt3_off/state`           |
+| **gt4_target**      | GT4 target temperature         | `http://<IP-ADDRESS>/number/gt4_target`        | `heatpumpctrl/number/gt4_target/state`        |
+| **add_heat_power**  | Add heat power                 | `http://<IP-ADDRESS>/number/add_heat_power`    | `heatpumpctrl/number/add_heat_power/state`    |
 
 ## SW-Architecture
 
