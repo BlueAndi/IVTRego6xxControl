@@ -68,6 +68,7 @@ uart:
 # https://esphome.io/components/web_server.html
 web_server:
   port: 80
+  version: 3
 
 # MQTT configuration
 mqtt:
