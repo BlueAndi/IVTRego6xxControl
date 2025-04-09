@@ -6,56 +6,104 @@ node "Olimex ESP23-POE-ISO-IND" {
 
     node "ESP32" as esp32 {
         component "Software" as sw
-        component "UART" as uart
-        component "UEXT" as uext
+        component "UART" as uart <<peripheral>>
 
         sw - uart
-        uart - uext
     }
+
+    component "UEXT" as uext <<connector>>
+    component "EXT1" as ext1 <<connector>>
+
+    uart -- uext    
+
+    note top of ext1
+        * Pin 1: +5V
+        * Pin 2: +3.3V
+        * Pin 3: GND
+    end note
 }
 
 node "MOD-RS232" as modRS232
 
 node "Heatpump" as heatPump {
-    node "RS232 Level Shifter" as rs232LevelShifter
+    node "RS232 Level Shifter" as rs232LevelShifter {
+
+        component "MAX232" as max232
+        component "Optocoupler" as optocoupler
+        component "Sub-D9 male" as lvlShifterSubD9Opto <<connector>>
+        component "Sub-D9 female" as lvlShifterSubD9 <<connector>>
+        component "+5V" as lvlShifterVcc <<connector>>
+
+        lvlShifterSubD9 -- max232
+        lvlShifterVcc -- max232
+        max232 -- optocoupler
+        optocoupler -- lvlShifterSubD9Opto
+    }
+
     interface "Serial with\n5V-TTL levels" as iSerialTTL
 
     node "Electronic" as electronic {
-        component "Service Interface\nSub-D9" as serviceInterface
+        component "Service Interface\nSub-D9 female" as serviceInterface <<connector>>
         node "Rego6xx Controller" as rego6xx
 
         serviceInterface - rego6xx
     }
     
-    rs232LevelShifter --( iSerialTTL
+    lvlShifterSubD9Opto ---( iSerialTTL
     iSerialTTL -- serviceInterface
 
-    note right of rs232LevelShifter
+    note bottom of rs232LevelShifter
         DIY RS232 level shifter based
-        on a MAX232 chip. This one is
-        inside the compartment of the
-        heatpump. It is connected to
+        on a MAX232 chip with optocoupler.
+        This one is inside the compartment
+        of the heatpump. It is connected to
         the service interface.
+    end note
+
+    note top of serviceInterface
+        SUB-D9 Pinout:
+        * Pin 2: Rego6xx RXD
+        * Pin 3: Rego6xx TXD
+        * Pin 4: +5V
+        * Pin 5: GND
+    end note
+
+    note left of optocoupler
+        Optocoupler is used to isolate the
+        heatpump from the microcontroller.
+        Its driven by the 5V/GND lines of
+        the service interface.
+    end note
+
+    note left of max232
+        MAX232 is used to convert the 5V-TTL
+        levels to RS232 levels.
+        It must be powered separately with 5V,
+        because the MOD-RS232 is powered with 3.3V
+        and has no 5V output on the Sub-D9 connector.
     end note
 }
 
 interface "Serial with\nRS232 levels" as iSerialRS232_1
 interface "Serial with\nRS232 levels" as iSerialRS232_2
-node "Gender Changer\nSub-D9" as genderChanger
+node "Gender Changer\nSub-D9" as genderChanger <<connector>>
 
-uext -- modRS232
+uext --- modRS232
 modRS232 -- iSerialRS232_1
 iSerialRS232_1 )-- genderChanger
 genderChanger --( iSerialRS232_2
-iSerialRS232_2 -- rs232LevelShifter
+iSerialRS232_2 -- lvlShifterSubD9
 
-note right of modRS232
+ext1 ----- lvlShifterVcc
+
+note top of modRS232
     Olimex MOD-RS232 is a RS232 to TTL converter
     with 5V-TTL levels.
 
-    SUB-D9 Pinout:
+    SUB-D9 (female) Pinout:
     * Pin 2: PC RXD
     * Pin 3: PC TXD
+    * Pin 4: NC
     * Pin 5: GND
 end note
 
