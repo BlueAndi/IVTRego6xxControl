@@ -8,7 +8,7 @@ Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv
 [![Release](https://img.shields.io/github/release/BlueAndi/IVTRego6xxControl.svg)](https://github.com/BlueAndi/IVTRego6xxControl/releases)
 
 - [Motivation](#motivation)
-- [Supported Hardware](#supported-hardware)
+- [Hardware](#hardware)
 - [Deployment](#deployment)
 - [Software](#software)
   - [Installation](#installation)
@@ -43,12 +43,11 @@ The first adapter I created was the [Rego6xxSrv](https://github.com/BlueAndi/Reg
 
 The protocol for the Rego6xx controller was original derived from http://rago600.sourceforge.net/.
 
-## Supported Hardware
+## Hardware
 
-- [Olimex ESP32-POE](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE/open-source-hardware)
-- [Olimex ESP32-POE-ISO](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware)
+The [Olimex ESP32-POE-ISO](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware) board with the RS-232 level shifter [Olimex MOD-RS232](https://www.olimex.com/Products/Modules/Interface/MOD-RS232/open-source-hardware) is used.
 
-with the RS-232 level shifter [Olimex MOD-RS232](https://www.olimex.com/Products/Modules/Interface/MOD-RS232/open-source-hardware).
+![Olimex ESP32-POE-ISO pinout](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/resources/ESP32-POE-ISO-GPIO.png)
 
 ## Deployment
 
