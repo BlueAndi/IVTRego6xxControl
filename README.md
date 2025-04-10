@@ -1,7 +1,7 @@
 # IVT Rego6xx Control <!-- omit in toc -->
 
-A REST API server which provides control over IVT heatpumps, which uses a Rego6xx controller.
-Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv).
+A REST API server and MQTT client which provides control over IVT heatpumps, which uses a Rego6xx controller.
+Its the successor project of [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv). Homeassistant MQTT automatic device discovery is supported as well.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://choosealicense.com/licenses/mit/)
 [![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -42,6 +42,10 @@ Unfortunately my Junkers heatpump (original build by IVT) has no smart interface
 The first adapter I created was the [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv) based on a ATmega644P, which is still up and running. But meanwhile the ATmega644P board I used is obsolete since 2024-01-01 and regarding my ideas the resources are very limited. Therefore the decision was made to create a secon adapter with less resource constraints and easier integration into a home automation.
 
 The protocol for the Rego6xx controller was original derived from http://rago600.sourceforge.net/.
+
+![FrontPanel](doc/images/front_panel.png)
+![Temperatures](doc/images/temperatures.png)
+![Settings](doc/images/settings.png)
 
 ## Hardware
 
