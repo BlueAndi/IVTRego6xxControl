@@ -72,9 +72,9 @@ ESPHome is used as the base of the software. The IVT reg6xx controller is implem
     ```bash
     pip install -r requirements.txt
     ```
-5. Create a ```secrets.yaml``` in the project root folder with
+5. Create a ```secrets.yaml``` in the project root folder. Replace **my_user** and **my_password** according to the MQTT broker credentials.
   ```yaml
-  mqtt_user: myuser
+  mqtt_user: my_user
   mqtt_password: my_password
   ```
 
