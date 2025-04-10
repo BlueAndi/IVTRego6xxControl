@@ -141,7 +141,6 @@ void IVTRego6xxCtrl::registerBinarySensor(IVTRego6xxBinarySensor* binarySensor)
     {
         ESP_LOGE(TAG, "Failed to register binary sensor '%s'!", binarySensor->get_name().c_str());
     }
-
 }
 
 void IVTRego6xxCtrl::registerTextSensor(IVTRego6xxTextSensor* textSensor)
@@ -762,9 +761,11 @@ void IVTRego6xxCtrl::readTextSensors()
         }
         else
         {
-            std::string msg = m_displayRsp->getMsg().c_str();
+            String      msg = m_displayRsp->getMsg(); /* encoding: iso-8859-1 */
+            std::string msgUtf8;
 
-            currentTextSensor->publish_state(msg);
+            iso8859_1_to_utf8(msg.c_str(), msgUtf8);
+            currentTextSensor->publish_state(msgUtf8);
 
             ESP_LOGI(TAG, "Read text sensor '%s' successful.", currentTextSensor->get_name().c_str());
         }
@@ -865,6 +866,31 @@ void IVTRego6xxCtrl::readNumbers()
 
         /* Pause until next number will be read. */
         m_pauseTimer.start(REGO6xx_REQ_PAUSE);
+    }
+}
+
+void IVTRego6xxCtrl::iso8859_1_to_utf8(const char* input, std::string& output)
+{
+    if (nullptr != input)
+    {
+        size_t inputLength = strlen(input);
+        size_t idx         = 0U;
+
+        for (idx = 0; idx < inputLength; ++idx)
+        {
+            unsigned char singleChar = static_cast<unsigned char>(input[idx]);
+
+            if (singleChar < 0x80U)
+            {
+                /* ASCII characters remain the same. */
+                output += static_cast<char>(singleChar);
+            }
+            else
+            {
+                output += static_cast<char>(0xC0U | (singleChar >> 6U));   /* First byte of UTF-8. */
+                output += static_cast<char>(0x80U | (singleChar & 0x3FU)); /* Second byte of UTF-8. */
+            }
+        }
     }
 }
 

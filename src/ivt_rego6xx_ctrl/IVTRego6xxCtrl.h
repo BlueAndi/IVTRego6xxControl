@@ -345,6 +345,14 @@ private:
      * Read all registered numbers.
      */
     void readNumbers();
+
+    /**
+     * Convert the given string from iso-8859-1 to utf-8.
+     * 
+     * @param[in] input The string to convert.
+     * @param[out] output The converted string.
+     */
+    void iso8859_1_to_utf8(const char* input, std::string& output);
 };
 
 } /* namespace ivt_rego6xx_ctrl */
