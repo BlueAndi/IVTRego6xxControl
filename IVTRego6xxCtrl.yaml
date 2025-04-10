@@ -53,14 +53,16 @@ ethernet:
 
 # Configure UART interface for heatpump communication.
 # https://esphome.io/components/uart.html
+#
+# Use UART1 on UEXT connector.
 uart:
   id: uart_heatpump
-  rx_pin: GPIO4
-  tx_pin: GPIO3
-  baud_rate: 115200
+  rx_pin: GPIO36
+  tx_pin: GPIO4
+  baud_rate: 19200
   debug:
     direction: BOTH
-    dummy_receiver: true
+    dummy_receiver: false
     after:
       timeout: 500ms
 
