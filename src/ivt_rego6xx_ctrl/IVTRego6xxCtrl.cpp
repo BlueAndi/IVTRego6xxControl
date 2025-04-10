@@ -349,7 +349,7 @@ bool IVTRego6xxCtrl::processButtons()
         {
             ESP_LOGW(TAG, "Write button '%s' response invalid.", currentButton->get_name().c_str());
         }
-        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_confirmRsp->getDevAddr())
+        else if (Rego6xxCtrl::DEV_ADDR_HOST != m_confirmRsp->getDevAddr())
         {
             ESP_LOGW(TAG, "Write button '%s' response has wrong destination.", currentButton->get_name().c_str());
         }
@@ -440,7 +440,7 @@ bool IVTRego6xxCtrl::processNumberUpdates()
         {
             ESP_LOGW(TAG, "Write number '%s' response invalid.", currentNumber->get_name().c_str());
         }
-        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_confirmRsp->getDevAddr())
+        else if (Rego6xxCtrl::DEV_ADDR_HOST != m_confirmRsp->getDevAddr())
         {
             ESP_LOGW(TAG, "Write number '%s' response has wrong destination.", currentNumber->get_name().c_str());
         }
@@ -598,7 +598,7 @@ void IVTRego6xxCtrl::readSensors()
         {
             ESP_LOGW(TAG, "Read sensor '%s' response invalid.", currentSensor->get_name().c_str());
         }
-        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr())
+        else if (Rego6xxCtrl::DEV_ADDR_HOST != m_rego6xxRsp->getDevAddr())
         {
             ESP_LOGW(TAG, "Read sensor '%s' response has wrong destination.", currentSensor->get_name().c_str());
         }
@@ -677,7 +677,7 @@ void IVTRego6xxCtrl::readBinarySensors()
         {
             ESP_LOGW(TAG, "Read binary sensor '%s' response invalid.", currentBinarySensor->get_name().c_str());
         }
-        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr())
+        else if (Rego6xxCtrl::DEV_ADDR_HOST != m_rego6xxRsp->getDevAddr())
         {
             ESP_LOGW(TAG, "Read binary sensor '%s' response has wrong destination.", currentBinarySensor->get_name().c_str());
         }
@@ -756,7 +756,7 @@ void IVTRego6xxCtrl::readTextSensors()
         {
             ESP_LOGW(TAG, "Read text sensor '%s' response invalid.", currentTextSensor->get_name().c_str());
         }
-        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_displayRsp->getDevAddr())
+        else if (Rego6xxCtrl::DEV_ADDR_HOST != m_displayRsp->getDevAddr())
         {
             ESP_LOGW(TAG, "Read text sensor '%s' response has wrong destination.", currentTextSensor->get_name().c_str());
         }
@@ -835,7 +835,7 @@ void IVTRego6xxCtrl::readNumbers()
         {
             ESP_LOGW(TAG, "Read number '%s' response invalid.", currentNumber->get_name().c_str());
         }
-        else if (Rego6xxCtrl::DEV_ADDR_HOST == m_rego6xxRsp->getDevAddr())
+        else if (Rego6xxCtrl::DEV_ADDR_HOST != m_rego6xxRsp->getDevAddr())
         {
             ESP_LOGW(TAG, "Read number '%s' response has wrong destination.", currentNumber->get_name().c_str());
         }

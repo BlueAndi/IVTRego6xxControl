@@ -72,6 +72,11 @@ ESPHome is used as the base of the software. The IVT reg6xx controller is implem
     ```bash
     pip install -r requirements.txt
     ```
+5. Create a ```secrets.yaml``` in the project root folder with
+  ```yaml
+  mqtt_user: myuser
+  mqtt_password: my_password
+  ```
 
 ### Build
 
