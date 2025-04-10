@@ -71,6 +71,16 @@ uart:
 web_server:
   port: 80
   version: 3
+  sorting_groups:
+    - id: sg_front_panel
+      name: "Front panel"
+      sorting_weight: 10
+    - id: sg_temperatures
+      name: "Temperatures"
+      sorting_weight: 20
+    - id: sg_settings
+      name: "Settings"
+      sorting_weight: 30
 
 # MQTT configuration
 mqtt:
@@ -81,10 +91,10 @@ mqtt:
   reboot_timeout: 0s
   birth_message:
     topic: heatpumpctrl/status
-    payload: 'online'
+    payload: "online"
   will_message:
     topic: heatpumpctrl/status
-    payload: 'offline'
+    payload: "offline"
 
 # Custom component configuration
 external_components:
@@ -113,6 +123,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 10
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -122,6 +135,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 20
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -131,6 +147,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 30
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -140,6 +159,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 40
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -149,6 +171,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 50
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -158,6 +183,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 60
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -167,6 +195,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 70
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -176,6 +207,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 80
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -185,6 +219,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 90
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -194,6 +231,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 100
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -203,6 +243,9 @@ sensor:
     unit_of_measurement: "°C"
     device_class: temperature
     state_class: measurement
+    web_server:
+      sorting_group_id: sg_temperatures
+      sorting_weight: 110
 
 # Binary sensor configuration
 # https://esphome.io/components/binary_sensor/index.html
@@ -218,30 +261,45 @@ binary_sensor:
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0012
     name: power led
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 10
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0013
     name: pump led
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 20
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0014
     name: heating led
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 30
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0015
     name: boiler led
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 40
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0016
     name: alarm led
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 50
 
 # Text sensor configuration
 # https://esphome.io/components/text_sensor/index.html
@@ -257,24 +315,36 @@ text_sensor:
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0000 # Display row 1
     name: display row 1
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 60
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0001 # Display row 2
     name: display row 2
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 70
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0002 # Display row 3
     name: display row 3
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 80
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0003 # Display row 4
     name: display row 4
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 90
 
 # Button configuration
 # https://esphome.io/components/button/index.html
@@ -290,6 +360,9 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0008
     ivt_rego6xx_ctrl_value: 0x0001
     name: power button
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 100
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -297,6 +370,9 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0009
     ivt_rego6xx_ctrl_value: 0x0001
     name: left button
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 110
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -304,6 +380,9 @@ button:
     ivt_rego6xx_ctrl_addr: 0x000A
     ivt_rego6xx_ctrl_value: 0x0001
     name: middle button
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 120
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -311,6 +390,9 @@ button:
     ivt_rego6xx_ctrl_addr: 0x000B
     ivt_rego6xx_ctrl_value: 0x0001
     name: right button
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 130
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -318,6 +400,9 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0044
     ivt_rego6xx_ctrl_value: 0x01FF
     name: turn wheel left
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 140
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -325,6 +410,9 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0044
     ivt_rego6xx_ctrl_value: 0x0001
     name: turn wheel right
+    web_server:
+      sorting_group_id: sg_front_panel
+      sorting_weight: 150
 
 # Number configuration
 # https://esphome.io/components/number/index.html
@@ -347,6 +435,9 @@ number:
     name: gt1 target
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 10
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -359,6 +450,9 @@ number:
     name: gt1 on
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 20
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -371,6 +465,9 @@ number:
     name: gt1 off
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 30
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -383,6 +480,9 @@ number:
     name: gt3 target
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 40
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -395,6 +495,9 @@ number:
     name: gt3 on
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 50
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -407,6 +510,9 @@ number:
     name: gt3 off
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 60
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -419,6 +525,9 @@ number:
     name: gt4 target
     unit_of_measurement: "°C"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 70
 
   - platform: ivt_rego6xx_ctrl
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
@@ -431,3 +540,6 @@ number:
     name: add heat power
     unit_of_measurement: "%"
     device_class: temperature
+    web_server:
+      sorting_group_id: sg_settings
+      sorting_weight: 80
