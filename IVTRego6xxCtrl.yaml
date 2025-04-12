@@ -6,7 +6,7 @@ esphome:
   area: Heating room
   project:
     name: "BlueAndi.IVTRego6xxControl"
-    version: "0.1.0"
+    version: "1.0.1"
   includes:
     - lib/Rego6xx
     - lib/Utilities
