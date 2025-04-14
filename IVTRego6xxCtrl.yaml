@@ -6,7 +6,7 @@ esphome:
   area: Heating room
   project:
     name: "BlueAndi.IVTRego6xxControl"
-    version: "1.0.1"
+    version: "1.1.0"
   includes:
     - lib/Rego6xx
     - lib/Utilities
@@ -121,8 +121,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x0209
     name: gt1
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 10
@@ -133,8 +135,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x020a
     name: gt2
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 20
@@ -145,8 +149,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x020b
     name: gt3
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 30
@@ -157,8 +163,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x020c
     name: gt4
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 40
@@ -169,8 +177,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x020d
     name: gt5
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 50
@@ -181,8 +191,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x020e
     name: gt6
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 60
@@ -193,8 +205,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x020f
     name: gt8
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 70
@@ -205,8 +219,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x0210
     name: gt9
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 80
@@ -217,8 +233,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x0211
     name: gt10
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 90
@@ -229,8 +247,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x0212
     name: gt11
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 100
@@ -241,8 +261,10 @@ sensor:
     ivt_rego6xx_ctrl_addr: 0x0213
     name: gt3x
     unit_of_measurement: "°C"
+    accuracy_decimals: 1
     device_class: temperature
     state_class: measurement
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_temperatures
       sorting_weight: 110
@@ -261,6 +283,7 @@ binary_sensor:
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0012
     name: power led
+    icon: mdi:led-outline
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 10
@@ -270,6 +293,7 @@ binary_sensor:
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0013
     name: pump led
+    icon: mdi:led-outline
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 20
@@ -279,6 +303,7 @@ binary_sensor:
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0014
     name: heating led
+    icon: mdi:led-outline
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 30
@@ -288,6 +313,7 @@ binary_sensor:
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0015
     name: boiler led
+    icon: mdi:led-outline
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 40
@@ -297,6 +323,7 @@ binary_sensor:
     ivt_rego6xx_ctrl_cmd: 0x00 # Read front panel register
     ivt_rego6xx_ctrl_addr: 0x0016
     name: alarm led
+    icon: mdi:led-outline
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 50
@@ -314,6 +341,7 @@ text_sensor:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0000 # Display row 1
+    icon: mdi:format-textbox
     name: display row 1
     web_server:
       sorting_group_id: sg_front_panel
@@ -324,6 +352,7 @@ text_sensor:
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0001 # Display row 2
     name: display row 2
+    icon: mdi:format-textbox
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 70
@@ -333,6 +362,7 @@ text_sensor:
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0002 # Display row 3
     name: display row 3
+    icon: mdi:format-textbox
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 80
@@ -342,6 +372,7 @@ text_sensor:
     ivt_rego6xx_ctrl_cmd: 0x20 # Read display register
     ivt_rego6xx_ctrl_addr: 0x0003 # Display row 4
     name: display row 4
+    icon: mdi:format-textbox
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 90
@@ -360,6 +391,7 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0008
     ivt_rego6xx_ctrl_value: 0x0001
     name: power button
+    icon: mdi:power
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 100
@@ -370,6 +402,7 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0009
     ivt_rego6xx_ctrl_value: 0x0001
     name: left button
+    icon: mdi:button-pointer
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 110
@@ -380,6 +413,7 @@ button:
     ivt_rego6xx_ctrl_addr: 0x000A
     ivt_rego6xx_ctrl_value: 0x0001
     name: middle button
+    icon: mdi:button-pointer
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 120
@@ -390,6 +424,7 @@ button:
     ivt_rego6xx_ctrl_addr: 0x000B
     ivt_rego6xx_ctrl_value: 0x0001
     name: right button
+    icon: mdi:button-pointer
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 130
@@ -400,6 +435,7 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0044
     ivt_rego6xx_ctrl_value: 0x01FF
     name: turn wheel left
+    icon: mdi:arrow-left-top
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 140
@@ -410,6 +446,7 @@ button:
     ivt_rego6xx_ctrl_addr: 0x0044
     ivt_rego6xx_ctrl_value: 0x0001
     name: turn wheel right
+    icon: mdi:arrow-right-top
     web_server:
       sorting_group_id: sg_front_panel
       sorting_weight: 150
@@ -435,6 +472,7 @@ number:
     name: gt1 target
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 10
@@ -450,6 +488,7 @@ number:
     name: gt1 on
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 20
@@ -465,6 +504,7 @@ number:
     name: gt1 off
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 30
@@ -480,6 +520,7 @@ number:
     name: gt3 target
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 40
@@ -495,6 +536,7 @@ number:
     name: gt3 on
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 50
@@ -510,6 +552,7 @@ number:
     name: gt3 off
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 60
@@ -525,6 +568,7 @@ number:
     name: gt4 target
     unit_of_measurement: "°C"
     device_class: temperature
+    icon: mdi:thermometer
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 70
@@ -540,6 +584,7 @@ number:
     name: add heat power
     unit_of_measurement: "%"
     device_class: temperature
+    icon: mdi:heat-pump
     web_server:
       sorting_group_id: sg_settings
       sorting_weight: 80
