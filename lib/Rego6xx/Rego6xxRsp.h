@@ -130,7 +130,7 @@ public:
 protected:
 
     /** Timeout in ms */
-    static const uint32_t TIMEOUT = (10UL * 1000UL);
+    static const uint32_t TIMEOUT = SIMPLE_TIMER_SECONDS(2U);
 
     Stream&               m_stream;    /**< Input stream from heatpump controller. */
     bool                  m_isUsed;    /**< Is response used by application. If no, the controller can use it again. */
