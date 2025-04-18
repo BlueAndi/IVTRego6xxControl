@@ -239,15 +239,22 @@ void IVTRego6xxCtrl::processStateMachine()
         break;
 
     case STATE_NUMBERS_UPDATE:
-        /* If all numbers handled, continue with the pending state.
-         * The pending state is the one, which has been paused before
-         * because of the button press.
-         */
         if (false == processNumberUpdates())
         {
-            nextState = getPendingState(STATE_NUMBERS_UPDATE);
+            nextState = STATE_TEXT_SENSORS;
+        }
+        break;
 
-            if (STATE_NUMBERS_UPDATE == nextState)
+    case STATE_TEXT_SENSORS:
+        if (false == processTextSensors())
+        {
+            /* If all numbers handled, continue with the pending state.
+            * The pending state is the one, which has been paused before
+            * because of the button press.
+            */
+            nextState = getPendingState(STATE_TEXT_SENSORS);
+
+            if (STATE_TEXT_SENSORS == nextState)
             {
                 nextState = STATE_SENSORS;
             }
@@ -264,13 +271,6 @@ void IVTRego6xxCtrl::processStateMachine()
     case STATE_BINARY_SENSORS:
         if (false == processBinarySensors())
         {
-            nextState = STATE_TEXT_SENSORS;
-        }
-        break;
-
-    case STATE_TEXT_SENSORS:
-        if (false == processTextSensors())
-        {
             nextState = STATE_NUMBERS;
         }
         break;
@@ -278,7 +278,7 @@ void IVTRego6xxCtrl::processStateMachine()
     case STATE_NUMBERS:
         if (false == processNumbers())
         {
-            nextState = STATE_SENSORS;
+            nextState = STATE_BUTTONS;
         }
         break;
 
@@ -327,6 +327,8 @@ bool IVTRego6xxCtrl::processButtons()
                 }
                 else
                 {
+                    /* Force text sensor update with display information. */
+                    m_textSensorTimer.start(0U);
                     break;
                 }
             }

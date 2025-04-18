@@ -189,9 +189,9 @@ private:
     {
         STATE_BUTTONS = 0U,   /**< Handle buttons. */
         STATE_NUMBERS_UPDATE, /**< Handle number updates. */
+        STATE_TEXT_SENSORS,   /**< Handle text sensors. */
         STATE_SENSORS,        /**< Handle sensors. */
         STATE_BINARY_SENSORS, /**< Handle binary sensors. */
-        STATE_TEXT_SENSORS,   /**< Handle text sensors. */
         STATE_NUMBERS,        /**< Handle numbers. */
     };
 
@@ -229,7 +229,7 @@ private:
     static const uint32_t NUMBER_READ_PERIOD        = SIMPLE_TIMER_SECONDS(60U);
 
     /** Pause between every request to the heatpump controller in ms. */
-    static const uint32_t    REGO6xx_REQ_PAUSE      = SIMPLE_TIMER_SECONDS(1U);
+    static const uint32_t    REGO6xx_REQ_PAUSE      = 100U;
 
     StreamUartDevAdapter     m_adapter;    /**< Stream to UART device adapter. */
     Rego6xxCtrl              m_ctrl;       /**< IVT rego6xx controller. */
