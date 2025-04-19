@@ -389,7 +389,7 @@ button:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
     ivt_rego6xx_ctrl_addr: 0x0008
-    ivt_rego6xx_ctrl_value: 0x0001
+    ivt_rego6xx_ctrl_value: 0x000001
     name: power button
     icon: mdi:power
     web_server:
@@ -400,7 +400,7 @@ button:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
     ivt_rego6xx_ctrl_addr: 0x0009
-    ivt_rego6xx_ctrl_value: 0x0001
+    ivt_rego6xx_ctrl_value: 0x000001
     name: left button
     icon: mdi:button-pointer
     web_server:
@@ -411,7 +411,7 @@ button:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
     ivt_rego6xx_ctrl_addr: 0x000A
-    ivt_rego6xx_ctrl_value: 0x0001
+    ivt_rego6xx_ctrl_value: 0x000001
     name: middle button
     icon: mdi:button-pointer
     web_server:
@@ -422,7 +422,7 @@ button:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
     ivt_rego6xx_ctrl_addr: 0x000B
-    ivt_rego6xx_ctrl_value: 0x0001
+    ivt_rego6xx_ctrl_value: 0x000001
     name: right button
     icon: mdi:button-pointer
     web_server:
@@ -444,7 +444,7 @@ button:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
     ivt_rego6xx_ctrl_addr: 0x0044
-    ivt_rego6xx_ctrl_value: 0x0001
+    ivt_rego6xx_ctrl_value: 0x000001
     name: turn wheel right
     icon: mdi:arrow-right-top
     web_server:
