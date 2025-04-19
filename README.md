@@ -98,62 +98,62 @@ esphome run IVTRego6xxCtrl.yaml
 
 ## Sensors
 
-| **Name**   | **Description**                | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|------------|--------------------------------|----------------|------------------------------------------------|------------------------------------------------|
-| **gt1**    | Radiator return temperature    | 0x02           | 0x0209                                         | 0x020B                                         |
-| **gt2**    | Outdoor temperature            | 0x02           | 0x020A                                         | 0x020C                                         |
-| **gt3**    | Hot water temperature          | 0x02           | 0x020B                                         | 0x020D                                         |
-| **gt4**    | Forward temperature            | 0x02           | 0x020C                                         | 0x020E                                         |
-| **gt5**    | Room temperature               | 0x02           | 0x020D                                         | 0x020F                                         |
-| **gt6**    | Compressor temperature         | 0x02           | 0x020E                                         | 0x0210                                         |
-| **gt8**    | Heat fluid out temperature     | 0x02           | 0x020F                                         | 0x0211                                         |
-| **gt9**    | Heat fluid in temperature      | 0x02           | 0x0210                                         | 0x0212                                         |
-| **gt10**   | Cold fluid in temperature      | 0x02           | 0x0211                                         | 0x0213                                         |
-| **gt11**   | Cold fluid out temperature     | 0x02           | 0x0212                                         | 0x0214                                         |
-| **gt3X**   | External hot water temperature | 0x02           | 0x0213                                         | 0x0215                                         |
+| **Name**   | **Description**                | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** | **Value**               |
+|------------|--------------------------------|----------------|------------------------------------------------|------------------------------------------------|-------------------------|
+| **gt1**    | Radiator return temperature    | 0x02           | 0x0209                                         | 0x020B                                         | Signed 16-bit in 0.1 °C |
+| **gt2**    | Outdoor temperature            | 0x02           | 0x020A                                         | 0x020C                                         | Signed 16-bit in 0.1 °C |
+| **gt3**    | Hot water temperature          | 0x02           | 0x020B                                         | 0x020D                                         | Signed 16-bit in 0.1 °C |
+| **gt4**    | Forward temperature            | 0x02           | 0x020C                                         | 0x020E                                         | Signed 16-bit in 0.1 °C |
+| **gt5**    | Room temperature               | 0x02           | 0x020D                                         | 0x020F                                         | Signed 16-bit in 0.1 °C |
+| **gt6**    | Compressor temperature         | 0x02           | 0x020E                                         | 0x0210                                         | Signed 16-bit in 0.1 °C |
+| **gt8**    | Heat fluid out temperature     | 0x02           | 0x020F                                         | 0x0211                                         | Signed 16-bit in 0.1 °C |
+| **gt9**    | Heat fluid in temperature      | 0x02           | 0x0210                                         | 0x0212                                         | Signed 16-bit in 0.1 °C |
+| **gt10**   | Cold fluid in temperature      | 0x02           | 0x0211                                         | 0x0213                                         | Signed 16-bit in 0.1 °C |
+| **gt11**   | Cold fluid out temperature     | 0x02           | 0x0212                                         | 0x0214                                         | Signed 16-bit in 0.1 °C |
+| **gt3X**   | External hot water temperature | 0x02           | 0x0213                                         | 0x0215                                         | Signed 16-bit in 0.1 °C |
 
 ## Binary Sensors
 
-| **Name**   | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|------------|-----------------|----------------|------------------------------------------------|------------------------------------------------|
-| **power**  | Power           | 0x00           | 0x0012                                         | 0x0012                                         |
-| **pump**   | Pump            | 0x00           | 0x0013                                         | 0x0013                                         |
-| **heating**| Heating         | 0x00           | 0x0014                                         | 0x0014                                         |
-| **boiler** | Boiler          | 0x00           | 0x0015                                         | 0x0015                                         |
-| **alarm**  | Alarm           | 0x00           | 0x0016                                         | 0x0016                                         |
+| **Name**   | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** | **Value**    |
+|------------|-----------------|----------------|------------------------------------------------|------------------------------------------------|--------------|
+| **power**  | Power           | 0x00           | 0x0012                                         | 0x0012                                         | 0: off 1: on |
+| **pump**   | Pump            | 0x00           | 0x0013                                         | 0x0013                                         | 0: off 1: on |
+| **heating**| Heating         | 0x00           | 0x0014                                         | 0x0014                                         | 0: off 1: on |
+| **boiler** | Boiler          | 0x00           | 0x0015                                         | 0x0015                                         | 0: off 1: on |
+| **alarm**  | Alarm           | 0x00           | 0x0016                                         | 0x0016                                         | 0: off 1: on |
 
 ## Text Sensors
 
-| **Name**          | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|-------------------|-----------------|---------------|------------------------------------------------|------------------------------------------------|
-| **display_row_1** | Display row 1   | 0x20          | 0x0000                                         | 0x0000                                         |
-| **display_row_2** | Display row 2   | 0x20          | 0x0001                                         | 0x0001                                         |
-| **display_row_3** | Display row 3   | 0x20          | 0x0002                                         | 0x0002                                         |
-| **display_row_4** | Display row 4   | 0x20          | 0x0003                                         | 0x0003                                         |
+| **Name**          | **Description** | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** | **Value**              |
+|-------------------|-----------------|----------------|------------------------------------------------|------------------------------------------------|------------------------|
+| **display_row_1** | Display row 1   | 0x20           | 0x0000                                         | 0x0000                                         | '\0' terminated string |
+| **display_row_2** | Display row 2   | 0x20           | 0x0001                                         | 0x0001                                         | '\0' terminated string |
+| **display_row_3** | Display row 3   | 0x20           | 0x0002                                         | 0x0002                                         | '\0' terminated string |
+| **display_row_4** | Display row 4   | 0x20           | 0x0003                                         | 0x0003                                         | '\0' terminated string |
 
 ## Buttons
 
-| **Name**            | **Description**   | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|---------------------|-------------------|----------------|------------------------------------------------|------------------------------------------------|
-| **power_button**    | Power button      | 0x01           | 0x0008                                         | 0x0000                                         |
-| **left_button**     | Left button       | 0x01           | 0x0009                                         | 0x0000                                         |
-| **middle_button**   | Middle button     | 0x01           | 0x000A                                         | 0x0000                                         |
-| **right_button**    | Right button      | 0x01           | 0x000B                                         | 0x0000                                         |
-| **turn_wheel_left** | Turn wheel left   | 0x01           | 0x0044                                         | 0x01FF                                         |
-| **turn_wheel_right**| Turn wheel right  | 0x01           | 0x0044                                         | 0x0001                                         |
+| **Name**            | **Description**   | **Command ID** | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** | **Value**  |
+|---------------------|-------------------|----------------|------------------------------------------------|------------------------------------------------|------------|
+| **power_button**    | Power button      | 0x01           | 0x0008                                         | 0x0008                                         | 1: pressed |
+| **left_button**     | Left button       | 0x01           | 0x0009                                         | 0x0009                                         | 1: pressed |
+| **middle_button**   | Middle button     | 0x01           | 0x000A                                         | 0x000A                                         | 1: pressed |
+| **right_button**    | Right button      | 0x01           | 0x000B                                         | 0x000B                                         | 1: pressed |
+| **turn_wheel_left** | Turn wheel left   | 0x01           | 0x0044                                         | 0x0044                                         | 0x1FFFFF   |
+| **turn_wheel_right**| Turn wheel right  | 0x01           | 0x0044                                         | 0x0044                                         | 0x000001   |
 
 ## Numbers
 
-| **Name**           | **Description**                 | **Command ID**    | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** |
-|--------------------|---------------------------------|-------------------|------------------------------------------------|------------------------------------------------|
-| **gt1_target**     | GT1 target temperature          | 0x02 / 0x03       | 0x006E                                         | 0x006E                                         |
-| **gt1_on**         | GT1 on temperature threshold    | 0x02 / 0x03       | 0x006F                                         | 0x006F                                         |
-| **gt1_off**        | GT1 off temperature threshold   | 0x02 / 0x03       | 0x0070                                         | 0x0070                                         |
-| **gt3_target**     | GT3 target temperature          | 0x02 / 0x03       | 0x002B                                         | 0x002B                                         |
-| **gt3_on**         | GT3 on temperature threshold    | 0x02 / 0x03       | 0x0073                                         | 0x0073                                         |
-| **gt3_off**        | GT3 off temperature threshold   | 0x02 / 0x03       | 0x0074                                         | 0x0074                                         |
-| **gt4_target**     | GT4 target temperature          | 0x02 / 0x03       | 0x006D                                         | 0x006D                                         |
-| **add_heat_power** | Add heat power                  | 0x02 / 0x03       | 0x006C                                         | 0x006C                                         |
+| **Name**           | **Description**                 | **Command ID**    | **Rego600-635**<br>**System Register Address** | **Rego636-...**<br>**System Register Address** | **Value**               |
+|--------------------|---------------------------------|-------------------|------------------------------------------------|------------------------------------------------|-------------------------|
+| **gt1_target**     | GT1 target temperature          | 0x02 / 0x03       | 0x006E                                         | 0x006E                                         | Signed 16-bit in 0.1 °C |
+| **gt1_on**         | GT1 on temperature threshold    | 0x02 / 0x03       | 0x006F                                         | 0x006F                                         | Signed 16-bit in 0.1 °C |
+| **gt1_off**        | GT1 off temperature threshold   | 0x02 / 0x03       | 0x0070                                         | 0x0070                                         | Signed 16-bit in 0.1 °C |
+| **gt3_target**     | GT3 target temperature          | 0x02 / 0x03       | 0x002B                                         | 0x002B                                         | Signed 16-bit in 0.1 °C |
+| **gt3_on**         | GT3 on temperature threshold    | 0x02 / 0x03       | 0x0073                                         | 0x0073                                         | Signed 16-bit in 0.1 °C |
+| **gt3_off**        | GT3 off temperature threshold   | 0x02 / 0x03       | 0x0074                                         | 0x0074                                         | Signed 16-bit in 0.1 °C |
+| **gt4_target**     | GT4 target temperature          | 0x02 / 0x03       | 0x006D                                         | 0x006D                                         | Signed 16-bit in 0.1 °C |
+| **add_heat_power** | Add heat power                  | 0x02 / 0x03       | 0x006C                                         | 0x006C                                         | Signed 16-bit in 0.1 %  |
 
 ## API Endpoints and MQTT Topics
 
