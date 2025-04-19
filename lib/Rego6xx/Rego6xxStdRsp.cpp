@@ -87,9 +87,9 @@ uint8_t Rego6xxStdRsp::getDevAddr() const
     return devAddr;
 }
 
-uint16_t Rego6xxStdRsp::getValue() const
+uint32_t Rego6xxStdRsp::getValue() const
 {
-    uint16_t data = 0U;
+    uint32_t data = 0U;
 
     if ((false == isPending()) &&
         (true == isValid()))
@@ -97,10 +97,10 @@ uint16_t Rego6xxStdRsp::getValue() const
         /* Common rules:
             - MSB first
             - 7 bit communication is used,
-                e.g. register address 0x1234 in binary form 00010010 001101000
-                will be expanded to 7bit form 00 0100100 01101000
+                e.g. register address 0x123456 in binary form 0001 0010 0011 0100 0101 0110
+                will be expanded to 7bit form as 21-bit value 1001000 1101000 1010110
         */
-        data  = ((uint16_t)(m_response[1] & 0x03U)) << 14U;
+        data  = ((uint16_t)(m_response[1] & 0x7FU)) << 14U;
         data |= ((uint16_t)(m_response[2] & 0x7FU)) <<  7U;
         data |= ((uint16_t)(m_response[3] & 0x7FU)) <<  0U;
     }

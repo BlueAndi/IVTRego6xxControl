@@ -76,7 +76,6 @@ void Rego6xxRsp::receive()
         if ((nullptr == buffer) ||
             (0U == size))
         {
-            m_stream.flush();
             m_isPending = false;
             m_timer.stop();
         }
@@ -88,7 +87,6 @@ void Rego6xxRsp::receive()
         /* Timeout? */
         else if (true == m_timer.isTimeout())
         {
-            m_stream.flush();
             m_isTimeout = true;
             m_isPending = false;
             memset(buffer, 0, size);

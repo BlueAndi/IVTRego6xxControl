@@ -57,7 +57,7 @@ CONFIG_SCHEMA = button.BUTTON_SCHEMA.extend(
         cv.Required(CONF_IVT_REGO6XX_CTRL_ID): cv.use_id(ivt_rego6xx_ctrl_ns.IVTRego6xxCtrl),
         cv.Required(CONF_IVT_REGO6XX_CMD): cv.hex_int_range(0x00, 0x7F),
         cv.Required(CONF_IVT_REGO6XX_ADDR): cv.hex_int_range(0x0000, 0x0300),
-        cv.Required(CONF_IVT_REGO6XX_VALUE): cv.hex_int_range(0x00, 0xFFFF),
+        cv.Required(CONF_IVT_REGO6XX_VALUE): cv.hex_int_range(0x00, 0x1FFFFF),
     })
 )
 

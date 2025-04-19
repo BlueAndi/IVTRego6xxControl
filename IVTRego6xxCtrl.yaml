@@ -433,7 +433,7 @@ button:
     ivt_rego6xx_ctrl_id: ivt_rego6xx_ctrl_id
     ivt_rego6xx_ctrl_cmd: 0x01 # Write to front panel register
     ivt_rego6xx_ctrl_addr: 0x0044
-    ivt_rego6xx_ctrl_value: 0x01FF
+    ivt_rego6xx_ctrl_value: 0x1FFFFF
     name: turn wheel left
     icon: mdi:arrow-left-top
     web_server:

@@ -249,9 +249,9 @@ void IVTRego6xxCtrl::processStateMachine()
         if (false == processTextSensors())
         {
             /* If all numbers handled, continue with the pending state.
-            * The pending state is the one, which has been paused before
-            * because of the button press.
-            */
+             * The pending state is the one, which has been paused before
+             * because of the button press.
+             */
             nextState = getPendingState(STATE_TEXT_SENSORS);
 
             if (STATE_TEXT_SENSORS == nextState)
@@ -316,9 +316,9 @@ bool IVTRego6xxCtrl::processButtons()
             {
                 uint8_t  cmdId = currentButton->getCmdId();
                 uint16_t addr  = currentButton->getAddr();
-                uint16_t value = currentButton->getValue();
+                uint32_t value = currentButton->getValue();
 
-                ESP_LOGI(TAG, "Write button '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X ...", currentButton->get_name().c_str(), value, cmdId, addr);
+                ESP_LOGI(TAG, "Write button '%s' 0x%06X with 0x%02X (cmd id) at 0x%04X ...", currentButton->get_name().c_str(), value, cmdId, addr);
                 m_confirmRsp = m_ctrl.writeStd(cmdId, addr, value);
 
                 if (nullptr == m_confirmRsp)
@@ -409,7 +409,7 @@ bool IVTRego6xxCtrl::processNumberUpdates()
             {
                 uint8_t  cmdId = currentNumber->getWriteCmdId();
                 uint16_t addr  = currentNumber->getAddr();
-                uint16_t value = m_ctrl.fromFloat(currentNumber->getValue());
+                uint32_t value = m_ctrl.fromFloat(currentNumber->getValue());
 
                 ESP_LOGI(TAG, "Write number '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X ...", currentNumber->get_name().c_str(), value, cmdId, addr);
                 m_confirmRsp = m_ctrl.writeStd(cmdId, addr, value);
@@ -609,7 +609,7 @@ void IVTRego6xxCtrl::readSensors()
 
             currentSensor->publish_state(value);
 
-            ESP_LOGI(TAG, "Read sensor '%s' successful.", currentSensor->get_name().c_str());
+            ESP_LOGI(TAG, "Read sensor '%s' successful: %0.2F (0x%06X)", currentSensor->get_name().c_str(), value, m_rego6xxRsp->getValue());
         }
 
         m_ctrl.release();
@@ -688,7 +688,7 @@ void IVTRego6xxCtrl::readBinarySensors()
 
             currentBinarySensor->publish_state(state);
 
-            ESP_LOGI(TAG, "Read binary sensor '%s' successful.", currentBinarySensor->get_name().c_str());
+            ESP_LOGI(TAG, "Read binary sensor '%s' successful: %s (0x%06X)", currentBinarySensor->get_name().c_str(), (false == state) ? "false" : "true", m_rego6xxRsp->getValue());
         }
 
         m_ctrl.release();
@@ -848,7 +848,7 @@ void IVTRego6xxCtrl::readNumbers()
 
             currentNumber->publish_state(value);
 
-            ESP_LOGI(TAG, "Read number '%s' successful.", currentNumber->get_name().c_str());
+            ESP_LOGI(TAG, "Read number '%s' successful: %0.2F (0x%06X)", currentNumber->get_name().c_str(), value, m_rego6xxRsp->getValue());
         }
 
         m_ctrl.release();

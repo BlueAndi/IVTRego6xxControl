@@ -74,7 +74,7 @@ const Rego6xxStdRsp* Rego6xxCtrl::readStd(uint8_t cmdId, uint16_t addr)
     return rsp;
 }
 
-const Rego6xxConfirmRsp* Rego6xxCtrl::writeStd(uint8_t cmdId, uint16_t addr, uint16_t value)
+const Rego6xxConfirmRsp* Rego6xxCtrl::writeStd(uint8_t cmdId, uint16_t addr, uint32_t value)
 {
     const Rego6xxConfirmRsp* rsp = nullptr;
 
@@ -89,7 +89,7 @@ const Rego6xxConfirmRsp* Rego6xxCtrl::writeStd(uint8_t cmdId, uint16_t addr, uin
     return rsp;
 }
 
-float Rego6xxCtrl::toFloat(uint16_t value)
+float Rego6xxCtrl::toFloat(uint32_t value)
 {
     int8_t sign = 1;
     float  floorPart;
@@ -110,14 +110,14 @@ float Rego6xxCtrl::toFloat(uint16_t value)
     return result;
 }
 
-bool Rego6xxCtrl::toBool(uint16_t value)
+bool Rego6xxCtrl::toBool(uint32_t value)
 {
     return (0U == value) ? false : true;
 }
 
-uint16_t Rego6xxCtrl::fromFloat(float value)
+uint32_t Rego6xxCtrl::fromFloat(float value)
 {
-    uint16_t result     = 0U;
+    uint32_t result     = 0U;
     bool     isNegative = (0.0F > value) ? true : false;
 
     if (true == isNegative)
@@ -125,7 +125,7 @@ uint16_t Rego6xxCtrl::fromFloat(float value)
         value = -value;
     }
 
-    result = static_cast<uint16_t>(value * 10.0F);
+    result = static_cast<uint32_t>(value * 10.0F);
 
     if (true == isNegative)
     {
@@ -180,7 +180,7 @@ const Rego6xxDisplayRsp* Rego6xxCtrl::readDisplay(uint8_t cmdId, uint16_t addr)
     return rsp;
 }
 
-String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
+String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint32_t data)
 {
     uint8_t             cmdBuffer[CMD_SIZE];
     const size_t        RCV_BUFFER_SIZE = 64;
@@ -202,15 +202,15 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
     /* Common rules:
         - MSB first
         - 7 bit communication is used,
-            e.g. register address 0x1234 in binary form 00010010 001101000
-            will be expanded to 7bit form 00 0100100 01101000
+            e.g. register address 0x123456 in binary form 0001 0010 0011 0100 0101 0110
+            will be expanded to 7bit form as 21-bit value 1001000 1101000 1010110
     */
     cmdBuffer[0] = DEV_ADDR_HEATPUMP;
     cmdBuffer[1] = cmdId;
     cmdBuffer[2] = (addr >> 14U) & 0x03U;
     cmdBuffer[3] = (addr >> 7U) & 0x7FU;
     cmdBuffer[4] = (addr >> 0U) & 0x7FU;
-    cmdBuffer[5] = (data >> 14U) & 0x03U;
+    cmdBuffer[5] = (data >> 14U) & 0x7FU;
     cmdBuffer[6] = (data >> 7U) & 0x7FU;
     cmdBuffer[7] = (data >> 0U) & 0x7FU;
     cmdBuffer[8] = Rego6xxUtil::calculateChecksum(&cmdBuffer[2], CMD_SIZE - 3U);
@@ -234,6 +234,50 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
     return rsp;
 }
 
+void Rego6xxCtrl::process()
+{
+    if (nullptr != m_pendingRsp)
+    {
+        m_pendingRsp->receive();
+
+        /* Pending response complete, but error happened? */
+        if (false == m_pendingRsp->isPending())
+        {
+            if ((true == m_pendingRsp->isTimeout()) ||
+                (false == m_pendingRsp->isValid()))
+            {
+                clearRxBuffer();
+            }
+        }
+    }
+    else
+    {
+        /* Clear any unexpected received bytes. */
+        clearRxBuffer();
+    }
+}
+
+void Rego6xxCtrl::release()
+{
+    if (nullptr != m_pendingRsp)
+    {
+        m_pendingRsp->release();
+        m_pendingRsp = nullptr;
+    }
+}
+
+bool Rego6xxCtrl::isPending() const
+{
+    bool isPending = false;
+
+    if (nullptr != m_pendingRsp)
+    {
+        isPending = true;
+    }
+
+    return isPending;
+}
+
 /******************************************************************************
  * Protected Methods
  *****************************************************************************/
@@ -242,7 +286,7 @@ String Rego6xxCtrl::writeDbg(uint8_t cmdId, uint16_t addr, uint16_t data)
  * Private Methods
  *****************************************************************************/
 
-void Rego6xxCtrl::writeCmd(uint8_t devAddr, uint8_t cmdId, uint16_t regAddr, uint16_t data)
+void Rego6xxCtrl::writeCmd(uint8_t devAddr, uint8_t cmdId, uint16_t regAddr, uint32_t data)
 {
     uint8_t cmdBuffer[CMD_SIZE];
 
@@ -257,20 +301,21 @@ void Rego6xxCtrl::writeCmd(uint8_t devAddr, uint8_t cmdId, uint16_t regAddr, uin
     /* Common rules:
         - MSB first
         - 7 bit communication is used,
-            e.g. register address 0x1234 in binary form 00010010 001101000
-            will be expanded to 7bit form 00 0100100 01101000
+            e.g. register address 0x123456 in binary form 0001 0010 0011 0100 0101 0110
+            will be expanded to 7bit form as 21-bit value 1001000 1101000 1010110
     */
     cmdBuffer[0] = devAddr;
     cmdBuffer[1] = cmdId;
     cmdBuffer[2] = (regAddr >> 14U) & 0x03U;
     cmdBuffer[3] = (regAddr >> 7U) & 0x7FU;
     cmdBuffer[4] = (regAddr >> 0U) & 0x7FU;
-    cmdBuffer[5] = (data >> 14U) & 0x03U;
+    cmdBuffer[5] = (data >> 14U) & 0x7FU;
     cmdBuffer[6] = (data >> 7U) & 0x7FU;
     cmdBuffer[7] = (data >> 0U) & 0x7FU;
     cmdBuffer[8] = Rego6xxUtil::calculateChecksum(&cmdBuffer[2], CMD_SIZE - 3U);
 
     (void)m_stream.write(cmdBuffer, CMD_SIZE);
+    m_stream.flush();
 
     return;
 }

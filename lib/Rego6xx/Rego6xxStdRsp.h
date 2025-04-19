@@ -96,7 +96,7 @@ public:
      * 
      * @return value
      */
-    uint16_t getValue() const;
+    uint32_t getValue() const;
 
 private:
 

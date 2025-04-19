@@ -75,7 +75,7 @@ public:
      * @param[in] addr  Address to read by the command.
      * @param[in] value Value to write by the command.
      */
-    IVTRego6xxButton(uint8_t cmdId, uint16_t addr, uint16_t value) :
+    IVTRego6xxButton(uint8_t cmdId, uint16_t addr, uint32_t value) :
         m_cmdId(cmdId),
         m_addr(addr),
         m_value(value),
@@ -115,7 +115,7 @@ public:
      *
      * @return The value to write by the command.
      */
-    uint16_t getValue() const
+    uint32_t getValue() const
     {
         return m_value;
     }
@@ -130,7 +130,7 @@ public:
         bool isPressed = m_isPressed;
 
         /* Reset button state. */
-        m_isPressed = false;
+        m_isPressed    = false;
 
         return isPressed;
     }
@@ -139,7 +139,7 @@ private:
 
     uint8_t  m_cmdId;     /**< Command id to send to the heatpump. */
     uint16_t m_addr;      /**< Address to read by the command. */
-    uint16_t m_value;     /**< Value to write by the command. */
+    uint32_t m_value;     /**< Value to write by the command. */
     bool     m_isPressed; /**< Is the button pressed? */
 
     /** No default constructor. */

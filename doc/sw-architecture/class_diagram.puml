@@ -91,11 +91,11 @@ package "esphome" <<namespace>> {
         class "IVTRego6xxButton" as ivtRego6xxButton {
             - m_cmdId: uint8_t
             - m_addr: uint16_t
-            - m_value: uint16_t
-            + IVTRego6xxButton(cmdId: uint8_t, addr: uint16_t, value: uint16_t)
+            - m_value: uint32_t
+            + IVTRego6xxButton(cmdId: uint8_t, addr: uint16_t, value: uint32_t)
             + getCmdId() : uint8_t
             + getAddr() : uint16_t
-            + getValue() : uint16_t
+            + getValue() : uint32_t
             - press_action() : void
         }
 
