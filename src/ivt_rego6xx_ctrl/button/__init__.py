@@ -49,7 +49,7 @@ CONF_IVT_REGO6XX_VALUE = "ivt_rego6xx_ctrl_value"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
-CONFIG_SCHEMA = button.BUTTON_SCHEMA.extend(
+CONFIG_SCHEMA = button.button_schema(ivt_rego6xx_button).extend(
     cv.Schema({
         cv.GenerateID(): cv.declare_id(ivt_rego6xx_button),
 

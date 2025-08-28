@@ -57,7 +57,7 @@ TEMPERATURE_STEP_MAX = 1.00  # K
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
-CONFIG_SCHEMA = number.NUMBER_SCHEMA.extend(
+CONFIG_SCHEMA = number.number_schema(ivt_rego6xx_number).extend(
     cv.Schema({
         cv.GenerateID(): cv.declare_id(ivt_rego6xx_number),
 

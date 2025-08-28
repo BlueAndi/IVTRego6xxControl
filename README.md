@@ -41,7 +41,7 @@ Unfortunately my Junkers heatpump (original build by IVT) has no smart interface
 
 The first adapter I created was the [Rego6xxSrv](https://github.com/BlueAndi/Rego6xxSrv) based on a ATmega644P, which is still up and running. But meanwhile the ATmega644P board I used is obsolete since 2024-01-01 and regarding my ideas the resources are very limited. Therefore the decision was made to create a secon adapter with less resource constraints and easier integration into a home automation.
 
-The protocol for the Rego6xx controller was original derived from http://rago600.sourceforge.net/.
+The protocol for the Rego6xx controller was original derived from [http://rago600.sourceforge.net/](http://rago600.sourceforge.net/).
 
 ![FrontPanel](doc/images/front_panel.png)
 ![Temperatures](doc/images/temperatures.png)
@@ -65,23 +65,28 @@ ESPHome is used as the base of the software. The IVT reg6xx controller is implem
 
 1. Install Python.
 2. Setup [virtual environment](https://docs.python.org/3/library/venv.html).
+
     ```bash
     python -m venv .venv
     ```
+
 3. Activate virtual environment.
    - Windows CMD: ```.venv\Scripts\activate.bat```
    - Windows PowerShell: ```.venv\Scripts\activate.ps1```
    - Linux: ```.venv/Scripts/activate```
 4. Install packages.
+
     ```bash
     pip install -r requirements.txt
     ```
+
 5. Create a ```secrets.yaml``` in the project root folder. Replace **my_user** and **my_password** according to the MQTT broker credentials.
-  ```yaml
-  mqtt_broker: my_broker_url
-  mqtt_user: my_user
-  mqtt_password: my_password
-  ```
+
+    ```yaml
+    mqtt_broker: my_broker_url
+    mqtt_user: my_user
+    mqtt_password: my_password
+    ```
 
 ### Build
 

@@ -48,7 +48,7 @@ CONF_IVT_REGO6XX_ADDR = "ivt_rego6xx_ctrl_addr"
 
 # The configuration schema is automatically loaded by the ESPHome core and used to validate
 # the provided configuration. See https://esphome.io/guides/contributing#config-validation
-CONFIG_SCHEMA = text_sensor.TEXT_SENSOR_SCHEMA.extend(
+CONFIG_SCHEMA = text_sensor.text_sensor_schema(ivt_rego6xx_text_sensor).extend(
     cv.Schema({
         cv.GenerateID(): cv.declare_id(ivt_rego6xx_text_sensor),
 

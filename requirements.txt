@@ -1,2 +1,2 @@
 wheel >= 0.45.1
-esphome >= 2025.4.0
+esphome >= 2025.8.1
