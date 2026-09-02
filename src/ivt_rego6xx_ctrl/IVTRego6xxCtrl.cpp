@@ -34,6 +34,7 @@
  *****************************************************************************/
 #include "IVTRego6xxCtrl.h"
 #include "esphome/core/log.h"
+#include <inttypes.h>
 #include <string>
 
 /******************************************************************************
@@ -318,12 +319,12 @@ bool IVTRego6xxCtrl::processButtons()
                 uint16_t addr  = currentButton->getAddr();
                 uint32_t value = currentButton->getValue();
 
-                ESP_LOGI(TAG, "Write button '%s' 0x%06X with 0x%02X (cmd id) at 0x%04X ...", currentButton->get_name().c_str(), value, cmdId, addr);
+                ESP_LOGI(TAG, "Write button '%s' 0x%06" PRIX32 " with 0x%02X (cmd id) at 0x%04X ...", currentButton->get_name().c_str(), value, cmdId, addr);
                 m_confirmRsp = m_ctrl.writeStd(cmdId, addr, value);
 
                 if (nullptr == m_confirmRsp)
                 {
-                    ESP_LOGE(TAG, "Failed to write button '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X!", currentButton->get_name().c_str(), value, cmdId, addr);
+                    ESP_LOGE(TAG, "Failed to write button '%s' 0x%04" PRIX32 " with 0x%02X (cmd id) at 0x%04X!", currentButton->get_name().c_str(), value, cmdId, addr);
                 }
                 else
                 {
@@ -411,12 +412,12 @@ bool IVTRego6xxCtrl::processNumberUpdates()
                 uint16_t addr  = currentNumber->getAddr();
                 uint32_t value = m_ctrl.fromFloat(currentNumber->getValue());
 
-                ESP_LOGI(TAG, "Write number '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X ...", currentNumber->get_name().c_str(), value, cmdId, addr);
+                ESP_LOGI(TAG, "Write number '%s' 0x%04" PRIX32 " with 0x%02X (cmd id) at 0x%04X ...", currentNumber->get_name().c_str(), value, cmdId, addr);
                 m_confirmRsp = m_ctrl.writeStd(cmdId, addr, value);
 
                 if (nullptr == m_confirmRsp)
                 {
-                    ESP_LOGE(TAG, "Failed to write number '%s' 0x%04X with 0x%02X (cmd id) at 0x%04X!", currentNumber->get_name().c_str(), value, cmdId, addr);
+                    ESP_LOGE(TAG, "Failed to write number '%s' 0x%04" PRIX32 " with 0x%02X (cmd id) at 0x%04X!", currentNumber->get_name().c_str(), value, cmdId, addr);
                 }
                 else
                 {
@@ -609,7 +610,7 @@ void IVTRego6xxCtrl::readSensors()
 
             currentSensor->publish_state(value);
 
-            ESP_LOGI(TAG, "Read sensor '%s' successful: %0.2F (0x%06X)", currentSensor->get_name().c_str(), value, m_rego6xxRsp->getValue());
+            ESP_LOGI(TAG, "Read sensor '%s' successful: %0.2F (0x%06" PRIX32 ")", currentSensor->get_name().c_str(), value, m_rego6xxRsp->getValue());
         }
 
         m_ctrl.release();
@@ -688,7 +689,7 @@ void IVTRego6xxCtrl::readBinarySensors()
 
             currentBinarySensor->publish_state(state);
 
-            ESP_LOGI(TAG, "Read binary sensor '%s' successful: %s (0x%06X)", currentBinarySensor->get_name().c_str(), (false == state) ? "false" : "true", m_rego6xxRsp->getValue());
+            ESP_LOGI(TAG, "Read binary sensor '%s' successful: %s (0x%06" PRIX32 ")", currentBinarySensor->get_name().c_str(), (false == state) ? "false" : "true", m_rego6xxRsp->getValue());
         }
 
         m_ctrl.release();
@@ -848,7 +849,7 @@ void IVTRego6xxCtrl::readNumbers()
 
             currentNumber->publish_state(value);
 
-            ESP_LOGI(TAG, "Read number '%s' successful: %0.2F (0x%06X)", currentNumber->get_name().c_str(), value, m_rego6xxRsp->getValue());
+            ESP_LOGI(TAG, "Read number '%s' successful: %0.2F (0x%06" PRIX32 ")", currentNumber->get_name().c_str(), value, m_rego6xxRsp->getValue());
         }
 
         m_ctrl.release();

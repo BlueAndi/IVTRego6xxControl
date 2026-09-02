@@ -27,7 +27,7 @@
 import esphome.codegen as cg # Code generation API
 import esphome.config_validation as cv # Configuration validation API
 from esphome.components import sensor # Sensor component
-from esphome.const import CONF_ID, CONF_UNIT_OF_MEASUREMENT, CONF_STATE_CLASS
+from esphome.const import CONF_ID, CONF_STATE_CLASS
 from .. import ivt_rego6xx_ctrl_ns # IVT Rego6xx control component namespace
 
 ################################################################################
@@ -79,9 +79,6 @@ async def to_code(config: dict) -> None:
     await sensor.register_sensor(var, config)
 
     # Add the optional variables.
-    if CONF_UNIT_OF_MEASUREMENT in config:
-        cg.add(var.set_unit_of_measurement(config[CONF_UNIT_OF_MEASUREMENT]))
-
     if CONF_STATE_CLASS in config:
         cg.add(var.set_state_class(config[CONF_STATE_CLASS]))
 

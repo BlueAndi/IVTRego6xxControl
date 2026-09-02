@@ -6,14 +6,27 @@ esphome:
   area: Heating room
   project:
     name: "BlueAndi.IVTRego6xxControl"
-    version: "1.5.0"
+    version: "1.6.0"
   includes:
-    - lib/Rego6xx
-    - lib/Utilities
-  platformio_options:
-    build_flags:
-      - -I src/Rego6xx
-      - -I src/Utilities
+    - lib/Rego6xx/Rego6xxBoolRsp.cpp
+    - lib/Rego6xx/Rego6xxBoolRsp.h
+    - lib/Rego6xx/Rego6xxConfirmRsp.cpp
+    - lib/Rego6xx/Rego6xxConfirmRsp.h
+    - lib/Rego6xx/Rego6xxCtrl.cpp
+    - lib/Rego6xx/Rego6xxCtrl.h
+    - lib/Rego6xx/Rego6xxDisplayRsp.cpp
+    - lib/Rego6xx/Rego6xxDisplayRsp.h
+    - lib/Rego6xx/Rego6xxErrorRsp.cpp
+    - lib/Rego6xx/Rego6xxErrorRsp.h
+    - lib/Rego6xx/Rego6xxRsp.cpp
+    - lib/Rego6xx/Rego6xxRsp.h
+    - lib/Rego6xx/Rego6xxSim.cpp
+    - lib/Rego6xx/Rego6xxSim.h
+    - lib/Rego6xx/Rego6xxStdRsp.cpp
+    - lib/Rego6xx/Rego6xxStdRsp.h
+    - lib/Rego6xx/Rego6xxUtil.cpp
+    - lib/Rego6xx/Rego6xxUtil.h
+    - lib/Utilities/SimpleTimer.hpp
 
 # Platform configuration.
 # https://esphome.io/components/esp32.html
@@ -30,7 +43,6 @@ logger:
 # Enable Home Assistant API.
 # https://esphome.io/components/api.html
 api:
-  password: ""
   reboot_timeout: 0s # If you enable MQTT and you do not use the Native API Component, you must set reboot_timeout: 0s, otherwise the ESP will reboot every 15 minutes because no client connected to the native API.
 
 # Enable OTA updates.
